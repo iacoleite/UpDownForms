@@ -52,13 +52,13 @@ public class UpDownFormsContext : DbContext
         
         modelBuilder.Entity<Form>()
             //FOR MY SQL!!! REMEMBER TO CHANGE AFTER CHANGE DBMS!!!!!!!!!
-            //.Property(f => f.UpdatedAt)
-            //.HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");  // Default value with updatemodelBuilder.Entity<Form>()
+            .Property(f => f.UpdatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");  // Default value with updatemodelBuilder.Entity<Form>()
             
             // USE WHILE WE ARE USING SQLITE IN MEMORY!!!! 
-            .Property(f => f.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP")
-            .ValueGeneratedOnAddOrUpdate();  // Default value with update
+            //.Property(f => f.UpdatedAt)
+            //.HasDefaultValueSql("CURRENT_TIMESTAMP")
+            //.ValueGeneratedOnAddOrUpdate();  // Default value with update
         modelBuilder.Entity<Form>()
             .Property(f => f.IsPublished)
             .HasDefaultValue(false);  // Default value for IsPublished

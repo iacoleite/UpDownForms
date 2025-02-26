@@ -2,13 +2,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
-    //options.UseMySql(builder.Configuration.GetConnectionString("UpDownFormsContext")));
-    // using in-memory database because MySql or Docker are not installed
-    options.UseSqlite("DataSource=updownforms.db")
-    );
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+// using in-memory database because MySql or Docker are not installed
+//options.UseSqlite("DataSource=updownforms.db")
+//);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
