@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UpDownForms.Migrations
 {
     [DbContext(typeof(UpDownFormsContext))]
-    [Migration("20250226114653_initialMigration")]
+    [Migration("20250226133738_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />

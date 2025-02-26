@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     //options.UseMySql(builder.Configuration.GetConnectionString("UpDownFormsContext")));
     // using in-memory database because MySql or Docker are not installed
-    options.UseSqlite("DataSource=:memory:")
+    options.UseSqlite("DataSource=updownforms.db")
     );
 
 builder.Services.AddControllers();
@@ -20,7 +20,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var DbContext = scope.ServiceProvider.GetRequiredService<UpDownFormsContext>();
-    DbContext.Database.EnsureCreated();
+    //DbContext.Database.EnsureCreated();
     DbContext.Database.Migrate();
 }
 
