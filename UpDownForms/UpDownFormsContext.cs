@@ -17,8 +17,12 @@ public class UpDownFormsContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User Entity
+
         modelBuilder.Entity<User>()
             .HasKey(u => u.Id);  // Primary Key
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.Id)
+        //    .ValueGeneratedOnAdd();  // Auto-increment
         modelBuilder.Entity<User>()
             .Property(u => u.Name)
             .HasMaxLength(100)
@@ -33,38 +37,37 @@ public class UpDownFormsContext : DbContext
             .HasMaxLength(255)
             .IsRequired();  // PasswordHash field, set as required
         modelBuilder.Entity<User>()
-            .Property(u => u.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");  // Default value
+            .Property(u => u.CreatedAt);  // Default value
         modelBuilder.Entity<User>()
-            .Property(u => u.IsDeleted)
-            .HasDefaultValue(false);  // Default value for IsDeleted
+            .Property(u => u.IsDeleted);  // Default value for IsDeleted
 
         // Form Entity
         modelBuilder.Entity<Form>()
             .HasKey(f => f.Id);  // Primary Key
         modelBuilder.Entity<Form>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();  // Auto-increment
+        modelBuilder.Entity<Form>()
             .Property(f => f.Title)
             .HasMaxLength(255)
             .IsRequired();  // Title field, set as required
         modelBuilder.Entity<Form>()
-            .Property(f => f.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");  // Default value
-        
+            .Property(f => f.CreatedAt);
+
         modelBuilder.Entity<Form>()
             //FOR MY SQL!!! REMEMBER TO CHANGE AFTER CHANGE DBMS!!!!!!!!!
-            .Property(f => f.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");  // Default value with updatemodelBuilder.Entity<Form>()
+            .Property(f => f.UpdatedAt); 
             
-            // USE WHILE WE ARE USING SQLITE IN MEMORY!!!! 
-            //.Property(f => f.UpdatedAt)
-            //.HasDefaultValueSql("CURRENT_TIMESTAMP")
-            //.ValueGeneratedOnAddOrUpdate();  // Default value with update
+
+        // USE WHILE USING SQLITE!!!! 
+        //.Property(f => f.UpdatedAt)
+        //.HasDefaultValueSql("CURRENT_TIMESTAMP")
+        //.ValueGeneratedOnAddOrUpdate();  // Default value with update
         modelBuilder.Entity<Form>()
-            .Property(f => f.IsPublished)
-            .HasDefaultValue(false);  // Default value for IsPublished
+            .Property(f => f.IsPublished);
+            
         modelBuilder.Entity<Form>()
-            .Property(f => f.IsDeleted)
-            .HasDefaultValue(false);  // Default value for IsDeleted
+            .Property(f => f.IsDeleted);
 
         // Relationships for Form and User
         modelBuilder.Entity<Form>()
@@ -77,17 +80,17 @@ public class UpDownFormsContext : DbContext
         modelBuilder.Entity<Question>()
             .HasKey(q => q.Id);  // Primary Key
         modelBuilder.Entity<Question>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();  // Auto-increment
+        modelBuilder.Entity<Question>()
             .Property(q => q.Text)
             .IsRequired();  // Text field, set as required
         modelBuilder.Entity<Question>()
-            .Property(q => q.Order)
-            .HasDefaultValue(0);  // Default value for Order field
+            .Property(q => q.Order);
         modelBuilder.Entity<Question>()
-            .Property(q => q.IsRequired)
-            .HasDefaultValue(false);  // Default value for IsRequired
+            .Property(q => q.IsRequired);
         modelBuilder.Entity<Question>()
-            .Property(q => q.IsDeleted)
-            .HasDefaultValue(false);  // Default value for IsDeleted
+            .Property(q => q.IsDeleted);
 
         // Configure enum mapping (store as integer or string)
         modelBuilder.Entity<Question>()
@@ -105,9 +108,10 @@ public class UpDownFormsContext : DbContext
         modelBuilder.Entity<Option>()
             .HasKey(o => o.Id);  // Primary Key
         modelBuilder.Entity<Option>()
-            .Property(o => o.Order)
-            .HasDefaultValue(0);  // Default value for Order field
-        
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();  // Auto-increment
+        modelBuilder.Entity<Option>()
+            .Property(o => o.Order);        
 
         // Relationships for Option and Question
         modelBuilder.Entity<Option>()
@@ -120,11 +124,12 @@ public class UpDownFormsContext : DbContext
         modelBuilder.Entity<Response>()
             .HasKey(r => r.Id);  // Primary Key
         modelBuilder.Entity<Response>()
-            .Property(r => r.SubmittedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");  // Default value for SubmittedAt
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();  // Auto-increment
         modelBuilder.Entity<Response>()
-            .Property(r => r.IsDeleted)
-            .HasDefaultValue(false);  // Default value for IsDeleted
+            .Property(r => r.SubmittedAt);
+        modelBuilder.Entity<Response>()
+            .Property(r => r.IsDeleted);
 
         // Relationships for Response and Form
         modelBuilder.Entity<Response>()
@@ -137,8 +142,10 @@ public class UpDownFormsContext : DbContext
         modelBuilder.Entity<Answer>()
             .HasKey(a => a.Id);  // Primary Key
         modelBuilder.Entity<Answer>()
-            .Property(a => a.IsDeleted)
-            .HasDefaultValue(false);  // Default value for IsDeleted
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();  // Auto-increment
+        modelBuilder.Entity<Answer>()
+            .Property(a => a.IsDeleted);
 
         // Relationships for Answer, Response, Question, and Option
         modelBuilder.Entity<Answer>()
@@ -161,9 +168,10 @@ public class UpDownFormsContext : DbContext
 
         // Answer text and Option validation (CHECK constraint logic)
         // This should be ok with MySql (?)
-        modelBuilder.Entity<Answer>()
-            .HasCheckConstraint("CHK_Answer",
-                "(AnswerText IS NOT NULL AND OptionId IS NULL) OR (AnswerText IS NULL AND OptionId IS NOT NULL)");
+        //modelBuilder.Entity<Answer>()
+        //    .ToTable(t => t.HasCheckConstraint("CHK_Answer",
+        //        "(AnswerText IS NOT NULL AND OptionId IS NULL) OR (AnswerText IS NULL AND OptionId IS NOT NULL)"));
+
     }
 
     public override int SaveChanges()

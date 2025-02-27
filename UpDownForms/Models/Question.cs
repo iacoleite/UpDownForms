@@ -15,7 +15,7 @@ namespace UpDownForms.Models
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }
         public List<Option> Options { get; set; }
-        public List<Answer> Answers { get; set; }  // Add this line
+        public List<Answer> Answers { get; set; }  
 
     }
 }

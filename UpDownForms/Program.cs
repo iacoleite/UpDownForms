@@ -6,7 +6,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-// using in-memory database because MySql or Docker are not installed
+
+// using in-memory database while MySql is not installed
 //options.UseSqlite("DataSource=updownforms.db")
 //);
 

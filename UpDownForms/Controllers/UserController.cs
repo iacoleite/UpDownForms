@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UpDownForms.DTO;
 using UpDownForms.Models;
 
 
@@ -25,23 +26,34 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
-
-        //return new List<User>
-        //{
-        //    new User { Id = 1, Name = "Alice" },
-        //    new User { Id = 2, Name = "Bob" },
-        //    new User { Id = 3, Name = "Charlie" },
-        //};
+        return await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
     }
-    //public IEnumerable<WeatherForecast> Get()
-    //{
-    //    return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-    //    {
-    //        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-    //        TemperatureC = Random.Shared.Next(-20, 55),
-    //        Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-    //    })
-    //    .ToArray();
-    //}
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<User>> GetUser(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        return user;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CreateUserDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
+    {
+
+        if (createdUserDTO == null)
+        {
+            return BadRequest("Missing user data");
+        }
+
+        var user = new User(createdUserDTO);
+        //todo validation!
+        
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+    }
 }
