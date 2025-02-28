@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO;
+using UpDownForms.DTO.User;
 using UpDownForms.Models;
 
 
@@ -26,6 +26,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
+        // Linq query to get all users that are not deleted
         return await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
     }
 
@@ -55,5 +56,40 @@ public class UserController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] UpdateUserDTO updatedUserDTO)
+    {
+        if (updatedUserDTO == null)
+        {
+            return BadRequest("Missing user data");
+        }
+
+        var user = await _context.Users.FindAsync(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+        
+        user.UpdateUser(updatedUserDTO);
+
+        //user.IsDeleted = updatedUserDTO.IsDeleted;
+        await _context.SaveChangesAsync();
+        return Ok(user);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<User>> DeleteUser(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.DeleteUser();
+        await _context.SaveChangesAsync();
+        return Ok($"User {user.Email} deleted.");
     }
 }

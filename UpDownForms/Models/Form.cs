@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using UpDownForms.DTO.Form;
 
 namespace UpDownForms.Models
 {
@@ -16,5 +17,52 @@ namespace UpDownForms.Models
         public User User { get; set; }
         public List<Question> Questions { get; set; }
         public List<Response> Responses { get; set; }
+
+        public Form()
+        {
+        }
+
+        public Form(CreateFormDTO createFormDTO)
+        {
+            this.Title = createFormDTO.Title;
+            this.Description = createFormDTO.Description;
+        }
+
+        public FormDTO formDTO()
+        {
+            return new FormDTO
+            {
+                Id = this.Id,
+                UserId = this.UserId,
+                Title = this.Title,
+                Description = this.Description,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = this.UpdatedAt,
+                IsPublished = this.IsPublished,
+                IsDeleted = this.IsDeleted,
+                User = new UserDetailsDTO
+                {
+                    Id = this.User.Id,
+                    Name = this.User.Name,
+                    Email = this.User.Email,
+                    PasswordHash = this.User.PasswordHash,
+                    CreatedAt = this.User.CreatedAt,
+                    IsDeleted = this.User.IsDeleted
+                }
+            };
+        }
+
+        internal void UpdateForm(UpdateFormDTO updateFormDTO)
+        {
+            this.Title = updateFormDTO.Title;
+            this.Description = updateFormDTO.Description;
+            this.UpdatedAt = DateTime.UtcNow;
+
+        }
+
+        internal void DeleteForm()
+        {
+            this.IsDeleted = true;
+        }
     }
 }

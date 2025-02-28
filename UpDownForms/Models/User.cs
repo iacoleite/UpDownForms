@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using UpDownForms.DTO;
+using UpDownForms.DTO.User;
 
 namespace UpDownForms.Models
 {
@@ -19,7 +19,7 @@ namespace UpDownForms.Models
 
         public User()
         {
-        }   
+        }
 
         public User(CreateUserDTO dto)
         {
@@ -28,9 +28,39 @@ namespace UpDownForms.Models
             this.CreatedAt = DateTime.UtcNow;
             // PasswordHash = dto.PasswordHash ?? need to generate the Hash 
             this.PasswordHash = dto.Password;
+        }
 
+        public UserDetailsDTO ToUserDetailsDTO()
+        {
+            return new UserDetailsDTO
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Email = this.Email,
+                PasswordHash = this.PasswordHash,
+                CreatedAt = this.CreatedAt,
+                IsDeleted = this.IsDeleted
+            };
+        }
 
+        public void UpdateUser(UpdateUserDTO updatedUserDTO)
+        {
+            if (updatedUserDTO.Name != null)
+            {
+                this.Name = updatedUserDTO.Name;
+            }
 
+            if (updatedUserDTO.Password != null)
+            {
+                this.PasswordHash = updatedUserDTO.Password;
+            }
+            this.CreatedAt = DateTime.UtcNow;
+            this.IsDeleted = false;
+        }
+
+        public void DeleteUser()
+        {
+            this.IsDeleted = true;
         }
     }
 
