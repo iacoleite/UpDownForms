@@ -1,4 +1,4 @@
-﻿namespace UpDownForms.DTO.Form
+﻿namespace UpDownForms.DTO.FormDTOs
 {
     public class UpdateFormDTO
     {

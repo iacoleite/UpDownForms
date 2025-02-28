@@ -1,6 +1,6 @@
 ﻿using UpDownForms.Models;
 
-namespace UpDownForms.DTO.Form
+namespace UpDownForms.DTO.FormDTOs
 {
     public class CreateFormDTO
     {

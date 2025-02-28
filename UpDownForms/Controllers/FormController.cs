@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO.Form;
+using UpDownForms.DTO.FormDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.Controllers
@@ -40,7 +40,7 @@ namespace UpDownForms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Form>> PostForm([FromBody] CreateFormDTO createFormDTO)
+        public async Task<ActionResult<CreateFormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
         {
             if (createFormDTO == null)
             {

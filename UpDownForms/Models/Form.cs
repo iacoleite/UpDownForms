@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UpDownForms.DTO.Form;
+using UpDownForms.DTO.FormDTOs;
+using UpDownForms.DTO.User;
 
 namespace UpDownForms.Models
 {
@@ -17,6 +18,7 @@ namespace UpDownForms.Models
         public User User { get; set; }
         public List<Question> Questions { get; set; }
         public List<Response> Responses { get; set; }
+        //public string PasswordHash { get; set; }
 
         public Form()
         {

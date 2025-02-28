@@ -43,7 +43,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<CreateUserDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
-    {
+    {  
 
         if (createdUserDTO == null)
         {

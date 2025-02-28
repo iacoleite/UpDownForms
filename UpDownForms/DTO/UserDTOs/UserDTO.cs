@@ -1,4 +1,5 @@
 ﻿using UpDownForms.Models;
+using UpDownForms.DTO.FormDTOs;
 
 namespace UpDownForms.DTO.User
 {
@@ -11,6 +12,6 @@ namespace UpDownForms.DTO.User
         public string Password { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
-        public List<Form> Forms { get; set; }
+        public List<FormDTO> Forms { get; set; }
     }
 }

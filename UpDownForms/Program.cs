@@ -8,10 +8,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// using in-memory database while MySql is not installed
-//options.UseSqlite("DataSource=updownforms.db")
-//);
-
 // I can use the AddJsonOptions method to handle the circular references if needed.
 //builder.Services.AddControllers().AddJsonOptions(options =>
 //{
