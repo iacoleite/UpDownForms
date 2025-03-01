@@ -18,10 +18,12 @@ namespace UpDownForms.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Form>>> GetForms()
+        public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
         {
-            // Linq query to get all forms
-            return await _context.Forms.Where(f => !f.IsDeleted).ToListAsync();
+            // Linq query to get all forms that are not deleted
+            var forms = await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
+            
+            return forms.Select(forms => forms.ToFormDTO()).ToList();
         }
 
         [HttpGet("{id}")]
@@ -36,11 +38,11 @@ namespace UpDownForms.Controllers
             {
                 return NotFound();
             }
-            return form.formDTO();
+            return form.ToFormDTO();
         }
 
         [HttpPost]
-        public async Task<ActionResult<CreateFormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
+        public async Task<ActionResult<FormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
         {
             if (createFormDTO == null)
             {
@@ -48,25 +50,22 @@ namespace UpDownForms.Controllers
             }
 
             var form = new Form(createFormDTO);
-
-            // NEED TO FIX THE USER ID, SHOULD GET ID OF THE LOGGED USER !!!
-            form.UserId = 10;
-
-            form.CreatedAt = DateTime.UtcNow;
-            form.UpdatedAt = DateTime.UtcNow;
-            var user = await _context.Users.FindAsync(form.UserId);
-            if (user == null)
-            {
-                return BadRequest("Invalid user ID");
-            }
-            form.User = user;
+            
+            //var user = await _context.Users.FindAsync(form.UserId);
+            //if (user == null)
+            //{
+            //    return BadRequest("Invalid user ID");
+            //}
+            //form.User = user;
             _context.Forms.Add(form);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetForm), new { id = form.Id }, form);
+            int id = form.Id;
+            form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            return CreatedAtAction(nameof(GetForm), new { id = form.Id }, form.ToFormDTO());
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Form>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
+        public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
             if (updateFormDTO == null)
             {
@@ -80,11 +79,14 @@ namespace UpDownForms.Controllers
             form.UpdateForm(updateFormDTO);
 
             await _context.SaveChangesAsync();
-            return Ok(form);
+            //return forms.Select(forms => forms.ToFormDTO()).ToList();
+            
+            form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            return Ok(form.ToFormDTO());
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Form>> DeleteForm(int id)
+        public async Task<ActionResult<string>> DeleteForm(int id)
         {
             var form = await _context.Forms.FindAsync(id);
             if (form == null)
@@ -93,6 +95,7 @@ namespace UpDownForms.Controllers
             }
             form.DeleteForm();
             await _context.SaveChangesAsync();
+            //form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
             return Ok($"Form {form.Title} deleted.");
         }
 

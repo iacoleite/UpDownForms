@@ -37,7 +37,7 @@ namespace UpDownForms.Models
                 Id = this.Id,
                 Name = this.Name,
                 Email = this.Email,
-                PasswordHash = this.PasswordHash,
+                //PasswordHash = this.PasswordHash,
                 CreatedAt = this.CreatedAt,
                 IsDeleted = this.IsDeleted
             };
@@ -61,6 +61,11 @@ namespace UpDownForms.Models
         public void DeleteUser()
         {
             this.IsDeleted = true;
+        }
+
+        public void UndeleteUser()
+        {
+            this.IsDeleted = false;
         }
     }
 

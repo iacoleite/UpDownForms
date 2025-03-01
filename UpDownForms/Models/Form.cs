@@ -28,9 +28,15 @@ namespace UpDownForms.Models
         {
             this.Title = createFormDTO.Title;
             this.Description = createFormDTO.Description;
+
+            // NEED TO FIX THE USER ID, SHOULD GET ID OF THE LOGGED USER !!!
+            this.UserId = 10;
+
+            this.CreatedAt = DateTime.UtcNow;
+            this.UpdatedAt = DateTime.UtcNow;
         }
 
-        public FormDTO formDTO()
+        public FormDTO ToFormDTO()
         {
             return new FormDTO
             {
@@ -42,15 +48,16 @@ namespace UpDownForms.Models
                 UpdatedAt = this.UpdatedAt,
                 IsPublished = this.IsPublished,
                 IsDeleted = this.IsDeleted,
-                User = new UserDetailsDTO
-                {
-                    Id = this.User.Id,
-                    Name = this.User.Name,
-                    Email = this.User.Email,
-                    PasswordHash = this.User.PasswordHash,
-                    CreatedAt = this.User.CreatedAt,
-                    IsDeleted = this.User.IsDeleted
-                }
+                User = User.ToUserDetailsDTO()
+                //User = new UserDetailsDTO
+                //{
+                //    Id = this.User.Id,
+                //    Name = this.User.Name,
+                //    Email = this.User.Email,
+                //    //PasswordHash = this.User.PasswordHash,
+                //    CreatedAt = this.User.CreatedAt,
+                //    IsDeleted = this.User.IsDeleted
+                //}
             };
         }
 
@@ -59,7 +66,6 @@ namespace UpDownForms.Models
             this.Title = updateFormDTO.Title;
             this.Description = updateFormDTO.Description;
             this.UpdatedAt = DateTime.UtcNow;
-
         }
 
         internal void DeleteForm()

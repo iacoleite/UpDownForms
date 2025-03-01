@@ -8,11 +8,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// I can use the AddJsonOptions method to handle the circular references if needed.
+// I can use the ReferenceHandler.Preserve option to handle the circular references. But It's not the best way to handle it.
+// I will use the DTO pattern to handle the circular references.
 //builder.Services.AddControllers().AddJsonOptions(options =>
 //{
 //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 //});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

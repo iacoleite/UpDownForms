@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.User;
 using UpDownForms.Models;
 
-
 namespace UpDownForms.Controllers;
 
 [ApiController]
@@ -12,7 +11,6 @@ public class UserController : ControllerBase
 {
     //private readonly ILogger<UserController> _logger;
     private readonly UpDownFormsContext _context;
-
     //public UserController(ILogger<UserController> logger)
     //{
     //    _logger = logger;
@@ -24,25 +22,26 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<UserDetailsDTO>>> GetUsers()
     {
         // Linq query to get all users that are not deleted
-        return await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
+        return await _context.Users.Where(u => !u.IsDeleted).Cast<User>().Select(u => u.ToUserDetailsDTO()).ToListAsync();
+            
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    public async Task<ActionResult<UserDetailsDTO>> GetUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)
         {
             return NotFound();
         }
-        return user;
+        return user.ToUserDetailsDTO();
     }
 
     [HttpPost]
-    public async Task<ActionResult<CreateUserDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
+    public async Task<ActionResult<UserDetailsDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
     {  
 
         if (createdUserDTO == null)
@@ -55,11 +54,11 @@ public class UserController : ControllerBase
         
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToUserDetailsDTO());
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] UpdateUserDTO updatedUserDTO)
+    public async Task<ActionResult<UserDetailsDTO>> UpdateUser(int id, [FromBody] UpdateUserDTO updatedUserDTO)
     {
         if (updatedUserDTO == null)
         {
@@ -77,11 +76,11 @@ public class UserController : ControllerBase
 
         //user.IsDeleted = updatedUserDTO.IsDeleted;
         await _context.SaveChangesAsync();
-        return Ok(user);
+        return Ok(user.ToUserDetailsDTO());
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<User>> DeleteUser(int id)
+    public async Task<ActionResult<UserDetailsDTO>> DeleteUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)
@@ -90,6 +89,7 @@ public class UserController : ControllerBase
         }
         user.DeleteUser();
         await _context.SaveChangesAsync();
-        return Ok($"User {user.Email} deleted.");
+        //return Ok($"User deleted.\n" + user.ToUserDetailsDTO());
+        return Ok(user.ToUserDetailsDTO());
     }
 }

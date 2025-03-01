@@ -14,7 +14,7 @@ namespace UpDownForms.DTO.FormDTOs
         public bool IsPublished { get; set; }
         public bool IsDeleted { get; set; }
         public UserDetailsDTO User { get; set; }
-        public List<Question> Questions { get; set; }
-        public List<Response> Responses { get; set; }
+        //public List<Question> Questions { get; set; }
+        //public List<Response> Responses { get; set; }
     }
 }
