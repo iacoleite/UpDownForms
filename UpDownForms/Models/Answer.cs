@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using UpDownForms.DTO.AnswersDTOs;
 
 namespace UpDownForms.Models
 {
@@ -14,5 +15,18 @@ namespace UpDownForms.Models
         public Response Response { get; set; }
         public Question Question { get; set; }
         public Option Option { get; set; }
+
+        public AnswerDTO ToAnswerDTO()
+        {
+            return new AnswerDTO
+            {
+                Id = this.Id,
+                ResponseId = this.ResponseId,
+                QuestionId = this.QuestionId,
+                AnswerText = this.AnswerText,
+                OptionId = this.OptionId,
+                IsDeleted = this.IsDeleted
+            };
+        }
     }
 }

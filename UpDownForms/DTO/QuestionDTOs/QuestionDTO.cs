@@ -1,4 +1,6 @@
-﻿using UpDownForms.Models;
+﻿using UpDownForms.DTO.AnswersDTOs;
+using UpDownForms.DTO.OptionDTOs;
+using UpDownForms.Models;
 
 namespace UpDownForms.DTO.QuestionDTOs
 {
