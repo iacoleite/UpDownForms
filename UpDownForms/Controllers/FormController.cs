@@ -23,7 +23,7 @@ namespace UpDownForms.Controllers
             // Linq query to get all forms that are not deleted
             var forms = await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
             
-            return forms.Select(forms => forms.ToFormDTO()).ToList();
+            return Ok(forms.Select(forms => forms.ToFormDTO()).ToList());
         }
 
         [HttpGet("{id}")]
@@ -38,7 +38,7 @@ namespace UpDownForms.Controllers
             {
                 return NotFound();
             }
-            return form.ToFormDTO();
+            return Ok(form.ToFormDTO());
         }
 
         [HttpPost]

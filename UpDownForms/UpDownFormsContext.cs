@@ -178,12 +178,26 @@ public class UpDownFormsContext : DbContext
     {
         var entries = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-        
+
         foreach (var entry in entries)
         {
-            if (entry.Entity is Form form)
+            switch (entry.Entity)
             {
-                form.UpdatedAt = DateTime.Now;
+                case Form form:
+                    form.UpdatedAt = DateTime.UtcNow;
+                    break;
+                case User user:
+                    user.UpdatedAt = DateTime.UtcNow;
+                    break;
+                //case Question question:
+                //    question.UpdatedAt = DateTime.UtcNow;
+                //    break;
+                //case Response response:
+                //    response.UpdatedAt = DateTime.UtcNow;
+                //    break;
+                //case Answer answer:
+                //    answer.UpdatedAt = DateTime.UtcNow;
+                //    break;
             }
         }
         return base.SaveChanges();
