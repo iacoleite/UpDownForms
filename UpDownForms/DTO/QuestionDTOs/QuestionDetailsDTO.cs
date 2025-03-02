@@ -4,8 +4,8 @@ namespace UpDownForms.DTO.QuestionDTOs
 {
     public class QuestionDetailsDTO
     {
-        //public int Id { get; set; }
-        //public int FormId { get; set; }
+        public int Id { get; set; }
+        public int FormId { get; set; }
         public string Text { get; set; }
         public int Order { get; set; }
         public QuestionType Type { get; set; }

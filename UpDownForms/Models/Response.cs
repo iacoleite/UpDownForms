@@ -7,7 +7,7 @@ namespace UpDownForms.Models
     {
         public int Id { get; set; }
         public int FormId { get; set; }
-        public string RespondentEmail { get; set; }
+        public string? RespondentEmail { get; set; }
         public DateTime SubmittedAt { get; set; }
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }

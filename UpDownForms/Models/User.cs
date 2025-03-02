@@ -56,7 +56,7 @@ namespace UpDownForms.Models
             {
                 this.PasswordHash = updatedUserDTO.Password;
             }
-            this.CreatedAt = DateTime.UtcNow;
+            this.UpdatedAt = DateTime.UtcNow;
             this.IsDeleted = false;
         }
 

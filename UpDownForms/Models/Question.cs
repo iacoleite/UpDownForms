@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using UpDownForms.DTO.AnswersDTOs;
+using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 
 namespace UpDownForms.Models
@@ -15,8 +17,8 @@ namespace UpDownForms.Models
         public bool IsRequired { get; set; }
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }
-        public List<Option> Options { get; set; }
-        public List<Answer> Answers { get; set; }
+        public List<Option> Options { get; set; } = new List<Option>();
+        public List<Answer> Answers { get; set; } = new List<Answer>();
 
 
         public Question()
@@ -25,6 +27,7 @@ namespace UpDownForms.Models
 
         public Question(CreateQuestionDTO createQuestionDTO)
         {
+            this.FormId = createQuestionDTO.FormId;
             this.Text = createQuestionDTO.Text;
             this.Order = createQuestionDTO.Order;
             this.Type = createQuestionDTO.Type;
@@ -42,52 +45,23 @@ namespace UpDownForms.Models
                 Order = this.Order,
                 Type = this.Type,
                 IsRequired = this.IsRequired,
-                IsDeleted = this.IsDeleted
-            };
-        }
-
-        public QuestionDTO ToQuestionDetailsDTO()
-        {
-            return new QuestionDTO
-            {
-                Id = this.Id,
-                FormId = this.FormId,
-                Text = this.Text,
-                Order = this.Order,
-                Type = this.Type,
-                IsRequired = this.IsRequired,
-                IsDeleted = this.IsDeleted
-            };
-        }
-
-        public QuestionDTO ToQuestionDetailsWithOptionsDTO()
-        {
-            return new QuestionDTO
-            {
-                //Id = this.Id,
-                //FormId = this.FormId,
-                Text = this.Text,
-                Order = this.Order,
-                Type = this.Type,
-                IsRequired = this.IsRequired,
-                IsDeleted = this.IsDeleted,
-                Options = this.Options.Select(o => o.ToOptionDTO()).ToList()
-            };
-        }
-
-        public QuestionDTO ToQuestionDetailsWithOptionAnswersDTO()
-        {
-            return new QuestionDTO
-            {
-                Id = this.Id,
-                FormId = this.FormId,
-                Text = this.Text,
-                Order = this.Order,
-                Type = this.Type,
-                IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted,
                 Options = this.Options.Select(o => o.ToOptionDTO()).ToList(),
                 Answers = this.Answers.Select(a => a.ToAnswerDTO()).ToList()
+            };
+        }
+
+        public QuestionDetailsDTO ToQuestionDetailsDTO()
+        {
+            return new QuestionDetailsDTO
+            {
+                Id = this.Id,
+                FormId = this.FormId,
+                Text = this.Text,
+                Order = this.Order,
+                Type = this.Type,
+                IsRequired = this.IsRequired,
+                IsDeleted = this.IsDeleted
             };
         }
 
@@ -124,6 +98,14 @@ namespace UpDownForms.Models
         public void RemoveOption(Option option)
         {
             this.Options.Remove(option);
+        }
+        public List<OptionDTO> GetOptionsDTOs()
+        {
+            return this.Options.Select(o => o.ToOptionDTO()).ToList();
+        }
+        public List<AnswerDTO> GetAnswerDTOs()
+        {
+            return this.Answers.Select(a => a.ToAnswerDTO()).ToList();
         }
 
 

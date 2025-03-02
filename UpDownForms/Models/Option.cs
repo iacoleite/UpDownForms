@@ -14,6 +14,15 @@ namespace UpDownForms.Models
         public int Order { get; set; }
         public Question Question { get; set; }
 
+        public Option() { }
+
+        public Option(CreateOptionDTO createOptionDTO)
+        {
+            //this.QuestionId = createOptionDTO.QuestionId;
+            this.Text = createOptionDTO.Text;
+            this.Order = createOptionDTO.Order;
+        }
+
         public OptionDTO ToOptionDTO()
         {
             return new OptionDTO
