@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UpDownForms.Models;
 
-public class UpDownFormsContext : DbContext
+public class UpDownFormsContext : IdentityDbContext
 {
     public UpDownFormsContext(DbContextOptions<UpDownFormsContext> options) : base(options)
     {
@@ -95,7 +95,7 @@ public class UpDownFormsContext : DbContext
         // Configure enum mapping (store as integer or string)
         modelBuilder.Entity<Question>()
             .Property(q => q.Type)
-            .HasConversion<int>();  // Store as an integer in the database
+            .HasConversion<string>();  // Store as an integer in the database
 
         // Relationships for Question and Form
         modelBuilder.Entity<Question>()

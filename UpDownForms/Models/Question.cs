@@ -30,7 +30,7 @@ namespace UpDownForms.Models
             this.FormId = createQuestionDTO.FormId;
             this.Text = createQuestionDTO.Text;
             this.Order = createQuestionDTO.Order;
-            this.Type = createQuestionDTO.Type;
+            this.Type = Enum.Parse<QuestionType>(createQuestionDTO.Type);
             this.IsRequired = createQuestionDTO.IsRequired;
             this.IsDeleted = false;
         }
@@ -43,7 +43,7 @@ namespace UpDownForms.Models
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                Type = this.Type,
+                Type = this.Type.ToString(),
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted,
                 Options = this.Options.Select(o => o.ToOptionDTO()).ToList(),
@@ -59,7 +59,7 @@ namespace UpDownForms.Models
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                Type = this.Type,
+                Type = this.Type.ToString(),
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted
             };

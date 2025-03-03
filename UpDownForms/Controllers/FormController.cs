@@ -61,6 +61,9 @@ namespace UpDownForms.Controllers
             await _context.SaveChangesAsync();
             int id = form.Id;
             form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            if (form == null) {
+                return NotFound();
+            }
             return CreatedAtAction(nameof(GetForm), new { id = form.Id }, form.ToFormDTO());
         }
 
@@ -82,6 +85,9 @@ namespace UpDownForms.Controllers
             //return forms.Select(forms => forms.ToFormDTO()).ToList();
             
             form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            if (form == null) {
+                return NotFound();
+            }
             return Ok(form.ToFormDTO());
         }
 

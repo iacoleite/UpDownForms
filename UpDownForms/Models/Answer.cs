@@ -13,9 +13,21 @@ namespace UpDownForms.Models
         public int? OptionId { get; set; }
         public bool IsDeleted { get; set; }
         public Response Response { get; set; }
-        public Question Question { get; set; }
+        public Question Question { get; set; } 
         public Option Option { get; set; }
 
+        public Answer()
+        {
+        }
+
+        public Answer(CreateAnswerDTO createAnswerDTO)
+        {
+            //this.ResponseId = createAnswerDTO.ResponseId;
+            this.QuestionId = createAnswerDTO.QuestionId;
+            this.AnswerText = createAnswerDTO.AnswerText;
+            this.OptionId = createAnswerDTO.OptionId;
+            //this.IsDeleted = false;
+        }
         public AnswerDTO ToAnswerDTO()
         {
             return new AnswerDTO
@@ -28,5 +40,9 @@ namespace UpDownForms.Models
                 IsDeleted = this.IsDeleted
             };
         }
+
+
+
+        
     }
 }
