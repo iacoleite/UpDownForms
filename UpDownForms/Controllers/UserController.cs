@@ -30,7 +30,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> GetUser(int id)
+    public async Task<ActionResult<UserDetailsDTO>> GetUser(string id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)
@@ -59,7 +59,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> UpdateUser(int id, [FromBody] UpdateUserDTO updatedUserDTO)
+    public async Task<ActionResult<UserDetailsDTO>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
     {
         if (updatedUserDTO == null)
         {
@@ -81,7 +81,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> DeleteUser(int id)
+    public async Task<ActionResult<UserDetailsDTO>> DeleteUser(string id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)

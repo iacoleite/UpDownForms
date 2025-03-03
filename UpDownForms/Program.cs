@@ -9,16 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<UpDownFormsContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddEntityFrameworkMySql();
+                .AddEntityFrameworkStores<UpDownFormsContext>()
+                .AddDefaultTokenProviders();
+// Remove AddEntityFrameworkMySql: Since you are already configuring the DbContext with UseMySql, you do not need to call AddEntityFrameworkMySql. Remove the AddEntityFrameworkMySql call from your Program.cs file.
+//builder.Services.AddEntityFrameworkMySql();
 
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddScoped<SignInManager<User>>();
-builder.Services.AddAuthentication( o =>
+builder.Services.AddAuthentication(o =>
 {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -27,6 +27,7 @@ builder.Services.AddAuthentication( o =>
     
 });
 
+builder.Services.AddHttpContextAccessor();
 // I can use the ReferenceHandler.Preserve option to handle the circular references. But It's not the best way to handle it.
 // I will use the DTO pattern to handle the circular references.
 //builder.Services.AddControllers().AddJsonOptions(options =>

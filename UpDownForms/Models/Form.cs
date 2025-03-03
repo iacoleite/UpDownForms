@@ -8,7 +8,7 @@ namespace UpDownForms.Models
     public class Form
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -30,7 +30,7 @@ namespace UpDownForms.Models
             this.Description = createFormDTO.Description;
 
             // NEED TO FIX THE USER ID, SHOULD GET ID OF THE LOGGED USER !!!
-            this.UserId = 10;
+            this.UserId = "1";
 
             this.CreatedAt = DateTime.UtcNow;
             this.UpdatedAt = DateTime.UtcNow;
