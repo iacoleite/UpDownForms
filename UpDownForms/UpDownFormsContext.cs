@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using UpDownForms.Models;
 
-public class UpDownFormsContext : IdentityDbContext
+public class UpDownFormsContext : IdentityDbContext<User>
 {
     public UpDownFormsContext(DbContextOptions<UpDownFormsContext> options) : base(options)
     {
@@ -12,34 +14,34 @@ public class UpDownFormsContext : IdentityDbContext
     public DbSet<Option> Options { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<Response> Responses { get; set; }
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> AppUsers => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // User Entity
+        //// User Entity
 
-        modelBuilder.Entity<User>()
-            .HasKey(u => u.Id);  // Primary Key
         //modelBuilder.Entity<User>()
-        //    .Property(u => u.Id)
-        //    .ValueGeneratedOnAdd();  // Auto-increment
-        modelBuilder.Entity<User>()
-            .Property(u => u.Name)
-            .HasMaxLength(100)
-            .IsRequired();  // Not Null
-        modelBuilder.Entity<User>()
-            .Property(u => u.Email)
-            .HasMaxLength(255)
-            .IsRequired()
-            .IsUnicode(false);  // Email field, set as required and unique
-        modelBuilder.Entity<User>()
-            .Property(u => u.PasswordHash)
-            .HasMaxLength(255)
-            .IsRequired();  // PasswordHash field, set as required
-        modelBuilder.Entity<User>()
-            .Property(u => u.CreatedAt);  // Default value
-        modelBuilder.Entity<User>()
-            .Property(u => u.IsDeleted);  // Default value for IsDeleted
+        //    .HasKey(u => u.Id);  // Primary Key
+        ////modelBuilder.Entity<User>()
+        ////    .Property(u => u.Id)
+        ////    .ValueGeneratedOnAdd();  // Auto-increment
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.Name)
+        //    .HasMaxLength(100)
+        //    .IsRequired();  // Not Null
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.Email)
+        //    .HasMaxLength(255)
+        //    .IsRequired()
+        //    .IsUnicode(false);  // Email field, set as required and unique
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.PasswordHash)
+        //    .HasMaxLength(255)
+        //    .IsRequired();  // PasswordHash field, set as required
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.CreatedAt);  // Default value
+        //modelBuilder.Entity<User>()
+        //    .Property(u => u.IsDeleted);  // Default value for IsDeleted
 
         // Form Entity
         modelBuilder.Entity<Form>()
@@ -174,7 +176,7 @@ public class UpDownFormsContext : IdentityDbContext
 
     }
 
-    public override int SaveChanges()
+    public override Task<int> SaveChangesAsync(CancellationToken token = default)
     {
         var entries = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
@@ -200,6 +202,6 @@ public class UpDownFormsContext : IdentityDbContext
                 //    break;
             }
         }
-        return base.SaveChanges();
+        return base.SaveChangesAsync(token);
     }
 }
