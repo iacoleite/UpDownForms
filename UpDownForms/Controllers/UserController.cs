@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO.User;
+using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
+using UpDownForms.Security;
 
 namespace UpDownForms.Controllers;
 
@@ -11,14 +13,16 @@ public class UserController : ControllerBase
 {
     //private readonly ILogger<UserController> _logger;
     private readonly UpDownFormsContext _context;
+    private readonly IPasswordHelper _passwordHelper;
     //public UserController(ILogger<UserController> logger)
     //{
     //    _logger = logger;
     //}
 
-    public UserController(UpDownFormsContext context)
+    public UserController(UpDownFormsContext context, IPasswordHelper passwordHelper)
     {
         _context = context;
+        _passwordHelper = passwordHelper;
     }
 
     [HttpGet]
@@ -29,6 +33,7 @@ public class UserController : ControllerBase
             
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> GetUser(string id)
     {
@@ -49,9 +54,10 @@ public class UserController : ControllerBase
             return BadRequest("Missing user data");
         }
 
-        var user = new User(createdUserDTO);
+        //var user = new User(createdUserDTO);
         //todo validation!
-        
+        var user = createdUserDTO.ToUserDto();
+        user.PasswordHash = _passwordHelper.HashPassword(user, createdUserDTO.Password);
         _context.Users.Add(user);
         
         await _context.SaveChangesAsync();
@@ -93,4 +99,5 @@ public class UserController : ControllerBase
         //return Ok($"User deleted.\n" + user.ToUserDetailsDTO());
         return Ok(user.ToUserDetailsDTO());
     }
+
 }

@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json.Serialization;
 using UpDownForms.Models;
+using UpDownForms.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +19,12 @@ builder.Services.AddIdentityCore<User>()
 // Remove AddEntityFrameworkMySql: Since you are already configuring the DbContext with UseMySql, you do not need to call AddEntityFrameworkMySql. Remove the AddEntityFrameworkMySql call from your Program.cs file.
 //builder.Services.AddEntityFrameworkMySql();
 
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
+});
+
 builder.Services.AddDbContext<UpDownFormsContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -22,10 +33,27 @@ builder.Services.AddAuthentication(o =>
 {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
+}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
-    
+    var settings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = settings.Issuer,
+        ValidAudience = settings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
+    };
 });
+//.AddJwtBearer();
+// using default values, without any parameter. I can use the appsettings.json to configure the JwtBearer. I need to set the correct string tough and pass it as a param like this:
+//.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+//o => builder.Configuration.Bind("JwtSettings", o));
+
+
+
 
 builder.Services.AddHttpContextAccessor();
 // I can use the ReferenceHandler.Preserve option to handle the circular references. But It's not the best way to handle it.
@@ -37,10 +65,43 @@ builder.Services.AddHttpContextAccessor();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
+builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
+builder.Services.AddScoped<TokenService>();
+
+// trying to configure Jwt
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
+builder.Services.AddScoped<TokenService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    o.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -80,7 +141,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

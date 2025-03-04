@@ -3,7 +3,8 @@ using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using UpDownForms.DTO.User;
+using UpDownForms.DTO.UserDTOs;
+using UpDownForms.Security;
 
 namespace UpDownForms.Models
 {
@@ -25,8 +26,6 @@ namespace UpDownForms.Models
             this.Name = dto.Name;
             this.Email = dto.Email;
             this.CreatedAt = DateTime.UtcNow;
-            // PasswordHash = dto.PasswordHash ?? need to generate the Hash 
-            this.PasswordHash = dto.Password;
         }
 
         public UserDetailsDTO ToUserDetailsDTO()
@@ -36,7 +35,7 @@ namespace UpDownForms.Models
                 Id = this.Id,
                 Name = this.Name,
                 Email = this.Email,
-                //PasswordHash = this.PasswordHash,
+                PasswordHash = this.PasswordHash,
                 CreatedAt = this.CreatedAt,
                 IsDeleted = this.IsDeleted
             };
@@ -54,7 +53,7 @@ namespace UpDownForms.Models
                 this.PasswordHash = updatedUserDTO.Password;
             }
             this.UpdatedAt = DateTime.UtcNow;
-            this.IsDeleted = false;
+            UndeleteUser();
         }
 
         public void DeleteUser()
@@ -66,10 +65,13 @@ namespace UpDownForms.Models
         {
             this.IsDeleted = false;
         }
-    }
 
-    
-    
+        private readonly IPasswordHelper _passwordHelper;
+        public User(IPasswordHelper passwordHelper)
+        {
+            _passwordHelper = passwordHelper;
+        }
+    }
 }
 
 

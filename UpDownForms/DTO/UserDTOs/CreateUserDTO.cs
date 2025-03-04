@@ -1,6 +1,8 @@
-﻿using UpDownForms.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using UpDownForms.Models;
+using UpDownForms.Security;
 
-namespace UpDownForms.DTO.User
+namespace UpDownForms.DTO.UserDTOs
 {
     public class CreateUserDTO
     {
@@ -12,5 +14,21 @@ namespace UpDownForms.DTO.User
         //public DateTime CreatedAt { get; set; }
         //public bool IsDeleted { get; set; }
         //public List<Form> Forms { get; set; }
+    }
+
+    public static class UserDtoExt
+    {
+        public static Models.User ToUserDto(this CreateUserDTO userDto)
+        {
+            var user = new Models.User
+            {
+                Name = userDto.Name,
+                Email = userDto.Email,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false,
+                Forms = new List<Form>()
+            };
+            return user;
+        }
     }
 }

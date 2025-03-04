@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using UpDownForms.DTO.FormDTOs;
-using UpDownForms.DTO.User;
+using UpDownForms.DTO.UserDTOs;
 
 namespace UpDownForms.Models
 {

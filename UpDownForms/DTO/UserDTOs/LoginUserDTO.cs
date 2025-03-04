@@ -1,8 +1,8 @@
 ﻿namespace UpDownForms.DTO.UserDTOs
 {
-    public class UpdateUserDTO
+    public class LoginUserDTO
     {
-        public string Name { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 }

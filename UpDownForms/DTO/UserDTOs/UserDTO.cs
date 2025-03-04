@@ -1,7 +1,7 @@
 ﻿using UpDownForms.Models;
 using UpDownForms.DTO.FormDTOs;
 
-namespace UpDownForms.DTO.User
+namespace UpDownForms.DTO.UserDTOs
 {
     public class UserDTO
     {

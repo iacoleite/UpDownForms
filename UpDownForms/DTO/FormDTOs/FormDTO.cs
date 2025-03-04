@@ -1,4 +1,4 @@
-﻿using UpDownForms.DTO.User;
+﻿using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.DTO.FormDTOs
