@@ -1,4 +1,4 @@
-namespace UpDownForms.DTO
+namespace UpDownForms.DTO.ApiResponse
 {
     public class ApiResponse<T>
     {

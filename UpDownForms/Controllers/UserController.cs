@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
@@ -32,11 +33,11 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDetailsDTO>>> GetUsers()
+    public async Task<ActionResult> GetUsers()
     {
         // Linq query to get all users that are not deleted
-        var users = await _userService.GetUsers();
-        return Ok(users);
+        var response = await _userService.GetUsers();
+        return Ok(response.Data);
             
     }
 
@@ -44,15 +45,22 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> GetUser(string id)
     {
-        try
+        var response = await _userService.GetUser(id);
+
+        if (!response.Success)
         {
-            var user = await _userService.GetUser(id);
-            return user;
+            return BadRequest(response.Message);
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok(response.Data);
+        //try
+        //{
+        //    var user = await _userService.GetUser(id);
+        //    return user;
+        //}
+        //catch (Exception ex)
+        //{
+        //    return BadRequest(ex.Message);
+        //}
     }
 
     [HttpPost]
@@ -81,49 +89,36 @@ public class UserController : ControllerBase
         //    return BadRequest(ModelState);
         //}
 
-        var result = await _userService.PostUser(createdUserDTO);
-        if (!result.IdentityResult.Succeeded)
+        var response = await _userService.PostUser(createdUserDTO);
+        if (!response.Success)
         {
-            return BadRequest(result.IdentityResult.Errors);
+            return BadRequest(response.Message);
         }
         
-        return CreatedAtAction(nameof(GetUser), new { id = result.CreatedUser.Id }, result.CreatedUser);
+        return Ok(response.Message + "\n" + response.Data.Email);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
+    public async Task<ActionResult<ApiResponse<UserDetailsDTO>>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
     {
-        if (updatedUserDTO == null)
+        var response = await _userService.UpdateUser(id, updatedUserDTO);
+        if (!response.Success)
         {
-            return BadRequest("Missing user data");
+            return BadRequest(response.Message);
         }
-
-        var user = await _context.Users.FindAsync(id);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
-        
-        user.UpdateUser(updatedUserDTO);
-
-        //user.IsDeleted = updatedUserDTO.IsDeleted;
-        await _context.SaveChangesAsync();
-        return Ok(user.ToUserDetailsDTO());
+        return Ok(response.Message + "\n" + response.Data.Email);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> DeleteUser(string id)
+    public async Task<ActionResult<ApiResponse<UserDetailsDTO>>> DeleteUser(string id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        var response = await _userService.DeleteUser(id);
+        if (!response.Success)
         {
-            return NotFound();
+            return BadRequest(response.Message);
         }
-        user.DeleteUser();
-        await _context.SaveChangesAsync();
         //return Ok($"User deleted.\n" + user.ToUserDetailsDTO());
-        return Ok(user.ToUserDetailsDTO());
+        return Ok(response.Message + "\n" + response.Data.Email);
     }
 
 }
