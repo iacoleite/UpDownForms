@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,10 +10,15 @@ namespace UpDownForms.Models
     [Table("Users")]
     public class User : IdentityUser
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public DateTime CreatedAt { get; set; }
+        [Required]
         public DateTime UpdatedAt { get; set; }
+        [Required]
         public bool IsDeleted { get; set; }
+        [Required]
         public List<Form> Forms { get; set; }
 
         public User()

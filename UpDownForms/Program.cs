@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using UpDownForms.Models;
 using UpDownForms.Security;
+using UpDownForms.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,7 +73,8 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
 builder.Services.AddScoped<TokenService>();
-
+builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -121,7 +123,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     // User settings.
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
+    options.User.RequireUniqueEmail = true;
+    
 });
 
 var app = builder.Build();

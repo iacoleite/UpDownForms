@@ -44,7 +44,7 @@ namespace UpDownForms.Controllers
         [HttpPost]
         public async Task<ActionResult<FormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
         {
-            if (createFormDTO == null)
+            if (createFormDTO == null || !ModelState.IsValid)
             {
                 return BadRequest("Missing form data");
             }

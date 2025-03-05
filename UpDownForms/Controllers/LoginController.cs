@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Security;
+using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
 {
@@ -9,35 +10,41 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class LoginController : Controller
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IPasswordHelper _passwordHelper;
-        private readonly TokenService _tokenService;
+        private readonly LoginService _loginService;
 
-        public LoginController(UpDownFormsContext context, IPasswordHelper passwordHelper, TokenService tokenService)
+        public LoginController(LoginService loginService)
         {
-            _context = context;
-            _passwordHelper = passwordHelper;
-            _tokenService = tokenService;
+            _loginService = loginService;
         }
 
         [HttpPost]
         public async Task<ActionResult<string>> Login([FromBody] LoginUserDTO loginDTO)
         {
-            if (loginDTO == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Missing login data");
+                return BadRequest("Invalid login data");
             }
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
-            if (user == null)
+            try
             {
-                return NotFound("User not found");
+                var token = await _loginService.Login(loginDTO);
+                return Ok(token);
             }
-            if (!_passwordHelper.VerifyPassword(user, loginDTO.Password, user.PasswordHash))
+            catch (ArgumentNullException ex)
             {
-                return Unauthorized("Invalid password");
+                return BadRequest(ex.Message);
             }
-            return Ok(_tokenService.GenerateToken(user));
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
     }
 }
