@@ -26,23 +26,22 @@ namespace UpDownForms.Models
         [Required]
         public User User { get; set; }
         [Required]
-        public List<Question> Questions { get; set; }
+        public List<Question> Questions { get; set; } = new List<Question>();
         [Required]
-        public List<Response> Responses { get; set; }
-        //public string PasswordHash { get; set; }
+        public List<Response> Responses { get; set; } = new List<Response>();
+        
 
         public Form()
         {
         }
 
-        public Form(CreateFormDTO createFormDTO)
+        public Form(CreateFormDTO createFormDTO, string userId)
         {
             this.Title = createFormDTO.Title;
             this.Description = createFormDTO.Description;
 
             // NEED TO FIX THE USER ID, SHOULD GET ID OF THE LOGGED USER !!!
-            this.UserId = "1";
-
+            this.UserId = userId;
             this.CreatedAt = DateTime.UtcNow;
             this.UpdatedAt = DateTime.UtcNow;
         }
@@ -59,16 +58,9 @@ namespace UpDownForms.Models
                 UpdatedAt = this.UpdatedAt,
                 IsPublished = this.IsPublished,
                 IsDeleted = this.IsDeleted,
-                User = User.ToUserDetailsDTO()
-                //User = new UserDetailsDTO
-                //{
-                //    Id = this.User.Id,
-                //    Name = this.User.Name,
-                //    Email = this.User.Email,
-                //    //PasswordHash = this.User.PasswordHash,
-                //    CreatedAt = this.User.CreatedAt,
-                //    IsDeleted = this.User.IsDeleted
-                //}
+                User = User.ToUserDetailsDTO(),
+                Questions = Questions.Select(q => q.ToQuestionDTO()).ToList(),
+                Responses = Responses.Select(r => r.ToResponseDTO()).ToList()
             };
         }
 

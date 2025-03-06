@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Security;
 
@@ -17,22 +18,22 @@ namespace UpDownForms.Services
             _tokenService = tokenService;
         }
 
-        public async Task<string> Login(LoginUserDTO loginDTO)
+        public async Task<ApiResponse<string>> Login(LoginUserDTO loginDTO)
         {
             if (loginDTO == null)
             {
-                throw new ArgumentNullException(nameof(loginDTO), "Missing login data");
+                return new ApiResponse<string>(false, "Missing Login data", null);
             }
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found");
+                return new ApiResponse<string>(false, "User not found", null);
             }
             if (!_passwordHelper.VerifyPassword(user, loginDTO.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Invalid password");
+                return new ApiResponse<string>(false, "Wrong password", null); ;
             }
-            return _tokenService.GenerateToken(user);
+            return new ApiResponse<string>(true, "Token generated successfully", _tokenService.GenerateToken(user));
         }
 
 

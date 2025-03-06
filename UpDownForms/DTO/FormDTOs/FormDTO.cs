@@ -1,4 +1,6 @@
-﻿using UpDownForms.DTO.UserDTOs;
+﻿using UpDownForms.DTO.QuestionDTOs;
+using UpDownForms.DTO.ResponseDTOs;
+using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.DTO.FormDTOs
@@ -14,7 +16,7 @@ namespace UpDownForms.DTO.FormDTOs
         public bool IsPublished { get; set; }
         public bool IsDeleted { get; set; }
         public UserDetailsDTO User { get; set; }
-        //public List<Question> Questions { get; set; }
-        //public List<Response> Responses { get; set; }
+        public List<QuestionDTO> Questions { get; set; }
+        public List<ResponseDTO> Responses { get; set; }
     }
 }

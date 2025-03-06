@@ -10,7 +10,7 @@ using UpDownForms.Security;
 
 namespace UpDownForms.Services
 {
-    public class UserService
+    public class UserService 
     {
         private readonly UpDownFormsContext _context;
         private readonly IPasswordHelper _passwordHelper;
@@ -25,12 +25,7 @@ namespace UpDownForms.Services
 
         public async Task<ApiResponse<IEnumerable<UserDetailsDTO>>> GetUsers()
         {
-            //return await _context.Users
-            //    .Where(u => !u.IsDeleted)                
-            //    .Select(u => u.ToUserDetailsDTO()).ToListAsync();
-
             var response = await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
-
             return new ApiResponse<IEnumerable<UserDetailsDTO>>(true, "ok!", response.Select(u => u.ToUserDetailsDTO()).ToList());
         }
 
@@ -44,7 +39,6 @@ namespace UpDownForms.Services
             return new ApiResponse<UserDetailsDTO>(true, "OK", response.ToUserDetailsDTO());
         }
 
-        //public async Task<(IdentityResult IdentityResult, User CreatedUser)> PostUser([FromBody] CreateUserDTO createdUserDTO)
         public async Task<ApiResponse<UserDetailsDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
         {
             if (createdUserDTO == null)

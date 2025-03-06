@@ -74,7 +74,11 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<LoggedUserService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, LoggedUserService>();
+
+builder.Services.AddScoped<FormService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

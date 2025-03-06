@@ -35,10 +35,12 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetUsers()
     {
-        // Linq query to get all users that are not deleted
         var response = await _userService.GetUsers();
+        if (!response.Success)
+        {
+            return BadRequest(response.Message);
+        }
         return Ok(response.Data);
-            
     }
 
     [Authorize]
@@ -52,49 +54,16 @@ public class UserController : ControllerBase
             return BadRequest(response.Message);
         }
         return Ok(response.Data);
-        //try
-        //{
-        //    var user = await _userService.GetUser(id);
-        //    return user;
-        //}
-        //catch (Exception ex)
-        //{
-        //    return BadRequest(ex.Message);
-        //}
     }
 
     [HttpPost]
     public async Task<ActionResult> PostUser([FromBody] CreateUserDTO createdUserDTO)
     {  
-
-        //if (createdUserDTO == null)
-        //{
-        //    return BadRequest("Missing user data");
-        //}
-
-        ////var user = new User(createdUserDTO);
-        ////todo validation!
-        //var user = createdUserDTO.ToUserDto();
-        //var result = await _userManager.CreateAsync(user, createdUserDTO.Password);
-        ////user.PasswordHash = _passwordHelper.HashPassword(user, createdUserDTO.Password);
-        ////_context.Users.Add(user);
-        //if (!result.Succeeded) 
-        //{
-        //    return BadRequest(result.Errors);
-        //}
-        
-        //await _context.SaveChangesAsync();
-        //if (!ModelState.IsValid)
-        //{
-        //    return BadRequest(ModelState);
-        //}
-
         var response = await _userService.PostUser(createdUserDTO);
         if (!response.Success)
         {
             return BadRequest(response.Message);
         }
-        
         return Ok(response.Message + "\n" + response.Data.Email);
     }
 
@@ -117,7 +86,6 @@ public class UserController : ControllerBase
         {
             return BadRequest(response.Message);
         }
-        //return Ok($"User deleted.\n" + user.ToUserDetailsDTO());
         return Ok(response.Message + "\n" + response.Data.Email);
     }
 

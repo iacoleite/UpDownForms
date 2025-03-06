@@ -1,29 +1,37 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.Models;
+using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class FormController : Controller
+    public class FormController : ControllerBase
     {
         private readonly UpDownFormsContext _context;
+        private readonly FormService _formService;
 
-        public FormController(UpDownFormsContext context)
+        public FormController(UpDownFormsContext context, FormService formService)
         {
             _context = context;
+            _formService = formService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
         {
             // Linq query to get all forms that are not deleted
-            var forms = await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
-            
-            return Ok(forms.Select(forms => forms.ToFormDTO()).ToList());
+            var response = await _formService.GetForms();
+            //await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
+            if (!response.Success)
+            {
+                return BadRequest(response.Message);
+            }
+            return Ok(response.Data);
         }
 
         [HttpGet("{id}")]
@@ -41,69 +49,68 @@ namespace UpDownForms.Controllers
             return Ok(form.ToFormDTO());
         }
 
+
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<FormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
         {
-            if (createFormDTO == null || !ModelState.IsValid)
+            var response = await _formService.PostForm(createFormDTO);
+            if (!response.Success)
             {
-                return BadRequest("Missing form data");
+                return BadRequest(response.Message);
             }
-
-            var form = new Form(createFormDTO);
-            
-            //var user = await _context.Users.FindAsync(form.UserId);
-            //if (user == null)
-            //{
-            //    return BadRequest("Invalid user ID");
-            //}
-            //form.User = user;
-            _context.Forms.Add(form);
-            await _context.SaveChangesAsync();
-            int id = form.Id;
-            form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
-            if (form == null) {
-                return NotFound();
-            }
-            return CreatedAtAction(nameof(GetForm), new { id = form.Id }, form.ToFormDTO());
+            return Ok(response.Data.Title);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
-            if (updateFormDTO == null)
+            var response = await _formService.PutForm(id, updateFormDTO);
+            if (!response.Success)
             {
-                return BadRequest("Missing form data");
+                return BadRequest(response.Message);
             }
-            var form = await _context.Forms.FindAsync(id);
-            if (form == null)
-            {
-                return NotFound("Missing form");
-            }
-            form.UpdateForm(updateFormDTO);
+            return Ok(response.Data.Title);
 
-            await _context.SaveChangesAsync();
-            //return forms.Select(forms => forms.ToFormDTO()).ToList();
-            
-            form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
-            if (form == null) {
-                return NotFound();
-            }
-            return Ok(form.ToFormDTO());
+            //if (updateFormDTO == null)
+            //{
+            //    return BadRequest("Missing form data");
+            //}
+            //var form = await _context.Forms.FindAsync(id);
+            //if (form == null)
+            //{
+            //    return NotFound("Missing form");
+            //}
+            //form.UpdateForm(updateFormDTO);
+
+            //await _context.SaveChangesAsync();
+            ////return forms.Select(forms => forms.ToFormDTO()).ToList();
+
+            //form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            //if (form == null) {
+            //    return NotFound();
+            //}
+            //return Ok(form.ToFormDTO());
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
-            var form = await _context.Forms.FindAsync(id);
-            if (form == null)
+            var response = await _formService.DeleteForm(id);
+            if (!response.Success)
             {
-                return NotFound();
+                return BadRequest(response.Message);
             }
-            form.DeleteForm();
-            await _context.SaveChangesAsync();
-            //form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
-            return Ok($"Form {form.Title} deleted.");
+            return Ok(response.Message);
+            //var form = await _context.Forms.FindAsync(id);
+            //if (form == null)
+            //{
+            //    return NotFound();
+            //}
+            //form.DeleteForm();
+            //await _context.SaveChangesAsync();
+            ////form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            //return Ok($"Form {form.Title} deleted.");
         }
-
     }
 }
