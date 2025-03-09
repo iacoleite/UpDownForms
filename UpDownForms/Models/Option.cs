@@ -12,7 +12,9 @@ namespace UpDownForms.Models
         public int QuestionId { get; set; }
         public string Text { get; set; }
         public int Order { get; set; }
-        public Question Question { get; set; }
+        public QuestionMultipleChoice QuestionMultipleChoice { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool IsCorrect { get; set; }
 
         public Option() { }
 

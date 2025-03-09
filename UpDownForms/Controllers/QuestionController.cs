@@ -28,15 +28,20 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionDTO>> GetQuestion(int id)
         {
-            var question = await _context.Questions.Include(q => q.Form).Include(q => q.Options).Include(q => q.Answers).FirstOrDefaultAsync(q => q.Id == id);
+            var question = await _context.Questions.Include(q => q.Form).Include(q => q.Answers).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
             }
 
             var questionDTO = question.ToQuestionDTO();
-            questionDTO.Options = question.Options.Select(o => o.ToOptionDTO()).ToList();
+            //questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
+            if (question is QuestionMultipleChoice multipleChoiceQuestion)
+            {
+                questionDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
+            }
             questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
+            
             return Ok(questionDTO);
         }
 
@@ -93,7 +98,7 @@ namespace UpDownForms.Controllers
         [HttpGet("{questionId}/options")]
         public async Task<ActionResult<IEnumerable<OptionDTO>>> GetOptions(int questionId)
         {
-            var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
                 return NotFound();
@@ -104,7 +109,7 @@ namespace UpDownForms.Controllers
         [HttpPost("{questionId}/options")]
         public async Task<IActionResult> AddOption(int questionId, [FromBody] CreateOptionDTO createOptionDTO)
         {
-            var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
                 return NotFound("Question not found");
@@ -118,7 +123,7 @@ namespace UpDownForms.Controllers
         [HttpDelete("{questionId}/options/{optionId}")]
         public async Task<IActionResult> DeleteOption(int questionId, int optionId)
         {
-            var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
                 return NotFound("Question not found");

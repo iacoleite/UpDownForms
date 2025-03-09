@@ -13,11 +13,9 @@ namespace UpDownForms.Models
         public int FormId { get; set; }
         public string Text { get; set; }
         public int Order { get; set; }
-        public QuestionType Type { get; set; }
         public bool IsRequired { get; set; }
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }
-        public List<Option> Options { get; set; } = new List<Option>();
         public List<Answer> Answers { get; set; } = new List<Answer>();
 
 
@@ -30,7 +28,7 @@ namespace UpDownForms.Models
             this.FormId = createQuestionDTO.FormId;
             this.Text = createQuestionDTO.Text;
             this.Order = createQuestionDTO.Order;
-            this.Type = Enum.Parse<QuestionType>(createQuestionDTO.Type);
+            //this.Type = Enum.Parse<QuestionType>(createQuestionDTO.Type);
             this.IsRequired = createQuestionDTO.IsRequired;
             this.IsDeleted = false;
         }
@@ -43,10 +41,10 @@ namespace UpDownForms.Models
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                Type = this.Type.ToString(),
+                //Type = this.Type.ToString(),
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted,
-                Options = this.Options.Select(o => o.ToOptionDTO()).ToList(),
+                //Options = this.Options.Select(o => o.ToOptionDTO()).ToList(),
                 Answers = this.Answers.Select(a => a.ToAnswerDTO()).ToList()
             };
         }
@@ -59,7 +57,7 @@ namespace UpDownForms.Models
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                Type = this.Type.ToString(),
+                //Type = this.Type.ToString(),
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted
             };
@@ -91,18 +89,7 @@ namespace UpDownForms.Models
             this.IsDeleted = true;
         }
 
-        public void AddOption(Option option)
-        {
-            this.Options.Add(option);
-        }
-        public void RemoveOption(Option option)
-        {
-            this.Options.Remove(option);
-        }
-        public List<OptionDTO> GetOptionsDTOs()
-        {
-            return this.Options.Select(o => o.ToOptionDTO()).ToList();
-        }
+      
         public List<AnswerDTO> GetAnswerDTOs()
         {
             return this.Answers.Select(a => a.ToAnswerDTO()).ToList();

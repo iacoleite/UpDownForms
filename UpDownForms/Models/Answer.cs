@@ -9,12 +9,9 @@ namespace UpDownForms.Models
         public int Id { get; set; }
         public int ResponseId { get; set; }
         public int QuestionId { get; set; }
-        public string AnswerText { get; set; }
-        public int? OptionId { get; set; }
         public bool IsDeleted { get; set; }
         public Response Response { get; set; }
         public Question Question { get; set; } 
-        public Option Option { get; set; }
 
         public Answer()
         {
@@ -22,11 +19,11 @@ namespace UpDownForms.Models
 
         public Answer(CreateAnswerDTO createAnswerDTO)
         {
-            //this.ResponseId = createAnswerDTO.ResponseId;
+            this.ResponseId = createAnswerDTO.ResponseId;
             this.QuestionId = createAnswerDTO.QuestionId;
-            this.AnswerText = createAnswerDTO.AnswerText;
-            this.OptionId = createAnswerDTO.OptionId;
-            //this.IsDeleted = false;
+            //this.AnswerText = createAnswerDTO.AnswerText;
+            //this.OptionId = createAnswerDTO.OptionId;
+            this.IsDeleted = false;
         }
         public AnswerDTO ToAnswerDTO()
         {
@@ -35,8 +32,8 @@ namespace UpDownForms.Models
                 Id = this.Id,
                 ResponseId = this.ResponseId,
                 QuestionId = this.QuestionId,
-                AnswerText = this.AnswerText,
-                OptionId = this.OptionId,
+                //AnswerText = this.AnswerText,
+                //OptionId = this.OptionId,
                 IsDeleted = this.IsDeleted
             };
         }

@@ -4,7 +4,7 @@
     {
         MultipleChoice,
         Checkbox,
-        Text,
+        //Text,
         Dropdown
         //Date
 

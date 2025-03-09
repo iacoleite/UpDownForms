@@ -10,9 +10,13 @@ public class UpDownFormsContext : IdentityDbContext<User>
     }
 
     public DbSet<Form> Forms { get; set; }
-    public DbSet<Answer> Answers { get; set; }
-    public DbSet<Option> Options { get; set; }
     public DbSet<Question> Questions { get; set; }
+    public DbSet<QuestionMultipleChoice> QuestionsMultipleChoice { get; set; }
+    public DbSet<QuestionOpenEnded> QuestionsOpenEnded { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<AnswerMultipleChoice> AnswersMultipleChoice { get; set; }
+    public DbSet<AnswerOpenEnded> AnswersOpenEnded { get; set; }
+    public DbSet<Option> Options { get; set; }
     public DbSet<Response> Responses { get; set; }
     public DbSet<User> AppUsers => Set<User>();
 
@@ -96,10 +100,11 @@ public class UpDownFormsContext : IdentityDbContext<User>
         modelBuilder.Entity<Question>()
             .Property(q => q.IsDeleted);
 
-        // Configure enum mapping (store as integer or string)
+        // Trying to implement inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
-            .Property(q => q.Type)
-            .HasConversion<string>();  // Store as an integer in the database
+            .HasDiscriminator<string>("QuestionType")
+            .HasValue<QuestionMultipleChoice>("MultipleChoice")
+            .HasValue<QuestionOpenEnded>("OpenEnded");
 
         // Relationships for Question and Form
         modelBuilder.Entity<Question>()
@@ -107,22 +112,35 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .WithMany(f => f.Questions)
             .HasForeignKey(q => q.FormId)
             .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+        
+        modelBuilder.Entity<QuestionMultipleChoice>()
+            .Property(q => q.Type)
+            .HasConversion<string>();  // Store as an integer in the database
+
+        modelBuilder.Entity<QuestionMultipleChoice>()
+            .HasMany(q => q.Options)
+            .WithOne(o => o.QuestionMultipleChoice)
+            .HasForeignKey(o => o.QuestionId);
+
+        // Configure enum mapping (store as integer or string)
+ 
+
 
         // Option Entity
         modelBuilder.Entity<Option>()
             .HasKey(o => o.Id);  // Primary Key
         modelBuilder.Entity<Option>()
-            .Property(f => f.Id)
+            .Property(o => o.Id)
             .ValueGeneratedOnAdd();  // Auto-increment
         modelBuilder.Entity<Option>()
             .Property(o => o.Order);        
 
-        // Relationships for Option and Question
-        modelBuilder.Entity<Option>()
-            .HasOne(o => o.Question)
-            .WithMany(q => q.Options)
-            .HasForeignKey(o => o.QuestionId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+        //// Relationships for Option and Question
+        //modelBuilder.Entity<Option>()
+        //    .HasOne(o => o.QuestionMultipleChoice)
+        //    .WithMany(q => q.Options)
+        //    .HasForeignKey(o => o.QuestionId)
+        //    .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
 
         // Response Entity
         modelBuilder.Entity<Response>()
@@ -146,10 +164,16 @@ public class UpDownFormsContext : IdentityDbContext<User>
         modelBuilder.Entity<Answer>()
             .HasKey(a => a.Id);  // Primary Key
         modelBuilder.Entity<Answer>()
-            .Property(f => f.Id)
+            .Property(a => a.Id)
             .ValueGeneratedOnAdd();  // Auto-increment
         modelBuilder.Entity<Answer>()
             .Property(a => a.IsDeleted);
+
+        // TPH Inheritance for Answer
+        modelBuilder.Entity<Answer>()
+            .HasDiscriminator<string>("AnswerType")
+            .HasValue<AnswerMultipleChoice>("MultipleChoice")
+            .HasValue<AnswerOpenEnded>("OpenEnded");
 
         // Relationships for Answer, Response, Question, and Option
         modelBuilder.Entity<Answer>()
@@ -164,11 +188,15 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasForeignKey(a => a.QuestionId)
             .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
 
-        modelBuilder.Entity<Answer>()
-            .HasOne(a => a.Option)
+        modelBuilder.Entity<AnswerMultipleChoice>()
+            .HasOne(a => a.Options)
             .WithMany()
             .HasForeignKey(a => a.OptionId)
             .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+
+        modelBuilder.Entity<AnswerOpenEnded>()
+           .Property(a => a.AnswerText)
+           .IsRequired();
 
         // Answer text and Option validation (CHECK constraint logic)
         // This should be ok with MySql (?)

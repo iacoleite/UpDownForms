@@ -24,13 +24,18 @@ namespace UpDownForms.Services
 
         public async Task<ApiResponse<IEnumerable<FormDTO>>> GetForms()
         {
-            var response = await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
+            var response = await _context.Forms
+                                         .Include(f => f.User)
+                                         .Include(f => f.Questions)
+                                         .ThenInclude(q => (q as QuestionMultipleChoice).Options)
+                                         .Where(f => !f.IsDeleted)
+                .ToListAsync();
             return new ApiResponse<IEnumerable<FormDTO>>(true, "ok!", response.Select(f => f.ToFormDTO()).ToList());
         }
 
         public async Task<ApiResponse<FormDTO>> GetForm(int id)
         {
-            var form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
                 return new ApiResponse<FormDTO>(false, "Form not found", null);

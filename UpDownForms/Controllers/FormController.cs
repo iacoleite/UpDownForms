@@ -39,7 +39,7 @@ namespace UpDownForms.Controllers
         {
 
             //var form = await _context.Forms.Include(f => f.User).FirstOrDefault(f => f.Id == id).FindAsync(id);
-            var form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
+            var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).FirstOrDefaultAsync(f => f.Id == id);
 
             //var form = await _context.Forms.FindAsync(id);
             if (form == null)

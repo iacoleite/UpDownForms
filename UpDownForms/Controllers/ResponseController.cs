@@ -116,19 +116,19 @@ namespace UpDownForms.Controllers
                 return BadRequest("Invalid question ID");
             }
 
-            if (question.Type == QuestionType.MultipleChoice || question.Type == QuestionType.Checkbox || question.Type == QuestionType.Dropdown)
-            {
-                if (!createAnswerDTO.OptionId.HasValue)
-                {
-                    return BadRequest("Option ID is required for this question type");
-                }
+            //if (question.Type == QuestionType.MultipleChoice || question.Type == QuestionType.Checkbox || question.Type == QuestionType.Dropdown)
+            //{
+            //    if (!createAnswerDTO.OptionId.HasValue)
+            //    {
+            //        return BadRequest("Option ID is required for this question type");
+            //    }
 
-                var options = await _context.Options.AnyAsync(o => o.Id == createAnswerDTO.OptionId);
-                if (!options)
-                {
-                    return BadRequest("Invalid option ID");
-                }
-            }
+            //    var options = await _context.Options.AnyAsync(o => o.Id == createAnswerDTO.OptionId);
+            //    if (!options)
+            //    {
+            //        return BadRequest("Invalid option ID");
+            //    }
+            //}
 
             var answer = new Answer(createAnswerDTO);
             response.Answers.Add(answer);

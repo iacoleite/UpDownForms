@@ -17,8 +17,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddIdentityCore<User>()
                 .AddEntityFrameworkStores<UpDownFormsContext>()
                 .AddDefaultTokenProviders();
-// Remove AddEntityFrameworkMySql: Since you are already configuring the DbContext with UseMySql, you do not need to call AddEntityFrameworkMySql. Remove the AddEntityFrameworkMySql call from your Program.cs file.
-//builder.Services.AddEntityFrameworkMySql();
 
 builder.Services.AddLogging(logging =>
 {
