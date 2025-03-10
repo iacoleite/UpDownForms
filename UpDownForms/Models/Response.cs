@@ -34,8 +34,8 @@ namespace UpDownForms.Models
                 RespondentEmail = this.RespondentEmail,
                 SubmittedAt = this.SubmittedAt,
                 IsDeleted = this.IsDeleted,
-                Form = Form.ToFormDTO(),
-                Answers = this.Answers.Select(a => a.ToAnswerDTO()).ToList()
+                Form = this.Form != null ? this.Form.ToFormDTO() : null,
+                Answers = this.Answers != null ? this.Answers.Select(a => a.ToAnswerDTO()).ToList() : null
             };
         }
     }

@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using UpDownForms.DTO.OptionDTOs;
+﻿using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.DTO.AnswersDTOs
@@ -18,7 +17,7 @@ namespace UpDownForms.DTO.AnswersDTOs
     public class CreateAnswerMultipleChoiceDTO() : CreateAnswerDTO
     {
         //public int OptionId { get; set; }
-        public Option Options { get; set; }
+        public List<int> OptionsId { get; set; }
     }
 
     public class CreateAnswerOpenEndedDTO() : CreateAnswerDTO

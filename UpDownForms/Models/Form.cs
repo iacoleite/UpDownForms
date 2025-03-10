@@ -59,8 +59,8 @@ namespace UpDownForms.Models
                 IsPublished = this.IsPublished,
                 IsDeleted = this.IsDeleted,
                 User = User.ToUserDetailsDTO(),
-                Questions = Questions.Select(q => q.ToQuestionDTO()).ToList(),
-                Responses = Responses.Select(r => r.ToResponseDTO()).ToList()
+                Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
+                //Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
             };
         }
 

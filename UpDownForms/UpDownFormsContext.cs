@@ -16,6 +16,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
     public DbSet<Answer> Answers { get; set; }
     public DbSet<AnswerMultipleChoice> AnswersMultipleChoice { get; set; }
     public DbSet<AnswerOpenEnded> AnswersOpenEnded { get; set; }
+    public DbSet<AnsweredOption> AnsweredOptions { get; set; }
     public DbSet<Option> Options { get; set; }
     public DbSet<Response> Responses { get; set; }
     public DbSet<User> AppUsers => Set<User>();
@@ -188,11 +189,18 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasForeignKey(a => a.QuestionId)
             .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
 
-        modelBuilder.Entity<AnswerMultipleChoice>()
-            .HasOne(a => a.Options)
-            .WithMany()
-            .HasForeignKey(a => a.OptionId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+        modelBuilder.Entity<AnsweredOption>()
+            .HasKey(ao => new { ao.AnswerMultipleChoiceId, ao.OptionId }); // Composite primary key
+
+        modelBuilder.Entity<AnsweredOption>()
+            .HasOne(ao => ao.AnswerMultipleChoice)
+            .WithMany(amc => amc.SelectedOptions) // Navigation property in AnswerMultipleChoice
+            .HasForeignKey(ao => ao.AnswerMultipleChoiceId);
+
+        modelBuilder.Entity<AnsweredOption>()
+            .HasOne(ao => ao.Option)
+            .WithMany(o => o.AnsweredOptions) // Navigation property in Option
+            .HasForeignKey(ao => ao.OptionId);
 
         modelBuilder.Entity<AnswerOpenEnded>()
            .Property(a => a.AnswerText)

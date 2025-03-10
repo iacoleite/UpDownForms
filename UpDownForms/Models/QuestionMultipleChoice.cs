@@ -11,6 +11,27 @@ namespace UpDownForms.Models
 
         public QuestionMultipleChoice() { }
 
+
+        public override QuestionDTO ToQuestionDTO()
+        {
+            var baseDto = base.ToQuestionDTO(); 
+            var multipleChoiceDto = new QuestionMultipleChoiceDTO()
+            {
+                Id = baseDto.Id,
+                FormId = baseDto.FormId,
+                Text = baseDto.Text,
+                Order = baseDto.Order,
+                Type = baseDto.Type, 
+                IsRequired = baseDto.IsRequired,
+                IsDeleted = baseDto.IsDeleted,
+                Answers = baseDto.Answers, 
+                HasCorrectAnswer = this.HasCorrectAnswer,
+                Options = this.Options.Select(o => o.ToOptionDTO()).ToList()
+            };
+            return multipleChoiceDto;
+        }
+
+
         public QuestionMultipleChoice(CreateQuestionMultipleChoiceDTO createQuestionDTO)
         {
             this.FormId = createQuestionDTO.FormId;

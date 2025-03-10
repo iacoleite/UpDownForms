@@ -13,6 +13,7 @@ namespace UpDownForms.Models
         public int FormId { get; set; }
         public string Text { get; set; }
         public int Order { get; set; }
+        //public string Type { get; set; }
         public bool IsRequired { get; set; }
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }
@@ -33,15 +34,15 @@ namespace UpDownForms.Models
             this.IsDeleted = false;
         }
 
-        public QuestionDTO ToQuestionDTO()
+        public virtual QuestionDTO ToQuestionDTO()
         {
-            return new QuestionDTO
+            return new BaseQuestionDTO
             {
                 Id = this.Id,
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                //Type = this.Type.ToString(),
+                Type = this.GetType().Name,
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted,
                 //Options = this.Options.Select(o => o.ToOptionDTO()).ToList(),

@@ -89,63 +89,91 @@ namespace UpDownForms.Controllers
             return Ok("Response deleted");
         }
 
-        [HttpPost("{id}/answers")]
-        public async Task<ActionResult> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
+        //[HttpPost("{id}/answers")]
+        //public async Task<ActionResult> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
+        //{
+        //    if (createAnswerDTO == null)
+        //    {
+        //        return BadRequest("Missing answer data");
+        //    }
+
+        //    var response = await _context.Responses
+        //        .Include(r => r.Answers)
+        //        .Include(r => r.Form)
+        //        .ThenInclude(f => f.User)
+        //        .Include(r => r.Form)
+        //        .ThenInclude(f => f.Questions)
+        //        .FirstOrDefaultAsync(r => r.Id == id);
+
+        //    if (response == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var question = response.Form.Questions.FirstOrDefault(q => q.Id == createAnswerDTO.QuestionId);
+        //    if (question == null)
+        //    {
+        //        return BadRequest("Invalid question ID");
+        //    }
+
+        //    //if (question.Type == QuestionType.MultipleChoice || question.Type == QuestionType.Checkbox || question.Type == QuestionType.Dropdown)
+        //    //{
+        //    //    if (!createAnswerDTO.OptionId.HasValue)
+        //    //    {
+        //    //        return BadRequest("Option ID is required for this question type");
+        //    //    }
+
+        //    //    var options = await _context.Options.AnyAsync(o => o.Id == createAnswerDTO.OptionId);
+        //    //    if (!options)
+        //    //    {
+        //    //        return BadRequest("Invalid option ID");
+        //    //    }
+        //    //}
+
+        //    var answer = new Answer(createAnswerDTO);
+        //    response.Answers.Add(answer);
+        //    await _context.SaveChangesAsync();
+        //    var responseEntity = await _context.Responses
+        //        .Include(r => r.Answers)
+        //        .Include(r => r.Form)
+        //        .ThenInclude(f => f.User)
+        //        .Include(r => r.Form)
+        //        .ThenInclude(f => f.Questions)
+        //        .FirstOrDefaultAsync(r => r.Id == id);
+        //    if (responseEntity == null)
+        //    {
+        //        return BadRequest("Can't find response in db");
+        //    }
+        //    var responseDTO = responseEntity.ToResponseDTO();
+        //    return CreatedAtAction(nameof(GetResponse), new { id = response.Id }, responseDTO);
+        //}
+
+        [HttpPost("{id}/answers/")]
+        public async Task<AnswerMultipleChoice> PostAnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
         {
-            if (createAnswerDTO == null)
-            {
-                return BadRequest("Missing answer data");
-            }
+            var answerMultipleChoice = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
+            answerMultipleChoice.ResponseId = createAnswerMultipleChoiceDTO.ResponseId;
+            answerMultipleChoice.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
 
-            var response = await _context.Responses
-                .Include(r => r.Answers)
-                .Include(r => r.Form)
-                .ThenInclude(f => f.User)
-                .Include(r => r.Form)
-                .ThenInclude(f => f.Questions)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (response == null)
-            {
-                return NotFound();
-            }
-
-            var question = response.Form.Questions.FirstOrDefault(q => q.Id == createAnswerDTO.QuestionId);
-            if (question == null)
-            {
-                return BadRequest("Invalid question ID");
-            }
-
-            //if (question.Type == QuestionType.MultipleChoice || question.Type == QuestionType.Checkbox || question.Type == QuestionType.Dropdown)
-            //{
-            //    if (!createAnswerDTO.OptionId.HasValue)
-            //    {
-            //        return BadRequest("Option ID is required for this question type");
-            //    }
-
-            //    var options = await _context.Options.AnyAsync(o => o.Id == createAnswerDTO.OptionId);
-            //    if (!options)
-            //    {
-            //        return BadRequest("Invalid option ID");
-            //    }
-            //}
-
-            var answer = new Answer(createAnswerDTO);
-            response.Answers.Add(answer);
+            _context.Answers.Add(answerMultipleChoice);
             await _context.SaveChangesAsync();
-            var responseEntity = await _context.Responses
-                .Include(r => r.Answers)
-                .Include(r => r.Form)
-                .ThenInclude(f => f.User)
-                .Include(r => r.Form)
-                .ThenInclude(f => f.Questions)
-                .FirstOrDefaultAsync(r => r.Id == id);
-            if (responseEntity == null)
+
+            if (createAnswerMultipleChoiceDTO.OptionsId != null)
             {
-                return BadRequest("Can't find response in db");
+                foreach (var optionId in createAnswerMultipleChoiceDTO.OptionsId)
+                {
+                    var answeredOption = new AnsweredOption
+                    {
+                        AnswerMultipleChoiceId = answerMultipleChoice.Id,
+                        OptionId = optionId
+                    };
+                    _context.AnsweredOptions.Add(answeredOption);
+                }
             }
-            var responseDTO = responseEntity.ToResponseDTO();
-            return CreatedAtAction(nameof(GetResponse), new { id = response.Id }, responseDTO);
+
+            await _context.SaveChangesAsync();
+
+            return answerMultipleChoice;
         }
     }
 }

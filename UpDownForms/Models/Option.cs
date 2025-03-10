@@ -15,6 +15,7 @@ namespace UpDownForms.Models
         public QuestionMultipleChoice QuestionMultipleChoice { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsCorrect { get; set; }
+        public List<AnsweredOption> AnsweredOptions { get; set; } = new List<AnsweredOption>();
 
         public Option() { }
 

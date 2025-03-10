@@ -34,13 +34,19 @@ namespace UpDownForms.Controllers
                 return NotFound();
             }
 
-            var questionDTO = question.ToQuestionDTO();
+            QuestionDTO questionDTO = question.ToQuestionDTO();
             //questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
             if (question is QuestionMultipleChoice multipleChoiceQuestion)
             {
-                questionDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
+                QuestionMultipleChoiceDTO multipleChoiceDTO = (QuestionMultipleChoiceDTO) multipleChoiceQuestion.ToQuestionDTO();
+                multipleChoiceDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
+                questionDTO = multipleChoiceDTO;
             }
-            questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
+            else
+            {
+                questionDTO = question.ToQuestionDTO();
+            }
+                questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
             
             return Ok(questionDTO);
         }
