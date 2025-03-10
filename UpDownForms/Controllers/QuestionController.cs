@@ -65,25 +65,84 @@ namespace UpDownForms.Controllers
                 return BadRequest("Can't find form to add question");
             }
 
-            var question = new Question(createQuestionDTO);
+            Question question;
+
+            if (createQuestionDTO is CreateQuestionMultipleChoiceDTO createQuestionMultipleChoiceDTO)
+            {
+                question = new QuestionMultipleChoice(createQuestionMultipleChoiceDTO);
+                if (createQuestionMultipleChoiceDTO.Options != null)
+                {
+                    foreach (var optionDTO in createQuestionMultipleChoiceDTO.Options)
+                    {
+                        var option = new Option(optionDTO);
+                        ((QuestionMultipleChoice)question).AddOption(option);
+                    }
+                }
+            }
+            else if (createQuestionDTO is CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO)
+            {
+                question = new QuestionOpenEnded(createQuestionOpenEndedDTO);
+                //question.FormId = createQuestionOpenEndedDTO.FormId;
+                //question.Text = createQuestionOpenEndedDTO.Text;
+                //question.Order = createQuestionOpenEndedDTO.Order;
+                //question.IsRequired = createQuestionOpenEndedDTO.IsRequired;
+                //question.IsDeleted = false;
+            }
+            else 
+            {
+                return BadRequest("Missing question data");
+            }
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetQuestion), new { id = question.Id }, question.ToQuestionDetailsDTO());
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<QuestionDetailsDTO>> PutQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
+        public async Task<ActionResult<QuestionDTO>> PutQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
         {
+            if (updateQuestionDTO == null)
+            {
+                return BadRequest("Missing question data");
+            }
             var question = await _context.Questions.FindAsync(id);
             if (question == null)
             {
                 return NotFound();
             }
-            question.Text = updateQuestionDTO.Text;
-            question.Order = updateQuestionDTO.Order;
-            question.IsRequired = updateQuestionDTO.IsRequired;
+
+            if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
+            {
+                if (!(question is QuestionMultipleChoice multipleChoiceQuestion))
+                {
+                    return BadRequest("Question type mismatch");
+                }
+                multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
+                multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
+                multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
+                multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
+                multipleChoiceQuestion.Type = updateQuestionMultipleChoiceDTO.Type;
+                multipleChoiceQuestion.IsDeleted = false;
+            }
+            else if (updateQuestionDTO is UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)
+            {
+                if (!(question is QuestionOpenEnded openEndedQuestion))
+                {
+                    return BadRequest("Question type mismatch");
+                }
+                openEndedQuestion.Text = updateQuestionOpenEndedDTO.Text;
+                openEndedQuestion.Order = updateQuestionOpenEndedDTO.Order;
+                openEndedQuestion.IsRequired = updateQuestionOpenEndedDTO.IsRequired;
+                openEndedQuestion.IsDeleted = false;
+            }
+            else
+            {
+                question.Text = updateQuestionDTO.Text;
+                question.Order = updateQuestionDTO.Order;
+                question.IsRequired = updateQuestionDTO.IsRequired;
+            }
+
             await _context.SaveChangesAsync();
-            return Ok(question.ToQuestionDetailsDTO());
+            return Ok(question.ToQuestionDTO());
         }
 
         [HttpDelete("{id}")]
