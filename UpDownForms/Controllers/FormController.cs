@@ -24,9 +24,7 @@ namespace UpDownForms.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
         {
-            // Linq query to get all forms that are not deleted
             var response = await _formService.GetForms();
-            //await _context.Forms.Include(f => f.User).Where(f => !f.IsDeleted).ToListAsync();
             if (!response.Success)
             {
                 return BadRequest(response.Message);
@@ -38,10 +36,8 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<FormDTO>> GetForm(int id)
         {
 
-            //var form = await _context.Forms.Include(f => f.User).FirstOrDefault(f => f.Id == id).FindAsync(id);
             var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).FirstOrDefaultAsync(f => f.Id == id);
 
-            //var form = await _context.Forms.FindAsync(id);
             if (form == null)
             {
                 return NotFound();
@@ -72,25 +68,6 @@ namespace UpDownForms.Controllers
             }
             return Ok(response.Data.Title);
 
-            //if (updateFormDTO == null)
-            //{
-            //    return BadRequest("Missing form data");
-            //}
-            //var form = await _context.Forms.FindAsync(id);
-            //if (form == null)
-            //{
-            //    return NotFound("Missing form");
-            //}
-            //form.UpdateForm(updateFormDTO);
-
-            //await _context.SaveChangesAsync();
-            ////return forms.Select(forms => forms.ToFormDTO()).ToList();
-
-            //form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
-            //if (form == null) {
-            //    return NotFound();
-            //}
-            //return Ok(form.ToFormDTO());
         }
 
         [HttpDelete("{id}")]
@@ -102,15 +79,7 @@ namespace UpDownForms.Controllers
                 return BadRequest(response.Message);
             }
             return Ok(response.Message);
-            //var form = await _context.Forms.FindAsync(id);
-            //if (form == null)
-            //{
-            //    return NotFound();
-            //}
-            //form.DeleteForm();
-            //await _context.SaveChangesAsync();
-            ////form = await _context.Forms.Include(f => f.User).FirstOrDefaultAsync(f => f.Id == id);
-            //return Ok($"Form {form.Title} deleted.");
+
         }
     }
 }

@@ -19,10 +19,7 @@ public class UserController : ControllerBase
     private readonly IPasswordHelper _passwordHelper;
     private readonly UserManager<User> _userManager;
     private readonly UserService _userService;
-    //public UserController(ILogger<UserController> logger)
-    //{
-    //    _logger = logger;
-    //}
+
 
     public UserController(UserService userService, IPasswordHelper passwordHelper, UpDownFormsContext context, UserManager<User> userManager)
     {

@@ -21,7 +21,6 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<IEnumerable<QuestionDetailsDTO>>> GetQuestions()
         {
             var questions = await _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).ToListAsync();
-            // Linq query to get all questions that are not deleted
             return Ok(questions.Select(q => q.ToQuestionDetailsDTO()).ToList());
         }
 
@@ -35,11 +34,9 @@ namespace UpDownForms.Controllers
             }
 
             QuestionDTO questionDTO = question.ToQuestionDTO();
-            //questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
             if (question is QuestionMultipleChoice multipleChoiceQuestion)
             {
                 QuestionMultipleChoiceDTO multipleChoiceDTO = (QuestionMultipleChoiceDTO) multipleChoiceQuestion.ToQuestionDTO();
-                //multipleChoiceDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
                 questionDTO = multipleChoiceDTO;
             }
             else
@@ -194,12 +191,12 @@ namespace UpDownForms.Controllers
             {
                 return NotFound("Option not found");
             }
-            // Should I use soft delete here? I'll not implement it now
+            // Should use soft delete here? 
             question.Options.Remove(option);
             await _context.SaveChangesAsync();
             return Ok();
         }
 
-        // WILL NOT IMPLEMENT UPDATE FOR OPTIONS (does it even make sense?)
+        // NOT IMPLEMENT UPDATE FOR OPTIONS (does it even make sense?)
     }
 }

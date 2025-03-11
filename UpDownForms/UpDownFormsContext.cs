@@ -8,7 +8,6 @@ public class UpDownFormsContext : IdentityDbContext<User>
     public UpDownFormsContext(DbContextOptions<UpDownFormsContext> options) : base(options)
     {
     }
-
     public DbSet<Form> Forms { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<QuestionMultipleChoice> QuestionsMultipleChoice { get; set; }
@@ -25,56 +24,47 @@ public class UpDownFormsContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
-        //// User Entity
+        //// User Entity -> Not needed anymore (YAY!) because of Identity 
 
         //modelBuilder.Entity<User>()
-        //    .HasKey(u => u.Id);  // Primary Key
+        //    .HasKey(u => u.Id);  
         ////modelBuilder.Entity<User>()
         ////    .Property(u => u.Id)
-        ////    .ValueGeneratedOnAdd();  // Auto-increment
+        ////    .ValueGeneratedOnAdd(); 
         //modelBuilder.Entity<User>()
         //    .Property(u => u.Name)
         //    .HasMaxLength(100)
-        //    .IsRequired();  // Not Null
+        //    .IsRequired();  
         //modelBuilder.Entity<User>()
         //    .Property(u => u.Email)
         //    .HasMaxLength(255)
         //    .IsRequired()
-        //    .IsUnicode(false);  // Email field, set as required and unique
+        //    .IsUnicode(false);  
         //modelBuilder.Entity<User>()
         //    .Property(u => u.PasswordHash)
         //    .HasMaxLength(255)
-        //    .IsRequired();  // PasswordHash field, set as required
+        //    .IsRequired(); 
         //modelBuilder.Entity<User>()
-        //    .Property(u => u.CreatedAt);  // Default value
+        //    .Property(u => u.CreatedAt);  
         //modelBuilder.Entity<User>()
-        //    .Property(u => u.IsDeleted);  // Default value for IsDeleted
+        //    .Property(u => u.IsDeleted);  
 
         // Form Entity
         modelBuilder.Entity<Form>()
-            .HasKey(f => f.Id);  // Primary Key
+            .HasKey(f => f.Id);
         modelBuilder.Entity<Form>()
             .Property(f => f.Id)
-            .ValueGeneratedOnAdd();  // Auto-increment
+            .ValueGeneratedOnAdd();
         modelBuilder.Entity<Form>()
             .Property(f => f.Title)
             .HasMaxLength(255)
-            .IsRequired();  // Title field, set as required
+            .IsRequired();
         modelBuilder.Entity<Form>()
             .Property(f => f.CreatedAt);
-
         modelBuilder.Entity<Form>()
-            //FOR MY SQL!!! REMEMBER TO CHANGE AFTER CHANGE DBMS!!!!!!!!!
             .Property(f => f.UpdatedAt); 
-            
-
-        // USE WHILE USING SQLITE!!!! 
-        //.Property(f => f.UpdatedAt)
-        //.HasDefaultValueSql("CURRENT_TIMESTAMP")
-        //.ValueGeneratedOnAddOrUpdate();  // Default value with update
         modelBuilder.Entity<Form>()
             .Property(f => f.IsPublished);
-            
         modelBuilder.Entity<Form>()
             .Property(f => f.IsDeleted);
 
@@ -83,17 +73,17 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(f => f.User)
             .WithMany(u => u.Forms)
             .HasForeignKey(f => f.UserId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+            .OnDelete(DeleteBehavior.Cascade);  
 
         // Question Entity
         modelBuilder.Entity<Question>()
-            .HasKey(q => q.Id);  // Primary Key
+            .HasKey(q => q.Id);  
         modelBuilder.Entity<Question>()
             .Property(f => f.Id)
-            .ValueGeneratedOnAdd();  // Auto-increment
+            .ValueGeneratedOnAdd();  
         modelBuilder.Entity<Question>()
             .Property(q => q.Text)
-            .IsRequired();  // Text field, set as required
+            .IsRequired();  
         modelBuilder.Entity<Question>()
             .Property(q => q.Order);
         modelBuilder.Entity<Question>()
@@ -101,7 +91,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
         modelBuilder.Entity<Question>()
             .Property(q => q.IsDeleted);
 
-        // Trying to implement inheritance between Question and differents types of questions using EF 
+        // inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
             .HasDiscriminator<string>("BaseQuestionType")
             .HasValue<QuestionMultipleChoice>("MultipleChoice")
@@ -112,43 +102,34 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(q => q.Form)
             .WithMany(f => f.Questions)
             .HasForeignKey(q => q.FormId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
-        
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Store QuestionType as an integer in the db
         modelBuilder.Entity<QuestionMultipleChoice>()
             .Property(q => q.QuestionType)
-            .HasConversion<string>();  // Store as an integer in the database
+            .HasConversion<string>();  
 
         modelBuilder.Entity<QuestionMultipleChoice>()
             .HasMany(q => q.Options)
             .WithOne(o => o.QuestionMultipleChoice)
             .HasForeignKey(o => o.QuestionId);
 
-        // Configure enum mapping (store as integer or string)
- 
-
-
         // Option Entity
         modelBuilder.Entity<Option>()
-            .HasKey(o => o.Id);  // Primary Key
+            .HasKey(o => o.Id);  
         modelBuilder.Entity<Option>()
             .Property(o => o.Id)
-            .ValueGeneratedOnAdd();  // Auto-increment
+            .ValueGeneratedOnAdd();  
         modelBuilder.Entity<Option>()
             .Property(o => o.Order);        
 
-        //// Relationships for Option and Question
-        //modelBuilder.Entity<Option>()
-        //    .HasOne(o => o.QuestionMultipleChoice)
-        //    .WithMany(q => q.Options)
-        //    .HasForeignKey(o => o.QuestionId)
-        //    .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
-
+       
         // Response Entity
         modelBuilder.Entity<Response>()
-            .HasKey(r => r.Id);  // Primary Key
+            .HasKey(r => r.Id);  
         modelBuilder.Entity<Response>()
             .Property(f => f.Id)
-            .ValueGeneratedOnAdd();  // Auto-increment
+            .ValueGeneratedOnAdd();  
         modelBuilder.Entity<Response>()
             .Property(r => r.SubmittedAt);
         modelBuilder.Entity<Response>()
@@ -159,14 +140,14 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(r => r.Form)
             .WithMany(f => f.Responses)
             .HasForeignKey(r => r.FormId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+            .OnDelete(DeleteBehavior.Cascade);  
 
         // Answer Entity
         modelBuilder.Entity<Answer>()
-            .HasKey(a => a.Id);  // Primary Key
+            .HasKey(a => a.Id);  
         modelBuilder.Entity<Answer>()
             .Property(a => a.Id)
-            .ValueGeneratedOnAdd();  // Auto-increment
+            .ValueGeneratedOnAdd();  
         modelBuilder.Entity<Answer>()
             .Property(a => a.IsDeleted);
 
@@ -181,37 +162,30 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(a => a.Response)
             .WithMany(r => r.Answers)
             .HasForeignKey(a => a.ResponseId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+            .OnDelete(DeleteBehavior.Cascade); 
 
         modelBuilder.Entity<Answer>()
             .HasOne(a => a.Question)
             .WithMany(q => q.Answers)
             .HasForeignKey(a => a.QuestionId)
-            .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
+            .OnDelete(DeleteBehavior.Cascade);  
 
         modelBuilder.Entity<AnsweredOption>()
-            .HasKey(ao => new { ao.AnswerMultipleChoiceId, ao.OptionId }); // Composite primary key
+            .HasKey(ao => new { ao.AnswerMultipleChoiceId, ao.OptionId }); 
 
         modelBuilder.Entity<AnsweredOption>()
             .HasOne(ao => ao.AnswerMultipleChoice)
-            .WithMany(amc => amc.SelectedOptions) // Navigation property in AnswerMultipleChoice
+            .WithMany(amc => amc.SelectedOptions) 
             .HasForeignKey(ao => ao.AnswerMultipleChoiceId);
 
         modelBuilder.Entity<AnsweredOption>()
             .HasOne(ao => ao.Option)
-            .WithMany(o => o.AnsweredOptions) // Navigation property in Option
+            .WithMany(o => o.AnsweredOptions) 
             .HasForeignKey(ao => ao.OptionId);
 
         modelBuilder.Entity<AnswerOpenEnded>()
            .Property(a => a.AnswerText)
            .IsRequired();
-
-        // Answer text and Option validation (CHECK constraint logic)
-        // This should be ok with MySql (?)
-        //modelBuilder.Entity<Answer>()
-        //    .ToTable(t => t.HasCheckConstraint("CHK_Answer",
-        //        "(AnswerText IS NOT NULL AND OptionId IS NULL) OR (AnswerText IS NULL AND OptionId IS NOT NULL)"));
-
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken token = default)

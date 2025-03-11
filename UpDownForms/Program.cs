@@ -46,28 +46,17 @@ builder.Services.AddAuthentication(o =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Key))
     };
 });
-//.AddJwtBearer();
-// using default values, without any parameter. I can use the appsettings.json to configure the JwtBearer. I need to set the correct string tough and pass it as a param like this:
-//.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-//o => builder.Configuration.Bind("JwtSettings", o));
+
 
 
 
 
 builder.Services.AddHttpContextAccessor();
-// I can use the ReferenceHandler.Preserve option to handle the circular references. But It's not the best way to handle it.
-// I will use the DTO pattern to handle the circular references.
-//builder.Services.AddControllers().AddJsonOptions(options =>
-//{
-//    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-//});
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddScoped<TokenService>();
 
-// trying to configure Jwt
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
 builder.Services.AddScoped<TokenService>();
@@ -109,7 +98,6 @@ builder.Services.AddSwaggerGen(o =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    // Password settings.
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
@@ -117,12 +105,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
 
-    // Lockout settings.
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    // User settings.
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = true;

@@ -39,8 +39,6 @@ namespace UpDownForms.Models
         {
             this.Title = createFormDTO.Title;
             this.Description = createFormDTO.Description;
-
-            // NEED TO FIX THE USER ID, SHOULD GET ID OF THE LOGGED USER !!!
             this.UserId = userId;
             this.CreatedAt = DateTime.UtcNow;
             this.UpdatedAt = DateTime.UtcNow;

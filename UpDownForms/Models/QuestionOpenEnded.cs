@@ -21,14 +21,14 @@ namespace UpDownForms.Models
             this.IsRequired = questionOpenEndedDTO.IsRequired;
             this.IsDeleted = false;
         }
-        public QuestionOpenEnded(CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO) // Constructor for CreateQuestionOpenEndedDTO
+        public QuestionOpenEnded(CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO) 
         {
             this.FormId = createQuestionOpenEndedDTO.FormId;
             this.Text = createQuestionOpenEndedDTO.Text;
             
             this.Order = createQuestionOpenEndedDTO.Order;
             this.IsRequired = createQuestionOpenEndedDTO.IsRequired;
-            this.IsDeleted = false; // Assuming default value
+            this.IsDeleted = false; 
         }
     }
 }

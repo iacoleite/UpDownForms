@@ -18,7 +18,6 @@ namespace UpDownForms.Security
         {
             var claims = new[]
             {
-                // Maybe I need to add more claims here, like expiration date, etc.
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
