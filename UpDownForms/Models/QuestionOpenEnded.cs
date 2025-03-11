@@ -11,6 +11,24 @@ namespace UpDownForms.Models
         {
         }
 
-        public bool IsDeleted { get; set; }
+        //public bool IsDeleted { get; set; }
+
+        public QuestionOpenEnded(QuestionOpenEndedDTO questionOpenEndedDTO)
+        {
+            this.FormId = questionOpenEndedDTO.FormId;
+            this.Text = questionOpenEndedDTO.Text;
+            this.Order = questionOpenEndedDTO.Order;
+            this.IsRequired = questionOpenEndedDTO.IsRequired;
+            this.IsDeleted = false;
+        }
+        public QuestionOpenEnded(CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO) // Constructor for CreateQuestionOpenEndedDTO
+        {
+            this.FormId = createQuestionOpenEndedDTO.FormId;
+            this.Text = createQuestionOpenEndedDTO.Text;
+            
+            this.Order = createQuestionOpenEndedDTO.Order;
+            this.IsRequired = createQuestionOpenEndedDTO.IsRequired;
+            this.IsDeleted = false; // Assuming default value
+        }
     }
 }

@@ -103,7 +103,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
 
         // Trying to implement inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
-            .HasDiscriminator<string>("QuestionType")
+            .HasDiscriminator<string>("BaseQuestionType")
             .HasValue<QuestionMultipleChoice>("MultipleChoice")
             .HasValue<QuestionOpenEnded>("OpenEnded");
 
@@ -115,7 +115,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .OnDelete(DeleteBehavior.Cascade);  // Cascade delete
         
         modelBuilder.Entity<QuestionMultipleChoice>()
-            .Property(q => q.Type)
+            .Property(q => q.QuestionType)
             .HasConversion<string>();  // Store as an integer in the database
 
         modelBuilder.Entity<QuestionMultipleChoice>()

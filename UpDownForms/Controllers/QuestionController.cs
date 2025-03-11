@@ -28,7 +28,7 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionDTO>> GetQuestion(int id)
         {
-            var question = await _context.Questions.Include(q => q.Form).Include(q => q.Answers).FirstOrDefaultAsync(q => q.Id == id);
+            var question = await _context.Questions.Include(q => q.Form).Include(q => q.Answers).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
@@ -39,7 +39,7 @@ namespace UpDownForms.Controllers
             if (question is QuestionMultipleChoice multipleChoiceQuestion)
             {
                 QuestionMultipleChoiceDTO multipleChoiceDTO = (QuestionMultipleChoiceDTO) multipleChoiceQuestion.ToQuestionDTO();
-                multipleChoiceDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
+                //multipleChoiceDTO.Options = multipleChoiceQuestion.Options.Select(o => o.ToOptionDTO()).ToList();
                 questionDTO = multipleChoiceDTO;
             }
             else
@@ -70,24 +70,20 @@ namespace UpDownForms.Controllers
             if (createQuestionDTO is CreateQuestionMultipleChoiceDTO createQuestionMultipleChoiceDTO)
             {
                 question = new QuestionMultipleChoice(createQuestionMultipleChoiceDTO);
-                if (createQuestionMultipleChoiceDTO.Options != null)
+                if (createQuestionMultipleChoiceDTO.Options != null && createQuestionMultipleChoiceDTO.Options.Any())
                 {
                     foreach (var optionDTO in createQuestionMultipleChoiceDTO.Options)
                     {
                         var option = new Option(optionDTO);
                         ((QuestionMultipleChoice)question).AddOption(option);
                     }
+                    ((QuestionMultipleChoice)question).QuestionType = Enum.Parse<QuestionType>(createQuestionMultipleChoiceDTO.QuestionType.ToString(), true);
                 }
             }
             else if (createQuestionDTO is CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO)
             {
                 question = new QuestionOpenEnded(createQuestionOpenEndedDTO);
-                //question.FormId = createQuestionOpenEndedDTO.FormId;
-                //question.Text = createQuestionOpenEndedDTO.Text;
-                //question.Order = createQuestionOpenEndedDTO.Order;
-                //question.IsRequired = createQuestionOpenEndedDTO.IsRequired;
-                //question.IsDeleted = false;
-            }
+}
             else 
             {
                 return BadRequest("Missing question data");
@@ -120,7 +116,7 @@ namespace UpDownForms.Controllers
                 multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
                 multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
                 multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
-                multipleChoiceQuestion.Type = updateQuestionMultipleChoiceDTO.Type;
+                multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
                 multipleChoiceQuestion.IsDeleted = false;
             }
             else if (updateQuestionDTO is UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)

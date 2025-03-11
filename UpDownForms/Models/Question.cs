@@ -58,7 +58,7 @@ namespace UpDownForms.Models
                 FormId = this.FormId,
                 Text = this.Text,
                 Order = this.Order,
-                //Type = this.Type.ToString(),
+                Type = this.GetType().Name,
                 IsRequired = this.IsRequired,
                 IsDeleted = this.IsDeleted
             };
