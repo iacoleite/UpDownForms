@@ -118,6 +118,9 @@ namespace UpDownForms.Controllers
             {
                 answer = new AnswerOpenEnded(answerOpenEndedDTO);
                 ((AnswerOpenEnded)answer).AnswerText = answerOpenEndedDTO.AnswerText;
+                answer.ResponseId = id;
+                answer.QuestionId = createAnswerDTO.QuestionId;
+                await _context.Answers.AddAsync(answer);
             }
             else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
             {
@@ -127,7 +130,7 @@ namespace UpDownForms.Controllers
                 answerMultipleChoice.ResponseId = id;
                 answerMultipleChoice.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
                 await _context.AnswersMultipleChoice.AddAsync(answerMultipleChoice);
-                //await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 if (createAnswerMultipleChoiceDTO != null && createAnswerMultipleChoiceDTO.SelectedOptions.Any())
                 {
@@ -136,7 +139,7 @@ namespace UpDownForms.Controllers
                         try
                         {
                             //var answeredOption = new AnsweredOption
-                            var existingAnsweredOption = _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answerMultipleChoice.Id);
+                            var existingAnsweredOption = await _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answerMultipleChoice.Id);
                             if (existingAnsweredOption == null)
                             {
                                 var answeredOption = new AnsweredOption
@@ -152,6 +155,8 @@ namespace UpDownForms.Controllers
                             return BadRequest(e.Message);
                         }
                     }
+                    await _context.SaveChangesAsync();
+
                 }
                 answer = answerMultipleChoice;
             }
@@ -160,16 +165,13 @@ namespace UpDownForms.Controllers
                 return BadRequest("Invalid answer type");
             }
 
-            if (answer != null)
+            if (answer != null && !(answer is AnswerMultipleChoice))
             {
-                if (!(answer is AnswerMultipleChoice))
-                {
-                    answer.ResponseId = id;
-                    answer.QuestionId = createAnswerDTO.QuestionId;
-                }
-                
-                await _context.Answers.AddAsync(answer);
                 await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, ((AnswerOpenEnded)answer).ToAnswerOpenEndedResponseDTO());
+            }
+            else if (answer != null)
+            {
                 return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, answer.ToAnswerDTO());
             }
             else

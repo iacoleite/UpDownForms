@@ -14,5 +14,17 @@ namespace UpDownForms.Models
         {
             this.AnswerText = createAnswerOpenEndedDTO.AnswerText;
         }
+
+        public AnswerOpenEndedResponseDTO ToAnswerOpenEndedResponseDTO()
+        {
+            return new AnswerOpenEndedResponseDTO
+            {
+                Id = this.Id,
+                ResponseId = this.ResponseId,
+                QuestionId = this.QuestionId,
+                AnswerText = this.AnswerText,
+                IsDeleted = this.IsDeleted
+            };
+        }
     }
 }
