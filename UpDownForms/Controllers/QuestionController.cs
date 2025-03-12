@@ -58,7 +58,7 @@ namespace UpDownForms.Controllers
 
             var form = await _context.Forms.FindAsync(createQuestionDTO.FormId);
             if (form == null)
-            {
+            {   
                 return BadRequest("Can't find form to add question");
             }
 
@@ -197,6 +197,6 @@ namespace UpDownForms.Controllers
             return Ok();
         }
 
-        // NOT IMPLEMENT UPDATE FOR OPTIONS (does it even make sense?)
+        // implement update?
     }
 }

@@ -1,6 +1,6 @@
 @UpDownForms_HostAddress = http://localhost:5248
 
-GET {{UpDownForms_HostAddress}}/weatherforecast/
+GET {{UpDownForms_HostAddress}}/forms/
 Accept: application/json
 
 ###

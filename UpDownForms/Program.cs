@@ -24,8 +24,10 @@ builder.Services.AddLogging(logging =>
     logging.AddDebug();
 });
 
-builder.Services.AddDbContext<UpDownFormsContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<UpDownFormsContext>(options => {
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.EnableSensitiveDataLogging();
+});
 
 builder.Services.AddScoped<SignInManager<User>>();
 builder.Services.AddAuthentication(o =>

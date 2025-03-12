@@ -19,7 +19,7 @@ namespace UpDownForms.Models
 
         public Answer(CreateAnswerDTO createAnswerDTO)
         {
-            this.ResponseId = createAnswerDTO.ResponseId;
+            //this.ResponseId = createAnswerDTO.ResponseId;
             this.QuestionId = createAnswerDTO.QuestionId;
             //this.AnswerText = createAnswerDTO.AnswerText;
             //this.OptionId = createAnswerDTO.OptionId;

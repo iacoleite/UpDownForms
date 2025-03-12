@@ -4,7 +4,7 @@ using UpDownForms.Models;
 
 namespace UpDownForms.DTO.QuestionDTOs
 {
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")] // it's lowercase because DB
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")] // it's lowercase because Json
     [JsonDerivedType(typeof(CreateQuestionMultipleChoiceDTO), typeDiscriminator: "MultipleChoice")] 
     [JsonDerivedType(typeof(CreateQuestionOpenEndedDTO), typeDiscriminator: "OpenEnded")] 
     public abstract class CreateQuestionDTO

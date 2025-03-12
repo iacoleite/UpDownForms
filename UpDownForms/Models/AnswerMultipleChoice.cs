@@ -10,10 +10,17 @@ namespace UpDownForms.Models
 
         public AnswerMultipleChoice() { }
 
-        public AnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerDTO) : base(createAnswerDTO)
+        public AnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerDTO)
         {
+            //this.ResponseId = createAnswerDTO.ResponseId;
+            this.QuestionId = createAnswerDTO.QuestionId;
+            this.IsDeleted = createAnswerDTO.IsDeleted;
             ////this.OptionId = createAnswerDTO.OptionId;
-            //this.SelectedOptions = createAnswerDTO.OptionsId;
+            foreach (var optionId in createAnswerDTO.SelectedOptions)
+            {
+                this.SelectedOptions.Add(new AnsweredOption { OptionId = optionId });
+            }
+            
         }
     }
 }

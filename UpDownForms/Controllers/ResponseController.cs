@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
@@ -20,29 +21,38 @@ namespace UpDownForms.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponses()
         {
-            var responses = await _context.Responses
-                .Include(r => r.Form)
-                .ThenInclude(f => f.User)
-                .Include(r => r.Answers)
-                .Where(r => !r.IsDeleted)
-                .ToListAsync();
+            try
+            {
+                var responses = await _context.Responses
+                    .Include(r => r.Form)
+                    .ThenInclude(f => f.User)
+                    .Include(r => r.Answers)
+                    .Where(r => !r.IsDeleted)
+                    .ToListAsync();
 
-            return Ok(responses.Select(response => response.ToResponseDTO()).ToList());
+                return Ok(responses.Select(response => response.ToResponseDTO()).ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ResponseDTO>> GetResponse(int id)
+        public async Task<ActionResult<ResponseFormNoResponseDTO>> GetResponse(int id)
         {
             var response = await _context.Responses
                 .Include(r => r.Form)
-                .ThenInclude(f => f.User)
+                    .ThenInclude(f => f.User)
                 .Include(r => r.Answers)
+                .Include(r => r.Form)
+                    .ThenInclude(f => f.Questions)
                 .FirstOrDefaultAsync(r => r.Id == id);
             if (response == null)
             {
                 return NotFound();
             }
-            return Ok(response.ToResponseDTO());
+            return Ok(response.ToResponseFormNoResponseDTO());
         }
 
         [HttpPost]
@@ -62,7 +72,7 @@ namespace UpDownForms.Controllers
             await _context.SaveChangesAsync();
             var responseEntity = await _context.Responses
                                                .Include(r => r.Form) 
-                                               .ThenInclude(f => f.User)
+                                                    .ThenInclude(f => f.User)
                                                .FirstOrDefaultAsync(r => r.Id == response.Id);
             if (responseEntity == null)
             {
@@ -90,31 +100,82 @@ namespace UpDownForms.Controllers
         }
 
         [HttpPost("{id}/answers/")]
-        public async Task<AnswerMultipleChoice> PostAnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
+        public async Task<ActionResult<AnswerDTO>> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
         {
-            var answerMultipleChoice = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
-            answerMultipleChoice.ResponseId = createAnswerMultipleChoiceDTO.ResponseId;
-            answerMultipleChoice.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
-
-            _context.Answers.Add(answerMultipleChoice);
-            await _context.SaveChangesAsync();
-
-            if (createAnswerMultipleChoiceDTO.OptionsId != null)
+            var response = await _context.Responses.FindAsync(id);
+            
+            if (createAnswerDTO == null)
             {
-                foreach (var optionId in createAnswerMultipleChoiceDTO.OptionsId)
+                return BadRequest("missing answer data");
+            }
+            
+            if (response == null)
+            {
+                return BadRequest("Invalid ResponseId");
+            }
+            Answer answer;
+            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
+            {
+                answer = new AnswerOpenEnded(answerOpenEndedDTO);
+                ((AnswerOpenEnded)answer).AnswerText = answerOpenEndedDTO.AnswerText;
+            }
+            else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
+            {
+                answer = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
+                AnswerMultipleChoice answerMultipleChoice = (AnswerMultipleChoice)answer;
+
+                answerMultipleChoice.ResponseId = id;
+                answerMultipleChoice.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
+                await _context.AnswersMultipleChoice.AddAsync(answerMultipleChoice);
+                //await _context.SaveChangesAsync();
+
+                if (createAnswerMultipleChoiceDTO != null && createAnswerMultipleChoiceDTO.SelectedOptions.Any())
                 {
-                    var answeredOption = new AnsweredOption
+                    foreach (var optionId in createAnswerMultipleChoiceDTO.SelectedOptions.Distinct())
                     {
-                        AnswerMultipleChoiceId = answerMultipleChoice.Id,
-                        OptionId = optionId
-                    };
-                    _context.AnsweredOptions.Add(answeredOption);
+                        try
+                        {
+                            //var answeredOption = new AnsweredOption
+                            var existingAnsweredOption = _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answerMultipleChoice.Id);
+                            if (existingAnsweredOption == null)
+                            {
+                                var answeredOption = new AnsweredOption
+                                {
+                                    AnswerMultipleChoiceId = answerMultipleChoice.Id,
+                                    OptionId = optionId
+                                };
+                                await _context.AnsweredOptions.AddAsync(answeredOption);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            return BadRequest(e.Message);
+                        }
+                    }
                 }
+                answer = answerMultipleChoice;
+            }
+            else
+            {
+                return BadRequest("Invalid answer type");
             }
 
-            await _context.SaveChangesAsync();
-
-            return answerMultipleChoice;
+            if (answer != null)
+            {
+                if (!(answer is AnswerMultipleChoice))
+                {
+                    answer.ResponseId = id;
+                    answer.QuestionId = createAnswerDTO.QuestionId;
+                }
+                
+                await _context.Answers.AddAsync(answer);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, answer.ToAnswerDTO());
+            }
+            else
+            {
+                return BadRequest("Can't create answer");
+            }
         }
     }
 }

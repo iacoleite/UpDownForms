@@ -27,14 +27,35 @@ namespace UpDownForms.Models
 
         public ResponseDTO ToResponseDTO()
         {
-            return new ResponseDTO
+            try
+            {
+                return new ResponseDTO
+                {
+                    Id = this.Id,
+                    FormId = this.FormId,
+                    RespondentEmail = this.RespondentEmail,
+                    SubmittedAt = this.SubmittedAt,
+                    IsDeleted = this.IsDeleted,
+                    Form = this.Form != null ? this.Form.ToFormDetailsDTO() : null,
+                    Answers = this.Answers != null ? this.Answers.Select(a => a.ToAnswerDTO()).ToList() : null
+                };
+            }
+            catch (Exception e )
+            {
+                throw new Exception("Error converting Response to ResponseDTO", e);
+            }
+        }
+        
+        public ResponseFormNoResponseDTO ToResponseFormNoResponseDTO()
+        {
+            return new ResponseFormNoResponseDTO
             {
                 Id = this.Id,
                 FormId = this.FormId,
                 RespondentEmail = this.RespondentEmail,
                 SubmittedAt = this.SubmittedAt,
                 IsDeleted = this.IsDeleted,
-                Form = this.Form != null ? this.Form.ToFormDTO() : null,
+                Form = this.Form != null ? this.Form.ToFormNoResponsesDTO() : null,
                 Answers = this.Answers != null ? this.Answers.Select(a => a.ToAnswerDTO()).ToList() : null
             };
         }

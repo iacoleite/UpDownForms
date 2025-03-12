@@ -58,6 +58,57 @@ namespace UpDownForms.Models
                 IsDeleted = this.IsDeleted,
                 User = User.ToUserDetailsDTO(),
                 Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
+                Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
+            };
+        }
+        public FormNoResponsesDTO ToFormNoResponsesDTO()
+        {
+            return new FormNoResponsesDTO
+            {
+                Id = this.Id,
+                UserId = this.UserId,
+                Title = this.Title,
+                Description = this.Description,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = this.UpdatedAt,
+                IsPublished = this.IsPublished,
+                IsDeleted = this.IsDeleted,
+                User = User.ToUserDetailsDTO(),
+                Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
+                //Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
+            };
+        }
+        public FormNoQuestionsDTO ToFormNoQuestionDTO()
+        {
+            return new FormNoQuestionsDTO
+            {
+                Id = this.Id,
+                UserId = this.UserId,
+                Title = this.Title,
+                Description = this.Description,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = this.UpdatedAt,
+                IsPublished = this.IsPublished,
+                IsDeleted = this.IsDeleted,
+                User = User.ToUserDetailsDTO(),
+                //Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
+                Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
+            };
+        }        
+        public FormDetailsDTO ToFormDetailsDTO()
+        {
+            return new FormDetailsDTO
+            {
+                Id = this.Id,
+                UserId = this.UserId,
+                Title = this.Title,
+                Description = this.Description,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = this.UpdatedAt,
+                IsPublished = this.IsPublished,
+                IsDeleted = this.IsDeleted,
+                //User = User.ToUserDetailsDTO(),
+                //Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
                 //Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
             };
         }

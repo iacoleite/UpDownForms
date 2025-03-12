@@ -1,27 +1,41 @@
-﻿using UpDownForms.DTO.OptionDTOs;
+﻿using System.Text.Json.Serialization;
+using UpDownForms.DTO.OptionDTOs;
+using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.DTO.AnswersDTOs
 {
-    public class CreateAnswerDTO
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")] // lowercase because Json
+    [JsonDerivedType(typeof(CreateAnswerMultipleChoiceDTO), typeDiscriminator: "MultipleChoice")]
+    [JsonDerivedType(typeof(CreateAnswerOpenEndedDTO), typeDiscriminator: "OpenEnded")]
+    public abstract class CreateAnswerDTO
     {
         //public int Id { get; set; }
-        public int ResponseId { get; set; }
+        //public int ResponseId { get; set; }
         public int QuestionId { get; set; }
-        //public string? AnswerText { get; set; }
-        //
+        public string Type{ get; set; }
         public bool IsDeleted { get; set; }
         
     }
 
-    public class CreateAnswerMultipleChoiceDTO() : CreateAnswerDTO
+    public class CreateAnswerMultipleChoiceDTO : CreateAnswerDTO
     {
         //public int OptionId { get; set; }
-        public List<int> OptionsId { get; set; }
+        public List<int> SelectedOptions { get; set; } = new List<int>();
+
+        public CreateAnswerMultipleChoiceDTO()
+        {
+            Type = "MultipleChoice";
+        }
     }
 
-    public class CreateAnswerOpenEndedDTO() : CreateAnswerDTO
+    public class CreateAnswerOpenEndedDTO : CreateAnswerDTO
     {
         public string AnswerText { get; set; }
+
+        public CreateAnswerOpenEndedDTO()
+        {
+            Type = "OpenEnded";
+        }
     }
 }
