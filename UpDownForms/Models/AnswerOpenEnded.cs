@@ -26,5 +26,18 @@ namespace UpDownForms.Models
                 IsDeleted = this.IsDeleted
             };
         }
+
+        public AnswerOpenEndedResponseDTO ToAnswerDTO()
+        {
+            return new AnswerOpenEndedResponseDTO
+            {
+                Id = this.Id,
+                ResponseId = this.ResponseId,
+                QuestionId = this.QuestionId,
+                AnswerText = this.AnswerText,
+                //OptionId = this.OptionId,
+                IsDeleted = this.IsDeleted
+            };
+        }
     }
 }

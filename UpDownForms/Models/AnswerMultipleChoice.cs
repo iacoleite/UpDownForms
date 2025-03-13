@@ -1,4 +1,5 @@
-﻿using UpDownForms.DTO.AnswersDTOs;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
 
 namespace UpDownForms.Models
@@ -32,6 +33,26 @@ namespace UpDownForms.Models
                 QuestionId = this.QuestionId,
                 IsDeleted = this.IsDeleted
             };
+        }
+
+        public AnswerMultipleChoiceResponseDTO ToAnswerDTO()
+        {
+            var teste = new AnswerMultipleChoiceResponseDTO
+            {
+
+                Id = this.Id,
+                ResponseId = this.ResponseId,
+                QuestionId = this.QuestionId,
+                //AnswerText = this.AnswerText,
+                //OptionId = this.OptionId,
+
+                IsDeleted = this.IsDeleted
+            };
+            //foreach (var optionId in pocoto.SelectedOptions)
+            //{
+            //    this.SelectedOptions.Add(new AnsweredOption { OptionId = optionId });
+            //}
+            return teste;
         }
     }
 }

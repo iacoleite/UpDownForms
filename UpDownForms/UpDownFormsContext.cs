@@ -193,7 +193,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
     {
         var entries = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-
+        
         foreach (var entry in entries)
         {
             switch (entry.Entity)

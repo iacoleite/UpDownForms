@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using UpDownForms.DTO.AnswersDTOs;
@@ -45,8 +46,8 @@ namespace UpDownForms.Controllers
                 .Include(r => r.Form)
                     .ThenInclude(f => f.User)
                 .Include(r => r.Answers)
-                .Include(r => r.Form)
-                    .ThenInclude(f => f.Questions)
+                //.Include(r => r.Form)
+                    //.ThenInclude(f => f.Questions)
                 .FirstOrDefaultAsync(r => r.Id == id);
             if (response == null)
             {
@@ -104,89 +105,59 @@ namespace UpDownForms.Controllers
         {
             var response = await _context.Responses.FindAsync(id);
 
-            if (createAnswerDTO == null)
-            {
-                return BadRequest("missing answer data");
-            }
-
             if (response == null)
             {
-                return BadRequest("Invalid ResponseId");
+                return NotFound("Invalid ResponseId");
             }
-
-            Answer answer;
 
             if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
             {
-                answer = new AnswerOpenEnded(answerOpenEndedDTO);
-                ((AnswerOpenEnded)answer).AnswerText = answerOpenEndedDTO.AnswerText;
+                var answer = new AnswerOpenEnded(answerOpenEndedDTO);
+                answer.AnswerText = answerOpenEndedDTO.AnswerText;
                 answer.ResponseId = id;
                 answer.QuestionId = createAnswerDTO.QuestionId;
+
                 await _context.Answers.AddAsync(answer);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, answer.ToAnswerOpenEndedResponseDTO());
             }
             else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
             {
-                answer = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
-                AnswerMultipleChoice answerMultipleChoice = (AnswerMultipleChoice)answer;
-
-                answerMultipleChoice.ResponseId = id;
-                answerMultipleChoice.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
-                await _context.AnswersMultipleChoice.AddAsync(answerMultipleChoice);
-                await _context.SaveChangesAsync();
-
-                if (createAnswerMultipleChoiceDTO != null && createAnswerMultipleChoiceDTO.SelectedOptions.Any())
+                using var transaction = _context.Database.BeginTransaction();
+                try
                 {
-                    foreach (var optionId in createAnswerMultipleChoiceDTO.SelectedOptions.Distinct())
-                    {
-                        try
-                        {
-                            //var answeredOption = new AnsweredOption
-                            var existingAnsweredOption = await _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answerMultipleChoice.Id);
-                            if (existingAnsweredOption == null)
-                            {
-                                var answeredOption = new AnsweredOption
-                                {
-                                    AnswerMultipleChoiceId = answerMultipleChoice.Id,
-                                    OptionId = optionId
-                                };
-                                await _context.AnsweredOptions.AddAsync(answeredOption);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            return BadRequest(e.Message);
-                        }
-                    }
+                    var answer = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
+                    answer.ResponseId = id;
+                    answer.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
+
+                    await _context.AnswersMultipleChoice.AddAsync(answer);
                     await _context.SaveChangesAsync();
 
+                    foreach (var optionId in createAnswerMultipleChoiceDTO.SelectedOptions.Distinct())
+                    {
+                        var existingAnsweredOption = await _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answer.Id);
+                        if (existingAnsweredOption == null)
+                        {
+                            var answeredOption = new AnsweredOption
+                            {
+                                AnswerMultipleChoiceId = answer.Id,
+                                OptionId = optionId
+                            };
+                            await _context.AnsweredOptions.AddAsync(answeredOption);
+                        }
+                    }
+                    await transaction.CommitAsync();
+                    return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (new AnswerMultipleChoiceResponseDTO(answer)));
                 }
-                answer = answerMultipleChoice;
+                catch (Exception e)
+                {
+                    return BadRequest(e.Message);
+                }
             }
             else
             {
-                return BadRequest("Invalid answer type");
-            }
-
-            if (answer != null && !(answer is AnswerMultipleChoice))
-            {
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, ((AnswerOpenEnded)answer).ToAnswerOpenEndedResponseDTO());
-            }
-            else if (answer != null)
-            {
-                //var answerMultipleChoice = (AnswerMultipleChoice)answer;
-                //var answerMultipleChoiceDTO = answerMultipleChoice.ToAnswerMultipleChoiceResponseDTO();
-                //foreach (var option in answerMultipleChoice.SelectedOptions)
-                //{
-                //    answerMultipleChoiceDTO.SelectedOptions.Add(option);
-                //}
-                
-                //return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (answerMultipleChoiceDTO));
-                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (new AnswerMultipleChoiceResponseDTO((AnswerMultipleChoice) answer)));
-            }
-            else
-            {
-                return BadRequest("Can't create answer");
+                return BadRequest("Invalid Answer Type");
             }
         }
     }

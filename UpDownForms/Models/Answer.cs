@@ -4,7 +4,7 @@ using UpDownForms.DTO.AnswersDTOs;
 namespace UpDownForms.Models
 {
     [Table("Answers")]
-    public class Answer
+    public abstract class Answer
     {
         public int Id { get; set; }
         public int ResponseId { get; set; }
@@ -25,7 +25,7 @@ namespace UpDownForms.Models
             //this.OptionId = createAnswerDTO.OptionId;
             this.IsDeleted = false;
         }
-        public AnswerDTO ToAnswerDTO()
+        public virtual AnswerDTO ToAnswerDTO()
         {
             return new AnswerDTO
             {
