@@ -71,7 +71,7 @@ namespace UpDownForms.Controllers
             _context.Responses.Add(response);
             await _context.SaveChangesAsync();
             var responseEntity = await _context.Responses
-                                               .Include(r => r.Form) 
+                                               .Include(r => r.Form)
                                                     .ThenInclude(f => f.User)
                                                .FirstOrDefaultAsync(r => r.Id == response.Id);
             if (responseEntity == null)
@@ -103,17 +103,19 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<AnswerDTO>> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
         {
             var response = await _context.Responses.FindAsync(id);
-            
+
             if (createAnswerDTO == null)
             {
                 return BadRequest("missing answer data");
             }
-            
+
             if (response == null)
             {
                 return BadRequest("Invalid ResponseId");
             }
+
             Answer answer;
+
             if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
             {
                 answer = new AnswerOpenEnded(answerOpenEndedDTO);
@@ -172,7 +174,15 @@ namespace UpDownForms.Controllers
             }
             else if (answer != null)
             {
-                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, answer.ToAnswerDTO());
+                //var answerMultipleChoice = (AnswerMultipleChoice)answer;
+                //var answerMultipleChoiceDTO = answerMultipleChoice.ToAnswerMultipleChoiceResponseDTO();
+                //foreach (var option in answerMultipleChoice.SelectedOptions)
+                //{
+                //    answerMultipleChoiceDTO.SelectedOptions.Add(option);
+                //}
+                
+                //return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (answerMultipleChoiceDTO));
+                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (new AnswerMultipleChoiceResponseDTO((AnswerMultipleChoice) answer)));
             }
             else
             {
@@ -181,3 +191,4 @@ namespace UpDownForms.Controllers
         }
     }
 }
+

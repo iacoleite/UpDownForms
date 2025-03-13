@@ -22,5 +22,16 @@ namespace UpDownForms.Models
             }
             
         }
+
+        public AnswerMultipleChoiceResponseDTO ToAnswerMultipleChoiceResponseDTO()
+        {
+            return new AnswerMultipleChoiceResponseDTO
+            {
+                Id = this.Id,
+                ResponseId = this.ResponseId,
+                QuestionId = this.QuestionId,
+                IsDeleted = this.IsDeleted
+            };
+        }
     }
 }
