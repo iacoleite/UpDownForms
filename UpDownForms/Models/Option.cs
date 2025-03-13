@@ -24,6 +24,7 @@ namespace UpDownForms.Models
             //this.QuestionId = createOptionDTO.QuestionId;
             this.Text = createOptionDTO.Text;
             this.Order = createOptionDTO.Order;
+            this.IsCorrect = createOptionDTO.IsCorrect;
         }
 
         public OptionDTO ToOptionDTO()
