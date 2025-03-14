@@ -2,14 +2,14 @@
 
 namespace UpDownForms.DTO.AnswersDTOs
 {
-    public class AnswerMultipleChoiceResponseDTO
+    public class AnswerMultipleChoiceResponseDTO : AnswerDTO
     {
-        public int Id { get; set; }
-        public int ResponseId { get; set; }
-        public int QuestionId { get; set; }
+        //public int Id { get; set; }
+        //public int ResponseId { get; set; }
+        //public int QuestionId { get; set; }
         //public string? AnswerText { get; set; }
         public List<int> SelectedOptions { get; set; } = new List<int>();
-        public bool IsDeleted { get; set; }
+        //public bool IsDeleted { get; set; }
 
         public AnswerMultipleChoiceResponseDTO()
         {

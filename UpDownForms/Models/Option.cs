@@ -34,7 +34,10 @@ namespace UpDownForms.Models
                 Id = this.Id,
                 QuestionId = this.QuestionId,
                 Text = this.Text,
-                Order = this.Order
+                Order = this.Order,
+                IsDeleted = this.IsDeleted,
+                IsCorrect = this.IsCorrect
+                
             };
         }
     }

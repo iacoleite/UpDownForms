@@ -1,13 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 
 namespace UpDownForms.Models
 {
-
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")] // it's lowercase because Json
+    [JsonDerivedType(typeof(QuestionMultipleChoice), typeDiscriminator: "MultipleChoice")]
+    [JsonDerivedType(typeof(QuestionOpenEnded), typeDiscriminator: "OpenEnded")]
     [Table("Questions")]
-    public class Question
+    public abstract class Question
     {
         public int Id { get; set; }
         public int FormId { get; set; }

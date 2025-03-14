@@ -58,7 +58,7 @@ namespace UpDownForms.Models
                 IsDeleted = this.IsDeleted,
                 User = User.ToUserDetailsDTO(),
                 Questions = this.Questions != null ? this.Questions.Select(q => q.ToQuestionDTO()).ToList() : null,
-                Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
+                //Responses = this.Responses != null ? this.Responses.Select(r => r.ToResponseDTO()).ToList() : null
             };
         }
         public FormNoResponsesDTO ToFormNoResponsesDTO()

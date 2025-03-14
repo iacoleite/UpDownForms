@@ -35,14 +35,13 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FormDTO>> GetForm(int id)
         {
-
-            var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).FirstOrDefaultAsync(f => f.Id == id);
-
-            if (form == null)
+            var response = await _formService.GetForm(id);
+            if (!response.Success)
             {
-                return NotFound();
+                return BadRequest(response.Message);
             }
-            return Ok(form.ToFormDTO());
+
+            return Ok(response.Data);
         }
 
 

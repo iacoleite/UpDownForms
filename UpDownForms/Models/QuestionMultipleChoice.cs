@@ -27,7 +27,7 @@ namespace UpDownForms.Models
                 Answers = baseDto.Answers, 
                 HasCorrectAnswer = this.HasCorrectAnswer,
                 QuestionType = this.QuestionType,
-                Options = this.Options.Select(o => o.ToOptionDTO()).ToList()
+                Options = this.Options != null ? this.Options.Select(o => o.ToOptionDTO()).ToList() : null
             };
             return multipleChoiceDto;
         }

@@ -1,4 +1,5 @@
-﻿using UpDownForms.DTO.OptionDTOs;
+﻿using System.Text.Json.Serialization;
+using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.Models;
 
 namespace UpDownForms.DTO.QuestionDTOs
@@ -7,6 +8,7 @@ namespace UpDownForms.DTO.QuestionDTOs
     {
         public bool HasCorrectAnswer { get; set; }
         public QuestionType QuestionType { get; set; }
-        public List<OptionDTO> Options { get; set; }
+        [JsonPropertyName("options")]
+        public List<OptionDTO> Options { get; set; } = new List<OptionDTO>();
     }
 }

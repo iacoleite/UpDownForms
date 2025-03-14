@@ -17,6 +17,6 @@ namespace UpDownForms.DTO.FormDTOs
         public bool IsDeleted { get; set; }
         public UserDetailsDTO User { get; set; }
         public List<QuestionDTO> Questions { get; set; }
-        public List<ResponseDTO> Responses { get; set; }
+        //public List<ResponseDTO> Responses { get; set; }
     }
 }

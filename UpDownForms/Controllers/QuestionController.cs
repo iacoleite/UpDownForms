@@ -34,16 +34,21 @@ namespace UpDownForms.Controllers
             }
 
             QuestionDTO questionDTO = question.ToQuestionDTO();
+            //if (questionDTO is QuestionMultipleChoiceDTO questionMultipleChoiceDTO)
+            //{
+            //    (QuestionMultipleChoiceDTO)questionDTO. = (QuestionMultipleChoice)question
+            //}
             if (question is QuestionMultipleChoice multipleChoiceQuestion)
             {
-                QuestionMultipleChoiceDTO multipleChoiceDTO = (QuestionMultipleChoiceDTO) multipleChoiceQuestion.ToQuestionDTO();
+                QuestionMultipleChoiceDTO multipleChoiceDTO = (QuestionMultipleChoiceDTO)multipleChoiceQuestion.ToQuestionDTO();
+                multipleChoiceQuestion.Options = ((QuestionMultipleChoice)question).Options;
                 questionDTO = multipleChoiceDTO;
             }
             else
             {
                 questionDTO = question.ToQuestionDTO();
             }
-                questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
+            questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
             
             return Ok(questionDTO);
         }
@@ -113,7 +118,7 @@ namespace UpDownForms.Controllers
                 multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
                 multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
                 multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
-                multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
+                //multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
                 multipleChoiceQuestion.IsDeleted = false;
             }
             else if (updateQuestionDTO is UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)
