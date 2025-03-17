@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.ApiResponse;
+using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
@@ -15,12 +16,14 @@ namespace UpDownForms.Services
         private readonly UpDownFormsContext _context;
         private readonly IPasswordHelper _passwordHelper;
         private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public UserService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager)
+        public UserService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager, IUserService userService)
         {
             _context = context;
             _passwordHelper = passwordHelper;
             _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<ApiResponse<IEnumerable<UserDetailsDTO>>> GetUsers()
@@ -72,6 +75,12 @@ namespace UpDownForms.Services
                 return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
             }
 
+            var loggedUserId = _userService.GetLoggedInUserId();
+            if ((user.Id != loggedUserId))
+            {
+                return new ApiResponse<UserDetailsDTO>(false, "You are not authorized to update this user", null);
+            }
+
             if (!string.IsNullOrEmpty(updatedUserDTO.Name))
             {
                 user.Name = updatedUserDTO.Name;
@@ -86,22 +95,29 @@ namespace UpDownForms.Services
                     return new ApiResponse<UserDetailsDTO>(false, "Password update failed", null);
                 }
             }
+            user.IsDeleted = false;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
                 return new ApiResponse<UserDetailsDTO>(false, "User update failed", null);
             }
-
             return new ApiResponse<UserDetailsDTO>(true, "User updated successfully", user.ToUserDetailsDTO());
         }
 
         public async Task<ApiResponse<UserDetailsDTO>> DeleteUser(string id)
         {
+            var loggedUserId = _userService.GetLoggedInUserId();
+
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
+            }
+
+            if ((user.Id != loggedUserId))
+            {
+                return new ApiResponse<UserDetailsDTO>(false, "You are not authorized to delete this user", null);
             }
             user.DeleteUser();
             _context.Users.Update(user);

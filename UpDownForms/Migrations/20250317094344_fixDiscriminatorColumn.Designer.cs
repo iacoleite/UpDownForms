@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UpDownForms.Migrations
 {
     [DbContext(typeof(UpDownFormsContext))]
-    partial class UpDownFormsContextModelSnapshot : ModelSnapshot
+    [Migration("20250317094344_fixDiscriminatorColumn")]
+    partial class fixDiscriminatorColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,6 +289,11 @@ namespace UpDownForms.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BaseQuestionType")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("varchar(21)");
+
                     b.Property<int>("FormId")
                         .HasColumnType("int");
 
@@ -304,8 +312,7 @@ namespace UpDownForms.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("varchar(21)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -313,7 +320,7 @@ namespace UpDownForms.Migrations
 
                     b.ToTable("Questions");
 
-                    b.HasDiscriminator<string>("Type").HasValue("Question");
+                    b.HasDiscriminator<string>("BaseQuestionType").HasValue("Question");
 
                     b.UseTphMappingStrategy();
                 });
@@ -451,7 +458,7 @@ namespace UpDownForms.Migrations
                     b.Property<bool>("HasCorrectAnswer")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("QuestionMCType")
+                    b.Property<string>("QuestionType")
                         .IsRequired()
                         .HasColumnType("longtext");
 

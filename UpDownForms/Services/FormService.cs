@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.FormDTOs;
+using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
 
@@ -112,6 +113,12 @@ namespace UpDownForms.Services
             if (form == null)
             {
                 return new ApiResponse<FormDTO>(false, "Form not found", null);
+            }
+            var user = form.User;
+            var loggedUserId = _userService.GetLoggedInUserId();
+            if ((user.Id != loggedUserId))
+            {
+                return new ApiResponse<FormDTO>(false, "You are not authorized to delete this form", null);
             }
 
             //var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).Include(f => f.Responses).FindAsync(id);

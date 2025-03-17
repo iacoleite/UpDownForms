@@ -21,10 +21,12 @@ namespace UpDownForms.Models
         public bool IsDeleted { get; set; }
         public Form Form { get; set; }
         public List<Answer> Answers { get; set; } = new List<Answer>();
+        //public string Type { get; set; }
 
 
         public Question()
         {
+            
         }
 
         public Question(CreateQuestionDTO createQuestionDTO)

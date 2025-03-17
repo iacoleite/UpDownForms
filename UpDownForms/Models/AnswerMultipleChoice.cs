@@ -9,7 +9,9 @@ namespace UpDownForms.Models
         //public int OptionId { get; set; }
         public List<AnsweredOption> SelectedOptions { get; set; } = new List<AnsweredOption>();
 
-        public AnswerMultipleChoice() { }
+        public AnswerMultipleChoice() {
+            //Type = "MultipleChoice";
+        }
 
         public AnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerDTO)
         {

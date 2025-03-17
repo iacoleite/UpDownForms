@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
+using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
 {
@@ -11,10 +13,12 @@ namespace UpDownForms.Controllers
     public class QuestionController : Controller
     {
         private readonly UpDownFormsContext _context;
+        private readonly IUserService _userService;
 
-        public QuestionController(UpDownFormsContext context)
+        public QuestionController(UpDownFormsContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -53,6 +57,7 @@ namespace UpDownForms.Controllers
             return Ok(questionDTO);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<QuestionDetailsDTO>> PostQuestion([FromBody] CreateQuestionDTO createQuestionDTO)
         {
@@ -67,6 +72,13 @@ namespace UpDownForms.Controllers
                 return BadRequest("Can't find form to add question");
             }
 
+            var userId = _userService.GetLoggedInUserId();
+            
+            if (!form.UserId.Equals(userId))
+            {
+                return BadRequest("Logged user does not authorization to post to form");
+            }
+
             Question question;
 
             if (createQuestionDTO is CreateQuestionMultipleChoiceDTO createQuestionMultipleChoiceDTO)
@@ -79,7 +91,7 @@ namespace UpDownForms.Controllers
                         var option = new Option(optionDTO);
                         ((QuestionMultipleChoice)question).AddOption(option);
                     }
-                    ((QuestionMultipleChoice)question).QuestionType = Enum.Parse<QuestionType>(createQuestionMultipleChoiceDTO.QuestionType.ToString(), true);
+                    ((QuestionMultipleChoice)question).QuestionMCType = Enum.Parse<QuestionType>(createQuestionMultipleChoiceDTO.QuestionType.ToString(), true);
                 }
             }
             else if (createQuestionDTO is CreateQuestionOpenEndedDTO createQuestionOpenEndedDTO)
@@ -95,6 +107,7 @@ namespace UpDownForms.Controllers
             return CreatedAtAction(nameof(GetQuestion), new { id = question.Id }, question.ToQuestionDetailsDTO());
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<QuestionDTO>> PutQuestion(int id, [FromBody] UpdateQuestionDTO updateQuestionDTO)
         {
@@ -102,10 +115,16 @@ namespace UpDownForms.Controllers
             {
                 return BadRequest("Missing question data");
             }
-            var question = await _context.Questions.FindAsync(id);
+            var question = await _context.Questions.Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
+            }
+            var userId = _userService.GetLoggedInUserId();
+            var formId = question.Form.UserId;
+            if (!formId.Equals(userId))
+            {
+                return BadRequest("Logged user does not authorization to update question");
             }
 
             if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
@@ -138,18 +157,26 @@ namespace UpDownForms.Controllers
                 question.Order = updateQuestionDTO.Order;
                 question.IsRequired = updateQuestionDTO.IsRequired;
             }
-
+            question.IsDeleted = false;
             await _context.SaveChangesAsync();
             return Ok(question.ToQuestionDTO());
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
-        public ActionResult DeleteQuestion(int id)
+        public async Task<IActionResult> DeleteQuestion(int id)
         {
-            var question = _context.Questions.Find(id);
+            var question = await _context.Questions.Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return NotFound();
+            }
+
+            var userId = _userService.GetLoggedInUserId();
+            var formId = question.Form.UserId;
+            if (!formId.Equals(userId))
+            {
+                return BadRequest("Logged user does not authorization to update question");
             }
             question.DeleteQuestion();
             _context.SaveChanges();
@@ -169,13 +196,20 @@ namespace UpDownForms.Controllers
             return Ok(question.Options.Select(o => o.ToOptionDTO()).ToList());
         }
 
+        [Authorize]
         [HttpPost("{questionId}/options")]
         public async Task<IActionResult> AddOption(int questionId, [FromBody] CreateOptionDTO createOptionDTO)
         {
-            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
                 return NotFound("Question not found");
+            }
+            var userId = _userService.GetLoggedInUserId();
+            var formId = question.Form.UserId;
+            if (!formId.Equals(userId))
+            {
+                return BadRequest("Logged user does not authorization to create Option to question");
             }
             var option = new Option(createOptionDTO);
             question.AddOption(option);
@@ -183,10 +217,11 @@ namespace UpDownForms.Controllers
             return CreatedAtAction(nameof(GetOptions), new { questionId = questionId }, option.ToOptionDTO());
         }
 
+        [Authorize]
         [HttpDelete("{questionId}/options/{optionId}")]
         public async Task<IActionResult> DeleteOption(int questionId, int optionId)
         {
-            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
                 return NotFound("Question not found");
@@ -195,6 +230,12 @@ namespace UpDownForms.Controllers
             if (option == null)
             {
                 return NotFound("Option not found");
+            }
+            var userId = _userService.GetLoggedInUserId();
+            var formId = question.Form.UserId;
+            if (!formId.Equals(userId))
+            {
+                return BadRequest("Logged user does not authorization to delete option");
             }
             // Should use soft delete here? 
             question.Options.Remove(option);

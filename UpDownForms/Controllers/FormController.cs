@@ -14,11 +14,13 @@ namespace UpDownForms.Controllers
     {
         private readonly UpDownFormsContext _context;
         private readonly FormService _formService;
+        private readonly IUserService _userService;
 
-        public FormController(UpDownFormsContext context, FormService formService)
+        public FormController(UpDownFormsContext context, FormService formService, IUserService userService)
         {
             _context = context;
             _formService = formService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -57,9 +59,16 @@ namespace UpDownForms.Controllers
             return Ok(response.Data.Title);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
+            var userId = _userService.GetLoggedInUserId();
+            var form = await _context.Forms.FindAsync(id);
+            if (userId != form.UserId)
+            {
+                return Unauthorized("You are not the owner of this form");
+            }
             var response = await _formService.PutForm(id, updateFormDTO);
             if (!response.Success)
             {
@@ -69,9 +78,16 @@ namespace UpDownForms.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
+            var userId = _userService.GetLoggedInUserId();
+            var form = await _context.Forms.FindAsync(id);
+            if (userId != form.UserId)
+            {
+                return Unauthorized("You are not the owner of this form");
+            }
             var response = await _formService.DeleteForm(id);
             if (!response.Success)
             {

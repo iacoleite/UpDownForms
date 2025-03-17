@@ -5,11 +5,13 @@ namespace UpDownForms.Models
 {
     public class QuestionMultipleChoice : Question
     {
-        public QuestionType QuestionType { get; set; }
+        public QuestionType QuestionMCType { get; set; }
         public bool HasCorrectAnswer { get; set; }
         public List<Option> Options { get; set; } = new List<Option>();
 
-        public QuestionMultipleChoice() { }
+        public QuestionMultipleChoice() {
+            //Type = "MultipleChoice";
+        }
 
 
         public override QuestionDTO ToQuestionDTO()
@@ -26,7 +28,7 @@ namespace UpDownForms.Models
                 IsDeleted = baseDto.IsDeleted,
                 Answers = baseDto.Answers, 
                 HasCorrectAnswer = this.HasCorrectAnswer,
-                QuestionType = this.QuestionType,
+                QuestionType = this.QuestionMCType,
                 Options = this.Options != null ? this.Options.Select(o => o.ToOptionDTO()).ToList() : null
             };
             return multipleChoiceDto;
@@ -38,7 +40,7 @@ namespace UpDownForms.Models
             this.FormId = createQuestionDTO.FormId;
             this.Text = createQuestionDTO.Text;
             this.Order = createQuestionDTO.Order;
-            this.QuestionType = Enum.Parse<QuestionType>(createQuestionDTO.Type);
+            this.QuestionMCType = Enum.Parse<QuestionType>(createQuestionDTO.Type);
             this.IsRequired = createQuestionDTO.IsRequired;
             this.IsDeleted = false;
             this.HasCorrectAnswer = createQuestionDTO.HasCorrectAnswer;

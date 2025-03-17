@@ -94,7 +94,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
 
         // inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
-            .HasDiscriminator<string>("BaseQuestionType")
+            .HasDiscriminator<string>("Type")
             .HasValue<QuestionMultipleChoice>("MultipleChoice")
             .HasValue<QuestionOpenEnded>("OpenEnded");
 
@@ -107,7 +107,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
 
         // Store QuestionType as an integer in the db
         modelBuilder.Entity<QuestionMultipleChoice>()
-            .Property(q => q.QuestionType)
+            .Property(q => q.QuestionMCType)
             .HasConversion<string>();  
 
         modelBuilder.Entity<QuestionMultipleChoice>()
@@ -154,7 +154,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
 
         // TPH Inheritance for Answer
         modelBuilder.Entity<Answer>()
-            .HasDiscriminator<string>("AnswerType")
+            .HasDiscriminator<string>("Type")
             .HasValue<AnswerMultipleChoice>("MultipleChoice")
             .HasValue<AnswerOpenEnded>("OpenEnded");
 

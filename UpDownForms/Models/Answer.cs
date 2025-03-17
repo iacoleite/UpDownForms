@@ -17,6 +17,7 @@ namespace UpDownForms.Models
         public bool IsDeleted { get; set; }
         public Response Response { get; set; }
         public Question Question { get; set; } 
+        //public string Type { get; set; }
 
         public Answer()
         {

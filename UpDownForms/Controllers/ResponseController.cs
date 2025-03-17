@@ -104,11 +104,33 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<AnswerDTO>> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
         {
             var response = await _context.Responses.FindAsync(id);
-
             if (response == null)
             {
                 return NotFound("Invalid ResponseId");
             }
+            var form = await _context.Forms.FindAsync(response.FormId);
+            if (form == null)
+            {
+                return NotFound("Invalid FormId");
+            }
+            var question = await _context.Questions.FindAsync(createAnswerDTO.QuestionId);
+            if (question == null)
+            {
+                return NotFound("Invalid QuestionId");
+            }
+            if (question.Id != createAnswerDTO.QuestionId)
+            {
+                return BadRequest("QuestionId does not match the question in the form");
+            }
+            if (form.Id != question.FormId)
+            {
+                return BadRequest("FormId does not match the form of the question");
+            }
+            if (question.GetType().Name != ("Question" + createAnswerDTO.Type))
+            {
+                return BadRequest("Answer type does not match the question type");
+            }
+
 
             if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
             {

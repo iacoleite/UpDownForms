@@ -4,8 +4,9 @@ namespace UpDownForms.Models
 {
     public class QuestionOpenEnded : Question
     {
-        public QuestionOpenEnded() : base()
+        public QuestionOpenEnded()
         {
+            //Type = "OpenEnded";
         }
         public QuestionOpenEnded(CreateQuestionDTO createQuestionDTO) : base(createQuestionDTO)
         {

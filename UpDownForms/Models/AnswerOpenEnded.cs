@@ -8,6 +8,7 @@ namespace UpDownForms.Models
 
         public AnswerOpenEnded()
         {
+            //Type = "OpenEnded";
         }   
 
         public AnswerOpenEnded(CreateAnswerOpenEndedDTO createAnswerOpenEndedDTO) : base(createAnswerOpenEndedDTO)
