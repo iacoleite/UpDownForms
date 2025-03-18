@@ -40,5 +40,10 @@ namespace UpDownForms.Models
                 
             };
         }
+
+        public void DeleteOption()
+        {
+            this.IsDeleted = true;
+        }
     }
 }

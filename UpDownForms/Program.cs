@@ -68,6 +68,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IUserService, LoggedUserService>();
 
 builder.Services.AddScoped<FormService>();
+builder.Services.AddScoped<QuestionService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>

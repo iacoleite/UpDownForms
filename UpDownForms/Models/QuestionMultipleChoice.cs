@@ -29,7 +29,7 @@ namespace UpDownForms.Models
                 Answers = baseDto.Answers, 
                 HasCorrectAnswer = this.HasCorrectAnswer,
                 QuestionType = this.QuestionMCType,
-                Options = this.Options != null ? this.Options.Select(o => o.ToOptionDTO()).ToList() : null
+                Options = this.Options != null ? this.Options.Where(o => o.IsDeleted == false).Select(o => o.ToOptionDTO()).ToList() : null
             };
             return multipleChoiceDto;
         }

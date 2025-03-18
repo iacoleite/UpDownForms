@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
+using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
 {
@@ -13,30 +14,28 @@ namespace UpDownForms.Controllers
     public class ResponseController : Controller
     {
         private readonly UpDownFormsContext _context;
+        private readonly IUserService _userService;
 
-        public ResponseController(UpDownFormsContext context)
+        public ResponseController(UpDownFormsContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponses()
         {
-            try
-            {
-                var responses = await _context.Responses
+            var response = await _context.Responses
                     .Include(r => r.Form)
                     .ThenInclude(f => f.User)
                     .Include(r => r.Answers)
                     .Where(r => !r.IsDeleted)
                     .ToListAsync();
-
-                return Ok(responses.Select(response => response.ToResponseDTO()).ToList());
-            }
-            catch (Exception e)
+            if (response == null)
             {
-                return BadRequest(e.Message);
+                return NotFound("No responses found");
             }
+            return Ok(response.Select(response => response.ToResponseDTO()).ToList());
         }
 
         [HttpGet("{id}")]
@@ -71,20 +70,8 @@ namespace UpDownForms.Controllers
             var response = new Response(createResponseDTO);
             _context.Responses.Add(response);
             await _context.SaveChangesAsync();
-            var responseEntity = await _context.Responses
-                                               .Include(r => r.Form)
-                                                    .ThenInclude(f => f.User)
-                                               .FirstOrDefaultAsync(r => r.Id == response.Id);
-            if (responseEntity == null)
-            {
-                return BadRequest("Can't find response in db");
-            }
-            var responseDTO = responseEntity.ToResponseDTO();
-            if (responseDTO == null)
-            {
-                return BadRequest("Can't find response in db");
-            }
-            return CreatedAtAction(nameof(GetResponse), new { id = response.Id }, responseDTO);
+
+            return CreatedAtAction(nameof(GetResponse), new { id = response.Id }, response.ToResponseDTO());
         }
 
         [HttpDelete("{id}")]
@@ -113,6 +100,7 @@ namespace UpDownForms.Controllers
             {
                 return NotFound("Invalid FormId");
             }
+
             var question = await _context.Questions.FindAsync(createAnswerDTO.QuestionId);
             if (question == null)
             {
@@ -130,7 +118,6 @@ namespace UpDownForms.Controllers
             {
                 return BadRequest("Answer type does not match the question type");
             }
-
 
             if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
             {
