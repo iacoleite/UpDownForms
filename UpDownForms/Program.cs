@@ -78,6 +78,9 @@ builder.Services.AddControllers()
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }); 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddRazorPages();
+
 builder.Services.AddSwaggerGen(o =>
 {
     o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -89,6 +92,9 @@ builder.Services.AddSwaggerGen(o =>
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
+
+    //builder.Services.AddHttpClient();
+
     o.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -104,6 +110,7 @@ builder.Services.AddSwaggerGen(o =>
         }
     });
 });
+builder.Services.AddHttpClient();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -141,8 +148,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.MapControllers();
 
