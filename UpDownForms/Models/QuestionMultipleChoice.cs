@@ -53,6 +53,24 @@ namespace UpDownForms.Models
         {
             this.Options.Remove(option);
         }
+
+        public override void DeleteQuestion()
+        {
+            this.IsDeleted = true;
+            foreach (var o in Options)
+            {
+                o.DeleteOption();
+            }
+        }
+
+        public void UndeleteQuestionAndOptions()
+        {
+            this.IsDeleted = false;
+            foreach (var o in Options)
+            {
+                o.UndeleteOption();
+            }
+        }
         //public List<OptionDTO> GetOptionsDTOs()
         //{
         //    return this.Options.Select(o => o.ToOptionDTO()).ToList();

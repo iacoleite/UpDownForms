@@ -90,7 +90,7 @@ namespace UpDownForms.Models
             this.IsDeleted = false;
         }
 
-        public void DeleteQuestion()
+        public virtual void DeleteQuestion()
         {
             this.IsDeleted = true;
         }

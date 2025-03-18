@@ -45,5 +45,10 @@ namespace UpDownForms.Models
         {
             this.IsDeleted = true;
         }
+
+        public void UndeleteOption()
+        {
+            this.IsDeleted = false;
+        }
     }
 }

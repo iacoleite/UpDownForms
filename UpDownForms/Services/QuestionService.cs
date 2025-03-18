@@ -108,7 +108,7 @@ namespace UpDownForms.Services
                 return new ApiResponse<QuestionDTO>(false, "Missing question data", null);
 
             }
-            var question = await _context.Questions.Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
+            var question = await _context.Questions.Include(q => q.Form).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return new ApiResponse<QuestionDTO>(false, "Can't find question", null);
@@ -119,6 +119,7 @@ namespace UpDownForms.Services
             {
                 return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to update question", null);
             }
+            Console.WriteLine(updateQuestionDTO.GetType());
 
             if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
             {
@@ -132,7 +133,9 @@ namespace UpDownForms.Services
                 multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
                 multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
                 //multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
-                multipleChoiceQuestion.IsDeleted = false;
+                //multipleChoiceQuestion.IsDeleted = false;
+                multipleChoiceQuestion.UndeleteQuestionAndOptions();
+
             }
             else if (updateQuestionDTO is UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)
             {
@@ -160,7 +163,7 @@ namespace UpDownForms.Services
 
         public async Task<ApiResponse<QuestionDTO>> DeleteQuestion(int id)
         {
-            var question = await _context.Questions.Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
+            var question = await _context.Questions.Include(q => q.Form).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 return new ApiResponse<QuestionDTO>(false, "Question not found", null);
@@ -172,7 +175,16 @@ namespace UpDownForms.Services
             {
                 return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to update question", null);                
             }
-            question.DeleteQuestion();
+
+            if (question.GetType().Name == "QuestionMultipleChoice") 
+            {
+                ((QuestionMultipleChoice)question).DeleteQuestion();
+            }
+            else
+            {
+                question.DeleteQuestion();
+            }
+            //question.DeleteQuestion();
             _context.SaveChanges();
             return new ApiResponse<QuestionDTO>(true, "Question Deleted", question.ToQuestionDTO());
         }
