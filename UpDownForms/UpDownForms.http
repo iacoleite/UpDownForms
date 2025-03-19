@@ -1,6 +1,8 @@
 @UpDownForms_HostAddress = http://localhost:5248
 
-GET {{UpDownForms_HostAddress}}/forms/
+GET {{UpDownForms_HostAddress}}/form/
 Accept: application/json
 
 ###
+GET {{UpDownForms_HostAddress}}/user/
+Accept: application/json

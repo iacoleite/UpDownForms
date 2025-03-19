@@ -15,17 +15,13 @@ namespace UpDownForms.Controllers;
 public class UserController : ControllerBase
 {
     //private readonly ILogger<UserController> _logger;
-    private readonly UpDownFormsContext _context;
-    private readonly IPasswordHelper _passwordHelper;
-    private readonly UserManager<User> _userManager;
+
     private readonly UserService _userService;
 
 
-    public UserController(UserService userService, IPasswordHelper passwordHelper, UpDownFormsContext context, UserManager<User> userManager)
+    public UserController(UserService userService)
     {
-        _context = context;
-        _passwordHelper = passwordHelper;
-        _userManager = userManager;
+
         _userService = userService;
     }
 

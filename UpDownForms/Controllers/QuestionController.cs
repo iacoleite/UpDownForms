@@ -12,14 +12,12 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class QuestionController : Controller
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IUserService _userService;
+
         private readonly QuestionService _questionService;
 
-        public QuestionController(UpDownFormsContext context, IUserService userService, QuestionService questionService)
+        public QuestionController(QuestionService questionService)
         {
-            _context = context;
-            _userService = userService;
+
             _questionService = questionService;
         }
 

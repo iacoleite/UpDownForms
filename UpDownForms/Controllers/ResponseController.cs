@@ -14,14 +14,12 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class ResponseController : Controller
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IUserService _userService;
+
         private readonly ResponseService _responseService;
 
-        public ResponseController(UpDownFormsContext context, IUserService userService, ResponseService responseService)
+        public ResponseController(ResponseService responseService)
         {
-            _context = context;
-            _userService = userService;
+
             _responseService = responseService;
         }
 

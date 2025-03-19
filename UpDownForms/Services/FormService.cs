@@ -116,7 +116,7 @@ namespace UpDownForms.Services
             }
             var user = form.User;
             var loggedUserId = _userService.GetLoggedInUserId();
-            if ((user.Id != loggedUserId))
+            if (user.Id != loggedUserId)
             {
                 return new ApiResponse<FormDTO>(false, "You are not authorized to delete this form", null);
             }

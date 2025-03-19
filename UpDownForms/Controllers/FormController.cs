@@ -12,15 +12,11 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class FormController : ControllerBase
     {
-        private readonly UpDownFormsContext _context;
         private readonly FormService _formService;
-        private readonly IUserService _userService;
 
-        public FormController(UpDownFormsContext context, FormService formService, IUserService userService)
+        public FormController(FormService formService)
         {
-            _context = context;
             _formService = formService;
-            _userService = userService;
         }
 
         [HttpGet]
@@ -63,12 +59,12 @@ namespace UpDownForms.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
-            var userId = _userService.GetLoggedInUserId();
-            var form = await _context.Forms.FindAsync(id);
-            if (userId != form.UserId)
-            {
-                return Unauthorized("You are not the owner of this form");
-            }
+            //var userId = _userService.GetLoggedInUserId();
+            //var form = await _context.Forms.FindAsync(id);
+            //if (userId != form.UserId)
+            //{
+            //    return Unauthorized("You are not the owner of this form");
+            //}
             var response = await _formService.PutForm(id, updateFormDTO);
             if (!response.Success)
             {
@@ -82,12 +78,12 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
-            var userId = _userService.GetLoggedInUserId();
-            var form = await _context.Forms.FindAsync(id);
-            if (userId != form.UserId)
-            {
-                return Unauthorized("You are not the owner of this form");
-            }
+            //var userId = _userService.GetLoggedInUserId();
+            //var form = await _context.Forms.FindAsync(id);
+            //if (userId != form.UserId)
+            //{
+            //    return Unauthorized("You are not the owner of this form");
+            //}
             var response = await _formService.DeleteForm(id);
             if (!response.Success)
             {
