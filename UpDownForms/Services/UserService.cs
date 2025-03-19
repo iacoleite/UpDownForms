@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.FormDTOs;
+using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
@@ -35,6 +37,12 @@ namespace UpDownForms.Services
         public async Task<ApiResponse<UserDetailsDTO>> GetUser(string id)
         {
             var response = await _context.Users.FindAsync(id);
+            var userId = _userService.GetLoggedInUserId();
+
+            if (!response.Id.Equals(userId))
+            {
+                return new ApiResponse<UserDetailsDTO>(false, "Logged user does not authorization to post to form", null);
+            }
             if (response == null)
             {
                 return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
@@ -115,7 +123,7 @@ namespace UpDownForms.Services
                 return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
             }
 
-            if ((user.Id != loggedUserId))
+            if (user.Id != loggedUserId)
             {
                 return new ApiResponse<UserDetailsDTO>(false, "You are not authorized to delete this user", null);
             }

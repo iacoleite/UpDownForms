@@ -119,14 +119,12 @@ namespace UpDownForms.Services
             {
                 return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to update question", null);
             }
-            Console.WriteLine(updateQuestionDTO.GetType());
 
             if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
             {
                 if (!(question is QuestionMultipleChoice multipleChoiceQuestion))
                 {
                     return new ApiResponse<QuestionDTO>(false, "Question type mismatch", null);
-
                 }
                 multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
                 multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
@@ -237,10 +235,9 @@ namespace UpDownForms.Services
             var formId = question.Form.UserId;
             if (!formId.Equals(userId))
             {
-                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to add options to question", null);
+                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to Delete options", null);
             }
-            // Should use soft delete here? 
-            //question.Options.Remove(option);
+
             option.DeleteOption();
             await _context.SaveChangesAsync();
             return new ApiResponse<QuestionDTO>(true, "Option DELETED", (QuestionMultipleChoiceDTO)question.ToQuestionDTO());

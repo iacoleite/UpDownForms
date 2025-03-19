@@ -59,5 +59,16 @@ namespace UpDownForms.Models
                 Answers = this.Answers != null ? this.Answers.Select(a => a.ToAnswerDTO()).ToList() : null
             };
         }
+
+        public void DeleteResponse()
+        {
+            this.IsDeleted = true;
+            foreach (Answer a in Answers)
+            {
+                a.IsDeleted = true;
+            }
+        }
+
+
     }
 }

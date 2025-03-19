@@ -69,12 +69,13 @@ builder.Services.AddScoped<IUserService, LoggedUserService>();
 
 builder.Services.AddScoped<FormService>();
 builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<ResponseService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
     {
-            o.JsonSerializerOptions.IncludeFields = true;
-        o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    o.JsonSerializerOptions.IncludeFields = true;
+    o.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }); 
 builder.Services.AddEndpointsApiExplorer();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -15,159 +16,71 @@ namespace UpDownForms.Controllers
     {
         private readonly UpDownFormsContext _context;
         private readonly IUserService _userService;
+        private readonly ResponseService _responseService;
 
-        public ResponseController(UpDownFormsContext context, IUserService userService)
+        public ResponseController(UpDownFormsContext context, IUserService userService, ResponseService responseService)
         {
             _context = context;
             _userService = userService;
+            _responseService = responseService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponses()
         {
-            var response = await _context.Responses
-                    .Include(r => r.Form)
-                    .ThenInclude(f => f.User)
-                    .Include(r => r.Answers)
-                    .Where(r => !r.IsDeleted)
-                    .ToListAsync();
-            if (response == null)
+            var response = await _responseService.GetResponses();
+            if (!response.Success)
             {
-                return NotFound("No responses found");
+                return BadRequest(response.Message);
             }
-            return Ok(response.Select(response => response.ToResponseDTO()).ToList());
+            return Ok(response.Data);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ResponseFormNoResponseDTO>> GetResponse(int id)
         {
-            var response = await _context.Responses
-                .Include(r => r.Form)
-                    .ThenInclude(f => f.User)
-                .Include(r => r.Answers)
-                //.Include(r => r.Form)
-                    //.ThenInclude(f => f.Questions)
-                .FirstOrDefaultAsync(r => r.Id == id);
-            if (response == null)
+            var response = await _responseService.GetResponseById(id);
+            if (!response.Success)
             {
-                return NotFound();
+                return BadRequest(response.Message);
             }
-            return Ok(response.ToResponseFormNoResponseDTO());
+            return Ok(response.Data);
         }
 
         [HttpPost]
         public async Task<ActionResult<ResponseDTO>> PostResponse([FromBody] CreateResponseDTO createResponseDTO)
         {
-            if (createResponseDTO == null)
+            var response = await _responseService.PostResponse(createResponseDTO);
+            if (!response.Success)
             {
-                return BadRequest("Missing response data");
+                return BadRequest(response.Message);
             }
-            var formExists = await _context.Forms.AnyAsync(f => f.Id == createResponseDTO.FormId);
-            if (!formExists)
-            {
-                return BadRequest("Invalid FormId");
-            }
-            var response = new Response(createResponseDTO);
-            _context.Responses.Add(response);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetResponse), new { id = response.Id }, response.ToResponseDTO());
+            return Ok(response.Data);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteResponse(int id)
         {
-            var response = await _context.Responses.FindAsync(id);
-            if (response == null)
+
+            var response = await _responseService.DeleteResponse(id);
+            if (!response.Success)
             {
-                return NotFound();
+                return BadRequest(response.Message);
             }
-            response.IsDeleted = true;
-            await _context.SaveChangesAsync();
-            return Ok("Response deleted");
+            return Ok(response.Data);
         }
 
         [HttpPost("{id}/answers/")]
         public async Task<ActionResult<AnswerDTO>> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
         {
-            var response = await _context.Responses.FindAsync(id);
-            if (response == null)
-            {
-                return NotFound("Invalid ResponseId");
-            }
-            var form = await _context.Forms.FindAsync(response.FormId);
-            if (form == null)
-            {
-                return NotFound("Invalid FormId");
-            }
 
-            var question = await _context.Questions.FindAsync(createAnswerDTO.QuestionId);
-            if (question == null)
+            var response = await _responseService.PostAnswer(id, createAnswerDTO);
+            if (!response.Success)
             {
-                return NotFound("Invalid QuestionId");
+                return BadRequest(response.Message);
             }
-            if (question.Id != createAnswerDTO.QuestionId)
-            {
-                return BadRequest("QuestionId does not match the question in the form");
-            }
-            if (form.Id != question.FormId)
-            {
-                return BadRequest("FormId does not match the form of the question");
-            }
-            if (question.GetType().Name != ("Question" + createAnswerDTO.Type))
-            {
-                return BadRequest("Answer type does not match the question type");
-            }
-
-            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
-            {
-                var answer = new AnswerOpenEnded(answerOpenEndedDTO);
-                answer.AnswerText = answerOpenEndedDTO.AnswerText;
-                answer.ResponseId = id;
-                answer.QuestionId = createAnswerDTO.QuestionId;
-
-                await _context.Answers.AddAsync(answer);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, answer.ToAnswerOpenEndedResponseDTO());
-            }
-            else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
-            {
-                using var transaction = _context.Database.BeginTransaction();
-                try
-                {
-                    var answer = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);
-                    answer.ResponseId = id;
-                    answer.QuestionId = createAnswerMultipleChoiceDTO.QuestionId;
-
-                    await _context.AnswersMultipleChoice.AddAsync(answer);
-                    await _context.SaveChangesAsync();
-
-                    foreach (var optionId in createAnswerMultipleChoiceDTO.SelectedOptions.Distinct())
-                    {
-                        var existingAnsweredOption = await _context.AnsweredOptions.FirstOrDefaultAsync(ao => ao.OptionId == optionId && ao.AnswerMultipleChoiceId == answer.Id);
-                        if (existingAnsweredOption == null)
-                        {
-                            var answeredOption = new AnsweredOption
-                            {
-                                AnswerMultipleChoiceId = answer.Id,
-                                OptionId = optionId
-                            };
-                            await _context.AnsweredOptions.AddAsync(answeredOption);
-                        }
-                    }
-                    await transaction.CommitAsync();
-                    return CreatedAtAction(nameof(GetResponse), new { id = answer.Id }, (new AnswerMultipleChoiceResponseDTO(answer)));
-                }
-                catch (Exception e)
-                {
-                    return BadRequest(e.Message);
-                }
-            }
-            else
-            {
-                return BadRequest("Invalid Answer Type");
-            }
+            return Ok(response.Data);
         }
     }
 }
