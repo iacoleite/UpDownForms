@@ -106,7 +106,6 @@ namespace UpDownForms.Services
             if (form.Id != question.FormId)
             {
                 return new ApiResponse<AnswerDTO>(false, "FormId does not match the form of the question", null);
-
             }
 
             if (question.GetType().Name != ("Question" + createAnswerDTO.Type))
@@ -114,7 +113,13 @@ namespace UpDownForms.Services
                 return new ApiResponse<AnswerDTO>(false, "Answer type does not match the question type", null);
             }
 
-            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO && question is QuestionOpenEnded provaDto)
+            var existingAnswer = await _context.Answers.FirstOrDefaultAsync(a => a.ResponseId == id && a.QuestionId == createAnswerDTO.QuestionId);
+            if (existingAnswer != null)
+            {
+                return new ApiResponse<AnswerDTO>(false, "Response already has an answer for this question", null);
+            }
+
+            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
             {
                 var answer = new AnswerOpenEnded(answerOpenEndedDTO);
                 answer.AnswerText = answerOpenEndedDTO.AnswerText;
@@ -125,7 +130,6 @@ namespace UpDownForms.Services
                 await _context.SaveChangesAsync();
 
                 return new ApiResponse<AnswerDTO>(true, "OK", answer.ToAnswerOpenEndedResponseDTO());
-
             }
             else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
             {
