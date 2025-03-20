@@ -11,12 +11,48 @@ namespace UpDownForms.Models
     [Table("Answers")]
     public abstract class Answer
     {
-        public int Id { get; set; }
-        public int ResponseId { get; set; }
-        public int QuestionId { get; set; }
-        public bool IsDeleted { get; set; }
-        public Response Response { get; set; }
-        public Question Question { get; set; } 
+        private int _id;
+        private int _responseId;
+        private int _questionId;
+        private bool _isDeleted;
+        private Response _response;
+        private Question _question;
+
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
+
+        public int ResponseId
+        {
+            get => _responseId;
+            set => _responseId = value;
+        }
+
+        public int QuestionId
+        {
+            get => _questionId;
+            set => _questionId = value;
+        }
+
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set => _isDeleted = value;
+        }
+
+        public Response Response
+        {
+            get => _response;
+            set => _response = value;
+        }
+
+        public Question Question
+        {
+            get => _question;
+            set => _question = value;
+        }
         //public string Type { get; set; }
 
         public Answer()

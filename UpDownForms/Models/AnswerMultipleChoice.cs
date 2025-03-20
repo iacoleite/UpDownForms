@@ -7,8 +7,13 @@ namespace UpDownForms.Models
     public class AnswerMultipleChoice : Answer
     {
         //public int OptionId { get; set; }
-        public List<AnsweredOption> SelectedOptions { get; set; } = new List<AnsweredOption>();
+        private List<AnsweredOption> _selectedOptions = new List<AnsweredOption>();
 
+        public List<AnsweredOption> SelectedOptions
+        {
+            get => _selectedOptions;
+            set => _selectedOptions = value;
+        }
         public AnswerMultipleChoice() {
             //Type = "MultipleChoice";
         }

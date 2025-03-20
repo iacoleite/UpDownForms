@@ -8,28 +8,94 @@ namespace UpDownForms.Models
     [Table("Forms")]
     public record Form
     {
-        public int Id { get; set; }
+        private int _id;
+        private string _userId;
+        private string _title;
+        private string _description;
+        private DateTime _createdAt;
+        private DateTime _updatedAt;
+        private bool _isPublished;
+        private bool _isDeleted;
+        private User _user;
+        private List<Question> _questions = new List<Question>();
+        private List<Response> _responses = new List<Response>();
+
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
+
         [Required]
-        public string UserId { get; set; }
+        public string UserId
+        {
+            get => _userId;
+            set => _userId = value;
+        }
+
         [Required]
-        public string Title { get; set; }
+        public string Title
+        {
+            get => _title;
+            set => _title = value;
+        }
+
         [Required]
-        public string Description { get; set; }
+        public string Description
+        {
+            get => _description;
+            set => _description = value;
+        }
+
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
+            set => _createdAt = value;
+        }
+
         [Required]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt
+        {
+            get => _updatedAt;
+            set => _updatedAt = value;
+        }
+
         [Required]
-        public bool IsPublished { get; set; }
+        public bool IsPublished
+        {
+            get => _isPublished;
+            set => _isPublished = value;
+        }
+
         [Required]
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set => _isDeleted = value;
+        }
+
         [Required]
-        public User User { get; set; }
+        public User User
+        {
+            get => _user;
+            set => _user = value;
+        }
+
         [Required]
-        public List<Question> Questions { get; set; } = new List<Question>();
+        public List<Question> Questions
+        {
+            get => _questions;
+            set => _questions = value;
+        }
+
         [Required]
-        public List<Response> Responses { get; set; } = new List<Response>();
-        
+        public List<Response> Responses
+        {
+            get => _responses;
+            set => _responses = value;
+        }
+
 
         public Form()
         {

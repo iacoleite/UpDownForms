@@ -8,14 +8,47 @@ namespace UpDownForms.Models
     [Table("Options")]
     public class Option
     {
-        public int Id { get; set; }
-        public int QuestionId { get; set; }
-        public string Text { get; set; }
-        public int Order { get; set; }
-        public QuestionMultipleChoice QuestionMultipleChoice { get; set; }
-        public bool IsDeleted { get; set; }
-        public bool IsCorrect { get; set; }
-        public List<AnsweredOption> AnsweredOptions { get; set; } = new List<AnsweredOption>();
+        private int _id;
+        private int _questionId;
+        private string _text;
+        private int _order;
+        private QuestionMultipleChoice _questionMultipleChoice;
+        private bool _isDeleted;
+        private bool _isCorrect;
+        private List<AnsweredOption> _answeredOptions = new List<AnsweredOption>();
+
+        public int Id { 
+            get => _id; 
+            set => _id = value; 
+        }
+        public int QuestionId { 
+            get => _questionId;
+            set => _questionId = value; 
+        }
+        public string Text { 
+            get => _text; 
+            set => _text = value; 
+        }
+        public int Order { 
+            get => _order; 
+            set => _order = value; 
+        }
+        public QuestionMultipleChoice QuestionMultipleChoice { 
+            get => _questionMultipleChoice; 
+            set => _questionMultipleChoice = value; 
+        }
+        public bool IsDeleted { 
+            get => _isDeleted; 
+            set => _isDeleted = value; 
+        }
+        public bool IsCorrect {
+            get => _isCorrect ; 
+            set => _isCorrect = value; 
+        }
+        public List<AnsweredOption> AnsweredOptions { 
+            get => _answeredOptions;  
+            set => _answeredOptions = value; 
+        } 
 
         public Option() { }
 

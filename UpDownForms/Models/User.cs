@@ -11,20 +11,52 @@ namespace UpDownForms.Models
     [Table("Users")]
     public class User : IdentityUser
     {
+        private string _name;
+        private DateTime _createdAt;
+        private DateTime _updatedAt;
+        private bool _isDeleted;
+        private List<Form> _forms;
+        private IPasswordHelper _passwordHelper;
+
         [Required]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set => _name = value;
+        }
+
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
+            set => _createdAt = value;
+        }
+
         [Required]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt
+        {
+            get => _updatedAt;
+            set => _updatedAt = value;
+        }
+
         [Required]
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted
+        {
+            get => _isDeleted;
+            set => _isDeleted = value;
+        }
+
         [Required]
-        public List<Form> Forms { get; set; }
+        public List<Form> Forms
+        {
+            get => _forms;
+            set => _forms = value;
+        }
 
         public User()
         {
         }
+
 
         public User(CreateUserDTO dto)
         {
@@ -71,7 +103,7 @@ namespace UpDownForms.Models
             this.IsDeleted = false;
         }
 
-        private readonly IPasswordHelper _passwordHelper;
+        //private readonly IPasswordHelper _passwordHelper;
         public User(IPasswordHelper passwordHelper)
         {
             _passwordHelper = passwordHelper;

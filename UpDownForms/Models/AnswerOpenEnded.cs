@@ -4,8 +4,13 @@ namespace UpDownForms.Models
 {
     public class AnswerOpenEnded : Answer
     {
-        public string AnswerText { get; set; }
+        private string _answerText;
 
+        public string AnswerText
+        {
+            get => _answerText;
+            set => _answerText = value;
+        }
         public AnswerOpenEnded()
         {
             //Type = "OpenEnded";
