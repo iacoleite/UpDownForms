@@ -108,12 +108,13 @@ namespace UpDownForms.Services
                 return new ApiResponse<AnswerDTO>(false, "FormId does not match the form of the question", null);
 
             }
+
             if (question.GetType().Name != ("Question" + createAnswerDTO.Type))
             {
                 return new ApiResponse<AnswerDTO>(false, "Answer type does not match the question type", null);
             }
 
-            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
+            if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO && question is QuestionOpenEnded provaDto)
             {
                 var answer = new AnswerOpenEnded(answerOpenEndedDTO);
                 answer.AnswerText = answerOpenEndedDTO.AnswerText;
