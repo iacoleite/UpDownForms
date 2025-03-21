@@ -161,11 +161,6 @@ namespace UpDownForms.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnswerType")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("varchar(21)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -177,7 +172,8 @@ namespace UpDownForms.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(21)
+                        .HasColumnType("varchar(21)");
 
                     b.HasKey("Id");
 
@@ -187,7 +183,7 @@ namespace UpDownForms.Migrations
 
                     b.ToTable("Answers");
 
-                    b.HasDiscriminator<string>("AnswerType").HasValue("Answer");
+                    b.HasDiscriminator<string>("Type").HasValue("Answer");
 
                     b.UseTphMappingStrategy();
                 });
