@@ -35,6 +35,10 @@ namespace UpDownForms.Services
                                             //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
                                          .Where(f => !f.IsDeleted)
                                          .ToListAsync();
+            if (response == null)
+            {
+                throw new EntityNotFoundException();
+            }
             return response.Select(f => f.ToFormDTO()).ToList();
         }
 
@@ -47,7 +51,7 @@ namespace UpDownForms.Services
                 .FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
-                 throw new EntityNotFoundException("messaggio");
+                 throw new EntityNotFoundException();
             }
             return form.ToFormDTO();
         }
