@@ -20,7 +20,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
     public DbSet<Response> Responses { get; set; }
     public DbSet<User> AppUsers => Set<User>();
 
-    
+    public UpDownFormsContext() { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

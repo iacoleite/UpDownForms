@@ -79,6 +79,9 @@ builder.Services.AddControllers()
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }); 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 builder.Services.AddSwaggerGen(o =>
 {
     o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -144,6 +147,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseExceptionHandler(_ => { });
+app.UseStatusCodePages();
 
 app.MapControllers();
 

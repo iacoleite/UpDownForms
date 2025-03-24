@@ -23,6 +23,10 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
+        public FormService()
+        {
+        }
+
         public async Task<ApiResponse<IEnumerable<FormDTO>>> GetForms()
         {
             var response = await _context.Forms
@@ -34,7 +38,7 @@ namespace UpDownForms.Services
             return new ApiResponse<IEnumerable<FormDTO>>(true, "ok!", response.Select(f => f.ToFormDTO()).ToList());
         }
 
-        public async Task<ApiResponse<FormDTO>> GetForm(int id)
+        public async Task<FormDTO> GetForm(int id)
         {
             var form = await _context.Forms
                 .Include(f => f.User)
@@ -43,9 +47,9 @@ namespace UpDownForms.Services
                 .FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
-                return new ApiResponse<FormDTO>(false, "Form not found", null);
+                 throw new EntityNotFoundException("messaggio");
             }
-            return new ApiResponse<FormDTO>(true, "OK", form.ToFormDTO());
+            return form.ToFormDTO();
         }
 
         public async Task<ApiResponse<FormDTO>> PostForm(CreateFormDTO createFormDTO)

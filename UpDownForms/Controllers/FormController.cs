@@ -26,6 +26,7 @@ namespace UpDownForms.Controllers
             if (!response.Success)
             {
                 return BadRequest(response.Message);
+                
             }
             return Ok(response.Data);
         }
@@ -33,13 +34,21 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FormDTO>> GetForm(int id)
         {
-            var response = await _formService.GetForm(id);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
+            //if (id < 0)
+            //{
+            //    return StatusCode(353, "pocoto");
+            //}
+            var response = await _formService.GetForm(id);
+            //if (!response.Success)
+            //{
+            //    return BadRequest(response.Message);
+            //}
 
-            return Ok(response.Data);
+            return Ok(response);
         }
 
 
@@ -47,6 +56,10 @@ namespace UpDownForms.Controllers
         [HttpPost]
         public async Task<ActionResult<FormDTO>> PostForm([FromBody] CreateFormDTO createFormDTO)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest();
+            //}
             var response = await _formService.PostForm(createFormDTO);
             if (!response.Success)
             {
@@ -59,12 +72,7 @@ namespace UpDownForms.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
-            //var userId = _userService.GetLoggedInUserId();
-            //var form = await _context.Forms.FindAsync(id);
-            //if (userId != form.UserId)
-            //{
-            //    return Unauthorized("You are not the owner of this form");
-            //}
+
             var response = await _formService.PutForm(id, updateFormDTO);
             if (!response.Success)
             {
@@ -78,12 +86,7 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
-            //var userId = _userService.GetLoggedInUserId();
-            //var form = await _context.Forms.FindAsync(id);
-            //if (userId != form.UserId)
-            //{
-            //    return Unauthorized("You are not the owner of this form");
-            //}
+
             var response = await _formService.DeleteForm(id);
             if (!response.Success)
             {
