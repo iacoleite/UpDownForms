@@ -27,7 +27,7 @@ namespace UpDownForms.Services
         {
         }
 
-        public async Task<ApiResponse<IEnumerable<FormDTO>>> GetForms()
+        public async Task<IEnumerable<FormDTO>> GetForms()
         {
             var response = await _context.Forms
                                          .Include(f => f.User)
@@ -35,7 +35,7 @@ namespace UpDownForms.Services
                                             //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
                                          .Where(f => !f.IsDeleted)
                                          .ToListAsync();
-            return new ApiResponse<IEnumerable<FormDTO>>(true, "ok!", response.Select(f => f.ToFormDTO()).ToList());
+            return response.Select(f => f.ToFormDTO()).ToList();
         }
 
         public async Task<FormDTO> GetForm(int id)

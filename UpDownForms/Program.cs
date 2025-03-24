@@ -143,12 +143,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseExceptionHandler(_ => { });
-app.UseStatusCodePages();
+//app.UseStatusCodePages();
 
 app.MapControllers();
 

@@ -7,10 +7,6 @@ using System;
 
 namespace UpDownForms.Services
 {
-
-    public class EntityNotFoundException : Exception {
-        public EntityNotFoundException(string message) : base(message) { }
-    }
     public class CustomExceptionHandler : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -21,10 +17,11 @@ namespace UpDownForms.Services
                 UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                 EntityNotFoundException => StatusCodes.Status404NotFound,
                 
-                
-                
+                                
                 _ => StatusCodes.Status500InternalServerError
             };
+
+            httpContext.Response.StatusCode = statusCode;
 
             var problemDetails = new ProblemDetails
             {
@@ -37,9 +34,16 @@ namespace UpDownForms.Services
                 Instance = httpContext.Request.Path
             };
 
+            // this is not working. its returning as simple json even after explicit setting it like this.
+            httpContext.Response.ContentType = "application/problem+json";
+
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
         }
+    }
+    public class EntityNotFoundException : Exception
+    {
+        public EntityNotFoundException(string message) : base(message) { }
     }
 }
