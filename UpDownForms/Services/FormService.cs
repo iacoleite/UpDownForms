@@ -56,31 +56,43 @@ namespace UpDownForms.Services
             return form.ToFormDTO();
         }
 
-        public async Task<ApiResponse<FormDTO>> PostForm(CreateFormDTO createFormDTO)
+        public async Task<FormDTO> PostForm(CreateFormDTO createFormDTO)
         {
             if (createFormDTO == null)
             {
-                return new ApiResponse<FormDTO>(false, "Missing form data", null);
+                throw new BadHttpRequestException("Missing input data");
+                //return new ApiResponse<FormDTO>(false, "Missing form data", null);
             }
 
             var userId = _userService.GetLoggedInUserId();
             if (userId == null)
             {
-                return new ApiResponse<FormDTO>(false, "User should be logged", null);
+                throw new UnauthorizedException("User must be logged");
+                //return new ApiResponse<FormDTO>(false, "User should be logged", null);
             }
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return new ApiResponse<FormDTO>(false, "Invalid user ID", null);
-            }
-            var form = new Form(createFormDTO, userId);
+                throw new EntityNotFoundException("Invalid user Id");
 
-            _context.Forms.Add(form);
-            await _context.SaveChangesAsync();
-            return new ApiResponse<FormDTO>(true, "Form created successfully", form.ToFormDTO());
+                //return new ApiResponse<FormDTO>(false, "Invalid user ID", null);
+            }
+            try
+            {
+                var form = new Form(createFormDTO, userId);
+
+                _context.Forms.Add(form);
+                await _context.SaveChangesAsync();
+                //return new ApiResponse<FormDTO>(true, "Form created successfully", form.ToFormDTO());
+                return form.ToFormDTO();
+            } 
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
-        public async Task<ApiResponse<FormDTO>> PutForm(int id, UpdateFormDTO updateFormDTO)
+        public async Task<FormDTO> PutForm(int id, UpdateFormDTO updateFormDTO)
         {
             var form = await _context.Forms
                                      .Include(f => f.User)
@@ -89,12 +101,12 @@ namespace UpDownForms.Services
                                      .FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
-                return new ApiResponse<FormDTO>(false, "Form not found", null);
+                throw new EntityNotFoundException("Form not found");
             }
             var userId = _userService.GetLoggedInUserId();
             if (!(form.User.Id == userId))
             {
-                return new ApiResponse<FormDTO>(false, "You are not authorized to update this form", null);
+                throw new UnauthorizedException("You are not authorized to update this form");
             }
             if (!string.IsNullOrEmpty(updateFormDTO.Title))
             {
@@ -108,10 +120,10 @@ namespace UpDownForms.Services
             form.IsDeleted = false;
             _context.Forms.Update(form);
             await _context.SaveChangesAsync();
-            return new ApiResponse<FormDTO>(true, "Form updated successfully", form.ToFormDTO());
+            return form.ToFormDTO();
         }
 
-        public async Task<ApiResponse<FormDTO>> DeleteForm(int id)
+        public async Task<FormDTO> DeleteForm(int id)
         {
             var form = await _context.Forms
                                      .Include(f => f.User)
@@ -120,20 +132,20 @@ namespace UpDownForms.Services
                                      .FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
-                return new ApiResponse<FormDTO>(false, "Form not found", null);
+                throw new EntityNotFoundException("Form not found");
             }
             var user = form.User;
             var loggedUserId = _userService.GetLoggedInUserId();
             if (user.Id != loggedUserId)
             {
-                return new ApiResponse<FormDTO>(false, "You are not authorized to delete this form", null);
+                throw new UnauthorizedException("You are not authorized to update this form");
             }
 
             //var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).Include(f => f.Responses).FindAsync(id);
             form.IsDeleted = true;
             _context.Forms.Update(form);
             await _context.SaveChangesAsync();
-            return new ApiResponse<FormDTO>(true, "Form deleted successfully", form.ToFormDTO());
+            return form.ToFormDTO();
         }
     }
 }

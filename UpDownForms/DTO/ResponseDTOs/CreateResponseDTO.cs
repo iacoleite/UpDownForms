@@ -1,4 +1,5 @@
-﻿using UpDownForms.DTO.AnswersDTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.FormDTOs;
 
 namespace UpDownForms.DTO.ResponseDTOs
@@ -7,6 +8,9 @@ namespace UpDownForms.DTO.ResponseDTOs
     {
         //public int Id { get; set; }
         public int FormId { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        [EmailAddress]
+
         public string RespondentEmail { get; set; }
         //public DateTime SubmittedAt { get; set; }
         //public bool IsDeleted { get; set; }

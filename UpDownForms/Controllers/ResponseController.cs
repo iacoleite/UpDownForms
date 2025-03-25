@@ -27,58 +27,53 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponses()
         {
             var response = await _responseService.GetResponses();
-            if (!response.Success)
-            {
-                return BadRequest(response.Message);
-            }
-            return Ok(response.Data);
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ResponseFormNoResponseDTO>> GetResponse(int id)
         {
-            var response = await _responseService.GetResponseById(id);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Data);
+            var response = await _responseService.GetResponseById(id);
+            return Ok(response);
         }
 
         [HttpPost]
         public async Task<ActionResult<ResponseDTO>> PostResponse([FromBody] CreateResponseDTO createResponseDTO)
         {
-            var response = await _responseService.PostResponse(createResponseDTO);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Data);
+            var response = await _responseService.PostResponse(createResponseDTO);
+            return Ok(response);
         }
 
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteResponse(int id)
         {
-
-            var response = await _responseService.DeleteResponse(id);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Data);
+            var response = await _responseService.DeleteResponse(id);
+            return Ok(response);
         }
 
         [HttpPost("{id}/answers/")]
         public async Task<ActionResult<AnswerDTO>> PostAnswer(int id, [FromBody] CreateAnswerDTO createAnswerDTO)
         {
-
-            var response = await _responseService.PostAnswer(id, createAnswerDTO);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Data);
+            var response = await _responseService.PostAnswer(id, createAnswerDTO);
+            return Ok(response);
         }
     }
 }

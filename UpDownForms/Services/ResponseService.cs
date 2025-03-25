@@ -19,7 +19,7 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<ApiResponse<IEnumerable<ResponseDTO>>> GetResponses()
+        public async Task<IEnumerable<ResponseDTO>> GetResponses()
         {
             var response = await _context.Responses
                    .Include(r => r.Form)
@@ -29,13 +29,13 @@ namespace UpDownForms.Services
                    .ToListAsync();
             if (response == null)
             {
-                return new ApiResponse<IEnumerable<ResponseDTO>>(false, "Can't find any response", null);
+                throw new EntityNotFoundException("Can't find response");
             }
 
-            return new ApiResponse<IEnumerable<ResponseDTO>>(true, "OK", response.Select(r => r.ToResponseDTO()).ToList());
+            return response.Select(r => r.ToResponseDTO()).ToList();
         }
 
-        public async Task<ApiResponse<ResponseFormNoResponseDTO>> GetResponseById(int id)
+        public async Task<ResponseFormNoResponseDTO> GetResponseById(int id)
         {
             var response = await _context.Responses
                 .Include(r => r.Form)
@@ -46,77 +46,77 @@ namespace UpDownForms.Services
                 .FirstOrDefaultAsync(r => r.Id == id);
             if (response == null)
             {
-                return new ApiResponse<ResponseFormNoResponseDTO>(false, "Can't find  response", null);
+                throw new EntityNotFoundException("Can't find response");
             }
-            return new ApiResponse<ResponseFormNoResponseDTO>(true, "Ok", response.ToResponseFormNoResponseDTO());
+            return response.ToResponseFormNoResponseDTO();
         }
 
-        public async Task<ApiResponse<ResponseDTO>> PostResponse(CreateResponseDTO createResponseDTO)
+        public async Task<ResponseDTO> PostResponse(CreateResponseDTO createResponseDTO)
         {
             if (createResponseDTO == null)
             {
-                return new ApiResponse<ResponseDTO>(false, "Missing response data", null);
+                throw new BadHttpRequestException("Missing input data");
             }
             var formExists = await _context.Forms.AnyAsync(f => f.Id == createResponseDTO.FormId);
             if (!formExists)
             {
-                return new ApiResponse<ResponseDTO>(false, "Form does not exists", null);
+                throw new EntityNotFoundException("Can't find Form");
             }
             var response = new Response(createResponseDTO);
             _context.Responses.Add(response);
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<ResponseDTO>(true, "Ok", response.ToResponseDTO());
+            return response.ToResponseDTO();
         }
 
-        public async Task<ApiResponse<ResponseDTO>> DeleteResponse(int id)
+        public async Task<ResponseDTO> DeleteResponse(int id)
         {
             var response = await _context.Responses.Include(r => r.Answers).FirstOrDefaultAsync(r => id == r.Id);
             if (response == null)
             {
-                return new ApiResponse<ResponseDTO>(false, "Missing response data", null);
+                throw new EntityNotFoundException("Can't find Form");
             }
             response.DeleteResponse();
             //response.IsDeleted = true;
             await _context.SaveChangesAsync();
-            return new ApiResponse<ResponseDTO>(true, "Ok", response.ToResponseDTO());
+            return response.ToResponseDTO();
         }
 
-        public async Task<ApiResponse<AnswerDTO>> PostAnswer(int id, CreateAnswerDTO createAnswerDTO)
+        public async Task<AnswerDTO> PostAnswer(int id, CreateAnswerDTO createAnswerDTO)
         {
             var response = await _context.Responses.FindAsync(id);
             if (response == null)
             {
-                return new ApiResponse<AnswerDTO>(false, "Can't find Response", null);
+                throw new EntityNotFoundException("Can't find Response");
             }
             var form = await _context.Forms.FindAsync(response.FormId);
             if (form == null)
             {
-                return new ApiResponse<AnswerDTO>(false, "Can't find Form", null);
+                throw new EntityNotFoundException("Can't find Form");
             }
             var question = await _context.Questions.FindAsync(createAnswerDTO.QuestionId);
             if (question == null)
             {
-                return new ApiResponse<AnswerDTO>(false, "Can't find Question", null);
+                throw new EntityNotFoundException("Can't find Question");
             }
             if (question.Id != createAnswerDTO.QuestionId)
             {
-                return new ApiResponse<AnswerDTO>(false, "QuestionId does not match the question in the form", null);
+                throw new BadHttpRequestException("QuestionId does not match the question in the form");
             }
             if (form.Id != question.FormId)
             {
-                return new ApiResponse<AnswerDTO>(false, "FormId does not match the form of the question", null);
+                throw new BadHttpRequestException("FormId does not match the form of the question");
             }
 
             if (question.GetType().Name != ("Question" + createAnswerDTO.Type))
             {
-                return new ApiResponse<AnswerDTO>(false, "Answer type does not match the question type", null);
+                throw new BadHttpRequestException("Answer type does not match the question type");
             }
 
             var existingAnswer = await _context.Answers.FirstOrDefaultAsync(a => a.ResponseId == id && a.QuestionId == createAnswerDTO.QuestionId);
             if (existingAnswer != null)
             {
-                return new ApiResponse<AnswerDTO>(false, "Response already has an answer for this question", null);
+                throw new BadHttpRequestException("Response already has an answer for this question");
             }
 
             if (createAnswerDTO is CreateAnswerOpenEndedDTO answerOpenEndedDTO)
@@ -129,7 +129,7 @@ namespace UpDownForms.Services
                 await _context.Answers.AddAsync(answer);
                 await _context.SaveChangesAsync();
 
-                return new ApiResponse<AnswerDTO>(true, "OK", answer.ToAnswerOpenEndedResponseDTO());
+                return answer.ToAnswerOpenEndedResponseDTO();
             }
             else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
             {
@@ -157,16 +157,16 @@ namespace UpDownForms.Services
                         }
                     }
                     await transaction.CommitAsync();
-                    return new ApiResponse<AnswerDTO>(true, "OK", answer.ToAnswerMultipleChoiceResponseDTO());
+                    return answer.ToAnswerMultipleChoiceResponseDTO();
                 }
                 catch (Exception e)
                 {
-                    return new ApiResponse<AnswerDTO>(false, "Something went wrong!", null);
+                    throw new Exception("Something went wrong!");
                 }
             }
             else
             {
-                return new ApiResponse<AnswerDTO>(false, "Invalid Answer Type", null);
+                throw new BadHttpRequestException("Invalid Answer Type");
             }
         }
     }

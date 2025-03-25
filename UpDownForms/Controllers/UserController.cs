@@ -21,7 +21,6 @@ public class UserController : ControllerBase
 
     public UserController(UserService userService)
     {
-
         _userService = userService;
     }
 
@@ -29,57 +28,55 @@ public class UserController : ControllerBase
     public async Task<ActionResult> GetUsers()
     {
         var response = await _userService.GetUsers();
-        if (!response.Success)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Data);
+
+        return Ok(response);
     }
 
     [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> GetUser(string id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
         var response = await _userService.GetUser(id);
 
-        if (!response.Success)
-        {
-            return BadRequest(response.Message);
-        }
-        return Ok(response.Data);
+        return Ok(response);
     }
 
     [HttpPost]
     public async Task<ActionResult> PostUser([FromBody] CreateUserDTO createdUserDTO)
-    {  
-        var response = await _userService.PostUser(createdUserDTO);
-        if (!response.Success)
+    {
+        if (!ModelState.IsValid)
         {
-            return BadRequest(response.Message);
+            return BadRequest();
         }
-        return Ok(response.Message + "\n" + response.Data.Email);
+        var response = await _userService.PostUser(createdUserDTO);
+        return Ok(response);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ApiResponse<UserDetailsDTO>>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
+    public async Task<ActionResult<UserDetailsDTO>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
     {
-        var response = await _userService.UpdateUser(id, updatedUserDTO);
-        if (!response.Success)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(response.Message);
+            return BadRequest();
         }
-        return Ok(response.Message + "\n" + response.Data.Email);
+        var response = await _userService.UpdateUser(id, updatedUserDTO);
+        return Ok(response);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse<UserDetailsDTO>>> DeleteUser(string id)
+    public async Task<ActionResult<UserDetailsDTO>> DeleteUser(string id)
     {
-        var response = await _userService.DeleteUser(id);
-        if (!response.Success)
+        if (!ModelState.IsValid)
         {
-            return BadRequest(response.Message);
+            return BadRequest();
         }
-        return Ok(response.Message + "\n" + response.Data.Email);
+        var response = await _userService.DeleteUser(id);
+        
+        return Ok(response);
     }
 
 }

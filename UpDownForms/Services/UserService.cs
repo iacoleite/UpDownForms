@@ -13,7 +13,7 @@ using UpDownForms.Security;
 
 namespace UpDownForms.Services
 {
-    public class UserService 
+    public class UserService
     {
         private readonly UpDownFormsContext _context;
         private readonly IPasswordHelper _passwordHelper;
@@ -28,34 +28,42 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<ApiResponse<IEnumerable<UserDetailsDTO>>> GetUsers()
+        public async Task<IEnumerable<UserDetailsDTO>> GetUsers()
         {
             var response = await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
-            return new ApiResponse<IEnumerable<UserDetailsDTO>>(true, "ok!", response.Select(u => u.ToUserDetailsDTO()).ToList());
+            if (response == null)
+            {
+                throw new EntityNotFoundException();
+            }
+            return response.Select(u => u.ToUserDetailsDTO()).ToList();
         }
 
-        public async Task<ApiResponse<UserDetailsDTO>> GetUser(string id)
+        public async Task<UserDetailsDTO> GetUser(string id)
         {
             var response = await _context.Users.FindAsync(id);
+            if (response == null)
+            {
+                throw new EntityNotFoundException();
+            }
             var userId = _userService.GetLoggedInUserId();
 
             if (!response.Id.Equals(userId))
             {
-                return new ApiResponse<UserDetailsDTO>(false, "Logged user does not authorization to post to form", null);
+                //return new ApiResponse<UserDetailsDTO>(false, "Logged user does not authorization to post to form", null);
+                throw new UnauthorizedException("User not authorized to get data from another user");
+
             }
-            if (response == null)
-            {
-                return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
-            }
-            return new ApiResponse<UserDetailsDTO>(true, "OK", response.ToUserDetailsDTO());
+
+            return response.ToUserDetailsDTO();
         }
 
-        public async Task<ApiResponse<UserDetailsDTO>> PostUser([FromBody] CreateUserDTO createdUserDTO)
+        public async Task<UserDetailsDTO> PostUser([FromBody] CreateUserDTO createdUserDTO)
         {
             if (createdUserDTO == null)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "Missing user data", null);
+                throw new BadHttpRequestException("Missing input data");
             }
+
             var user = new User
             {
                 UserName = createdUserDTO.Email,
@@ -65,28 +73,36 @@ namespace UpDownForms.Services
                 IsDeleted = false,
                 Forms = new List<Form>()
             };
+            //try
+            //{
             var result = await _userManager.CreateAsync(user, createdUserDTO.Password);
-
             if (!result.Succeeded)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "User creation failed", null);
+                throw new Exception("Can't create user");
             }
 
-            return new ApiResponse<UserDetailsDTO>(true, "User created successfully", user.ToUserDetailsDTO());
+            return user.ToUserDetailsDTO();
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception(ex.Message);
+            //}
+
+
         }
 
-        public async Task<ApiResponse<UserDetailsDTO>> UpdateUser(string id, UpdateUserDTO updatedUserDTO)
+        public async Task<UserDetailsDTO> UpdateUser(string id, UpdateUserDTO updatedUserDTO)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
+                throw new EntityNotFoundException("User not found");
             }
 
             var loggedUserId = _userService.GetLoggedInUserId();
             if ((user.Id != loggedUserId))
             {
-                return new ApiResponse<UserDetailsDTO>(false, "You are not authorized to update this user", null);
+                throw new UnauthorizedException("User not authorized to update another user");
             }
 
             if (!string.IsNullOrEmpty(updatedUserDTO.Name))
@@ -100,7 +116,7 @@ namespace UpDownForms.Services
                 var updatePasswordResult = await _userManager.ResetPasswordAsync(user, token, updatedUserDTO.Password);
                 if (!updatePasswordResult.Succeeded)
                 {
-                    return new ApiResponse<UserDetailsDTO>(false, "Password update failed", null);
+                    throw new Exception("Failed to update password");
                 }
             }
             user.IsDeleted = false;
@@ -108,29 +124,29 @@ namespace UpDownForms.Services
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "User update failed", null);
+                throw new Exception("User update failed");
             }
-            return new ApiResponse<UserDetailsDTO>(true, "User updated successfully", user.ToUserDetailsDTO());
+            return user.ToUserDetailsDTO();
         }
 
-        public async Task<ApiResponse<UserDetailsDTO>> DeleteUser(string id)
+        public async Task<UserDetailsDTO> DeleteUser(string id)
         {
             var loggedUserId = _userService.GetLoggedInUserId();
 
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "User not found", null);
+                throw new EntityNotFoundException("User not found");
             }
 
             if (user.Id != loggedUserId)
             {
-                return new ApiResponse<UserDetailsDTO>(false, "You are not authorized to delete this user", null);
+                throw new UnauthorizedException("User not authorized to update another user");
             }
             user.DeleteUser();
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return new ApiResponse<UserDetailsDTO>(true, "User deleted successfully", user.ToUserDetailsDTO());
+            return user.ToUserDetailsDTO();
         }
     }
 }

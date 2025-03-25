@@ -61,24 +61,24 @@ namespace UpDownForms.Controllers
                 return BadRequest();
             }
             var response = await _formService.PostForm(createFormDTO);
-            if (!response.Success)
-            {
-                return BadRequest(response.Message);
-            }
-            return Ok(response.Data.Title);
+            //if (!response.Success)
+            //{
+            //    return BadRequest(response.Message);
+            //}
+            return Ok(response);
         }
 
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<FormDTO>> PutForm(int id, [FromBody] UpdateFormDTO updateFormDTO)
         {
-
-            var response = await _formService.PutForm(id, updateFormDTO);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Data.Title);
+            var response = await _formService.PutForm(id, updateFormDTO);
+
+            return Ok(response);
 
         }
 
@@ -86,13 +86,13 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
-
-            var response = await _formService.DeleteForm(id);
-            if (!response.Success)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
-            return Ok(response.Message);
+            var response = await _formService.DeleteForm(id);
+
+            return Ok(response);
 
         }
     }

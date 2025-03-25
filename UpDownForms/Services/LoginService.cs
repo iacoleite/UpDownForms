@@ -18,22 +18,28 @@ namespace UpDownForms.Services
             _tokenService = tokenService;
         }
 
-        public async Task<ApiResponse<string>> Login(LoginUserDTO loginDTO)
+        public async Task<string> Login(LoginUserDTO loginDTO)
         {
             if (loginDTO == null)
             {
-                return new ApiResponse<string>(false, "Missing Login data", null);
+                //return new ApiResponse<string>(false, "Missing Login data", null);
+                throw new BadHttpRequestException("Invalid login data");
+
             }
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDTO.Email);
             if (user == null)
             {
-                return new ApiResponse<string>(false, "User not found", null);
+                throw new EntityNotFoundException("Invalid user Id");
+                //return new ApiResponse<string>(false, "User not found", null);
             }
             if (!_passwordHelper.VerifyPassword(user, loginDTO.Password, user.PasswordHash))
             {
-                return new ApiResponse<string>(false, "Wrong password", null); ;
+                //return new ApiResponse<string>(false, "Wrong password", null);
+                throw new BadHttpRequestException("Wrong password");
+
             }
-            return new ApiResponse<string>(true, "Token generated successfully", _tokenService.GenerateToken(user));
+            //return new ApiResponse<string>(true, "Token generated successfully", _tokenService.GenerateToken(user));
+            return _tokenService.GenerateToken(user);
         }
 
 

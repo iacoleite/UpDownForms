@@ -18,32 +18,43 @@ namespace UpDownForms.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Login([FromBody] LoginUserDTO loginDTO)
+        public async Task<string> Login([FromBody] LoginUserDTO loginDTO)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Invalid login data");
+                throw new BadHttpRequestException("Invalid login data");
             }
             try
             {
                 var token = await _loginService.Login(loginDTO);
-                return Ok(token);
+                return token;
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(ex.Message);
+                throw new BadHttpRequestException(ex.Message);
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                //return NotFound(ex.Message);
+                throw new EntityNotFoundException(ex.Message);
+
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized(ex.Message);
+                //return Unauthorized(ex.Message);
+                throw new UnauthorizedException(ex.Message);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                throw new BadHttpRequestException(ex.Message);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                throw new UnauthorizedAccessException(ex.Message);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw new Exception(ex.Message);
             }
         }
     }

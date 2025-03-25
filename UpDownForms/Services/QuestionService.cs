@@ -21,22 +21,26 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<ApiResponse<IEnumerable<QuestionDetailsDTO>>> GetQuestions()
+        public async Task<IEnumerable<QuestionDetailsDTO>> GetQuestions()
         {
             var response = await _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).ToListAsync();
-            return new ApiResponse<IEnumerable<QuestionDetailsDTO>>(true, "OK", response.Select(q => q.ToQuestionDetailsDTO()).ToList());
+            if (response == null)
+            {
+                throw new EntityNotFoundException();
+            }
+            return response.Select(q => q.ToQuestionDetailsDTO()).ToList();
         }
 
-        public async Task<ApiResponse<QuestionDTO>> GetQuestionById(int id)
+        public async Task<QuestionDTO> GetQuestionById(int id)
         {
             var question = await _context.Questions.Include(q => q.Form).Include(q => q.Answers).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Can't find question", null);
+                throw new EntityNotFoundException("Can't find quesiton");
             }
-            
+
             QuestionDTO questionDTO = question.ToQuestionDTO();
-            
+
             if (question is QuestionMultipleChoice questionMultipleChoice)
             {
                 QuestionMultipleChoiceDTO questionMultipleChoiceDTO = (QuestionMultipleChoiceDTO)questionMultipleChoice.ToQuestionDTO();
@@ -48,28 +52,30 @@ namespace UpDownForms.Services
             }
             questionDTO.Answers = question.Answers.Select(a => a.ToAnswerDTO()).ToList();
 
-            return new ApiResponse<QuestionDTO>(true, "ok", questionDTO);
+            return questionDTO;
         }
 
-        public async Task<ApiResponse<QuestionDetailsDTO>> PostQuestion(CreateQuestionDTO createQuestionDTO)
+        public async Task<QuestionDetailsDTO> PostQuestion(CreateQuestionDTO createQuestionDTO)
         {
             if (createQuestionDTO == null)
             {
-                return new ApiResponse<QuestionDetailsDTO>(false, "Missing input data", null);
+                throw new BadHttpRequestException("Missing input data");
             }
 
             var form = await _context.Forms.FindAsync(createQuestionDTO.FormId);
             if (form == null)
             {
-                
-                return new ApiResponse<QuestionDetailsDTO>(false, "Can't find form to add question", null);
+                throw new EntityNotFoundException("Can't find form to add question");
             }
 
             var userId = _userService.GetLoggedInUserId();
-
+            if (userId == null)
+            {
+                throw new UnauthorizedException("User must be logged");
+            }
             if (!form.UserId.Equals(userId))
             {
-                return new ApiResponse<QuestionDetailsDTO>(false, "Logged user does not authorization to post to form", null);
+                throw new UnauthorizedException("User not authorized to add a question to this form");
             }
 
             Question question;
@@ -93,38 +99,42 @@ namespace UpDownForms.Services
             }
             else
             {
-                return new ApiResponse<QuestionDetailsDTO>(false, "Missing question data", null);
-
+                throw new BadHttpRequestException("Missing input data");
             }
             _context.Questions.Add(question);
             await _context.SaveChangesAsync();
-            return new ApiResponse<QuestionDetailsDTO>(true, "OK", question.ToQuestionDetailsDTO());
+            return question.ToQuestionDetailsDTO();
         }
 
-        public async Task<ApiResponse<QuestionDTO>> PutQuestion(int id, UpdateQuestionDTO updateQuestionDTO)
+        public async Task<QuestionDTO> PutQuestion(int id, UpdateQuestionDTO updateQuestionDTO)
         {
             if (updateQuestionDTO == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Missing question data", null);
+                throw new BadHttpRequestException("Missing input data");
 
             }
             var question = await _context.Questions.Include(q => q.Form).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Can't find question", null);
+                throw new EntityNotFoundException("Can't find question");
             }
             var userId = _userService.GetLoggedInUserId();
-            var formId = question.Form.UserId;
-            if (!formId.Equals(userId))
+            if (userId == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to update question", null);
+                throw new UnauthorizedException("User must be logged");
+            }
+            if (!question.Form.UserId.Equals(userId))
+            {
+                throw new UnauthorizedException("User not authorized to update question");
             }
 
             if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
             {
                 if (!(question is QuestionMultipleChoice multipleChoiceQuestion))
                 {
-                    return new ApiResponse<QuestionDTO>(false, "Question type mismatch", null);
+                    //return new ApiResponse<QuestionDTO>(false, "Question type mismatch", null);
+                    throw new BadHttpRequestException("Question type mismatch");
+
                 }
                 multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
                 multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
@@ -139,7 +149,7 @@ namespace UpDownForms.Services
             {
                 if (!(question is QuestionOpenEnded openEndedQuestion))
                 {
-                    return new ApiResponse<QuestionDTO>(false, "Question type mismatch", null);
+                    throw new BadHttpRequestException("Question type mismatch");
                 }
                 openEndedQuestion.Text = updateQuestionOpenEndedDTO.Text;
                 openEndedQuestion.Order = updateQuestionOpenEndedDTO.Order;
@@ -154,27 +164,30 @@ namespace UpDownForms.Services
             }
             question.IsDeleted = false;
             await _context.SaveChangesAsync();
-            
-            return new ApiResponse<QuestionDTO>(true, "OK", question.ToQuestionDTO());
+
+            return question.ToQuestionDTO();
 
         }
 
-        public async Task<ApiResponse<QuestionDTO>> DeleteQuestion(int id)
+        public async Task<QuestionDTO> DeleteQuestion(int id)
         {
             var question = await _context.Questions.Include(q => q.Form).Include(q => (q as QuestionMultipleChoice).Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Question not found", null);
+                throw new EntityNotFoundException("Can't find question");
             }
 
             var userId = _userService.GetLoggedInUserId();
-            var formId = question.Form.UserId;
-            if (!formId.Equals(userId))
+            if (userId == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to update question", null);                
+                throw new UnauthorizedException("User must be logged");
+            }
+            if (!question.Form.UserId.Equals(userId))
+            {
+                throw new UnauthorizedException("User not authorized to update question");
             }
 
-            if (question.GetType().Name == "QuestionMultipleChoice") 
+            if (question.GetType().Name == "QuestionMultipleChoice")
             {
                 ((QuestionMultipleChoice)question).DeleteQuestion();
             }
@@ -184,63 +197,69 @@ namespace UpDownForms.Services
             }
             //question.DeleteQuestion();
             _context.SaveChanges();
-            return new ApiResponse<QuestionDTO>(true, "Question Deleted", question.ToQuestionDTO());
+            return question.ToQuestionDTO();
         }
 
         // handling options
 
-        public async Task<ApiResponse<IEnumerable<OptionDTO>>> GetOptionsByQuestion(int id)
+        public async Task<IEnumerable<OptionDTO>> GetOptionsByQuestion(int id)
         {
             var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                return new ApiResponse<IEnumerable<OptionDTO>>(false, "Can't find question", null);
+                throw new EntityNotFoundException("Can't find question");
             }
 
-            return new ApiResponse<IEnumerable<OptionDTO>>(true, "ok", question.Options.Select(o => o.ToOptionDTO()).ToList());
+            return question.Options.Select(o => o.ToOptionDTO()).ToList();
         }
 
-        public async Task<ApiResponse<QuestionDTO>> AddOption(int id, CreateOptionDTO createOptionDTO)
+        public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)
         {
             var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Question not found", null);
+                throw new EntityNotFoundException("Can't find question");
             }
             var userId = _userService.GetLoggedInUserId();
-            var formId = question.Form.UserId;
-            if (!formId.Equals(userId))
+            if (userId == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to add options to question", null);
+                throw new UnauthorizedException("User must be logged");
+            }
+            if (!question.Form.UserId.Equals(userId))
+            {
+                throw new UnauthorizedException("User not authorized to update question");
             }
             var option = new Option(createOptionDTO);
             question.AddOption(option);
             await _context.SaveChangesAsync();
-            return new ApiResponse<QuestionDTO>(true, "Option added to question", (QuestionMultipleChoiceDTO)question.ToQuestionDTO());
+            return (QuestionMultipleChoiceDTO)question.ToQuestionDTO();
         }
 
-        public async Task<ApiResponse<QuestionDTO>> DeleteOption(int questionId, int optionId)
+        public async Task<QuestionDTO> DeleteOption(int questionId, int optionId)
         {
             var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == questionId);
             if (question == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Question not found", null);
+                throw new EntityNotFoundException("Can't find question");
             }
             var option = question.Options.FirstOrDefault(o => o.Id == optionId);
             if (option == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Option not found", null);
+                throw new EntityNotFoundException("Can't find option");
             }
             var userId = _userService.GetLoggedInUserId();
-            var formId = question.Form.UserId;
-            if (!formId.Equals(userId))
+            if (userId == null)
             {
-                return new ApiResponse<QuestionDTO>(false, "Logged user does not authorization to Delete options", null);
+                throw new UnauthorizedException("User must be logged");
+            }
+            if (!question.Form.UserId.Equals(userId))
+            {
+                throw new UnauthorizedException("User not authorized to update question");
             }
 
             option.DeleteOption();
             await _context.SaveChangesAsync();
-            return new ApiResponse<QuestionDTO>(true, "Option DELETED", (QuestionMultipleChoiceDTO)question.ToQuestionDTO());
+            return (QuestionMultipleChoiceDTO)question.ToQuestionDTO();
         }
     }
 }

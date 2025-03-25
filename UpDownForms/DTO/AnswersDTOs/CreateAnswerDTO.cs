@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
@@ -31,6 +32,8 @@ namespace UpDownForms.DTO.AnswersDTOs
 
     public class CreateAnswerOpenEndedDTO : CreateAnswerDTO
     {
+        [Required(AllowEmptyStrings = false)]
+
         public string AnswerText { get; set; }
 
         public CreateAnswerOpenEndedDTO()

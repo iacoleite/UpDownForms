@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.Models;
 
@@ -10,6 +11,8 @@ namespace UpDownForms.DTO.QuestionDTOs
     public abstract class CreateQuestionDTO
     {
         public int FormId { get; set; }
+        [Required(AllowEmptyStrings = false)]
+
         public string Text { get; set; }
         public int Order { get; set; }
         public string Type { get; set; }

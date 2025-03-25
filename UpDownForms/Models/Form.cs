@@ -6,96 +6,30 @@ using UpDownForms.DTO.UserDTOs;
 namespace UpDownForms.Models
 {
     [Table("Forms")]
-    public record Form
+    public class Form
     {
-        private int _id;
-        private string _userId;
-        private string _title;
-        private string _description;
-        private DateTime _createdAt;
-        private DateTime _updatedAt;
-        private bool _isPublished;
-        private bool _isDeleted;
-        private User _user;
-        private List<Question> _questions = new List<Question>();
-        private List<Response> _responses = new List<Response>();
 
-        public int Id
-        {
-            get => _id;
-            set => _id = value;
-        }
-
+        protected internal int Id { get; private set; }
         [Required]
-        public string UserId
-        {
-            get => _userId;
-            set => _userId = value;
-        }
-
+        public string UserId { get; private set; }
+        [Required(AllowEmptyStrings = false)]
+        public string Title { get; protected internal set; }
+        [Required(AllowEmptyStrings = false)]
+        public string Description { get; protected internal set; }
         [Required]
-        public string Title
-        {
-            get => _title;
-            set => _title = value;
-        }
-
+        public DateTime CreatedAt { get; protected internal set; }
         [Required]
-        public string Description
-        {
-            get => _description;
-            set => _description = value;
-        }
-
+        public DateTime UpdatedAt { get; protected internal set; }
         [Required]
-        public DateTime CreatedAt
-        {
-            get => _createdAt;
-            set => _createdAt = value;
-        }
-
+        public bool IsPublished { get; protected set; }
         [Required]
-        public DateTime UpdatedAt
-        {
-            get => _updatedAt;
-            set => _updatedAt = value;
-        }
-
+        public bool IsDeleted { get;  protected internal set; }
         [Required]
-        public bool IsPublished
-        {
-            get => _isPublished;
-            set => _isPublished = value;
-        }
-
+        public User User { get; private set; }
         [Required]
-        public bool IsDeleted
-        {
-            get => _isDeleted;
-            set => _isDeleted = value;
-        }
-
+        public List<Question> Questions { get; protected set; }
         [Required]
-        public User User
-        {
-            get => _user;
-            set => _user = value;
-        }
-
-        [Required]
-        public List<Question> Questions
-        {
-            get => _questions;
-            set => _questions = value;
-        }
-
-        [Required]
-        public List<Response> Responses
-        {
-            get => _responses;
-            set => _responses = value;
-        }
-
+        public List<Response> Responses { get; protected set; }
 
         public Form()
         {
