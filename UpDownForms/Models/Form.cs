@@ -8,28 +8,27 @@ namespace UpDownForms.Models
     [Table("Forms")]
     public class Form
     {
-
-        protected internal int Id { get; private set; }
+        public int Id { get;  set; }
         [Required]
-        public string UserId { get; private set; }
+        public string UserId { get;  set; }
         [Required(AllowEmptyStrings = false)]
-        public string Title { get; protected internal set; }
+        public string Title { get;   set; }
         [Required(AllowEmptyStrings = false)]
-        public string Description { get; protected internal set; }
+        public string Description { get; set; }
         [Required]
-        public DateTime CreatedAt { get; protected internal set; }
+        public DateTime CreatedAt { get; set; }
         [Required]
-        public DateTime UpdatedAt { get; protected internal set; }
+        public DateTime UpdatedAt { get; set; }
         [Required]
-        public bool IsPublished { get; protected set; }
+        public bool IsPublished { get;  set; }
         [Required]
-        public bool IsDeleted { get;  protected internal set; }
+        public bool IsDeleted { get;  set; }
         [Required]
-        public User User { get; private set; }
+        public User User { get;  set; }
         [Required]
-        public List<Question> Questions { get; protected set; }
+        public List<Question> Questions { get; set; }
         [Required]
-        public List<Response> Responses { get; protected set; }
+        public List<Response> Responses { get; set; }
 
         public Form()
         {

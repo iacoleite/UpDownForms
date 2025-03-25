@@ -12,68 +12,33 @@ namespace UpDownForms.Models
     [Table("Questions")]
     public abstract class Question
     {
-        private int _id;
-        private int _formId;
-        private string _text;
-        private int _order;
-        private bool _isRequired;
-        private bool _isDeleted;
-        private Form _form;
-        private List<Answer> _answers = new List<Answer>();
+        public int Id { get; set; }
 
-        public int Id
-        {
-            get => _id;
-            set => _id = value;
-        }
 
-        public int FormId
-        {
-            get => _formId;
-            set => _formId = value;
-        }
+        public int FormId { get; set; }
 
-        public string Text
-        {
-            get => _text;
-            set => _text = value;
-        }
 
-        public int Order
-        {
-            get => _order;
-            set => _order = value;
-        }
+        public string Text { get; set; }
 
-        public bool IsRequired
-        {
-            get => _isRequired;
-            set => _isRequired = value;
-        }
 
-        public bool IsDeleted
-        {
-            get => _isDeleted;
-            set => _isDeleted = value;
-        }
+        public int Order { get; set; }
 
-        public Form Form
-        {
-            get => _form;
-            set => _form = value;
-        }
 
-        public List<Answer> Answers
-        {
-            get => _answers;
-            set => _answers = value;
-        }
+        public bool IsRequired { get; set; }
+
+
+        public bool IsDeleted { get; set; }
+
+
+        public Form Form { get; set; }
+
+        public List<Answer> Answers { get; set; }
         //public string Type { get; set; }
 
 
         public Question()
         {
-            
+
         }
 
         public Question(CreateQuestionDTO createQuestionDTO)
@@ -142,7 +107,7 @@ namespace UpDownForms.Models
             this.IsDeleted = true;
         }
 
-      
+
         public List<AnswerDTO> GetAnswerDTOs()
         {
             return this.Answers.Select(a => a.ToAnswerDTO()).ToList();

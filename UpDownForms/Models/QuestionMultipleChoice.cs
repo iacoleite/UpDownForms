@@ -5,27 +5,16 @@ namespace UpDownForms.Models
 {
     public class QuestionMultipleChoice : Question
     {
-        private QuestionType _questionMCType;
-        private bool _hasCorrectAnswer;
-        private List<Option> _options = new List<Option>();
 
-        public QuestionType QuestionMCType
-        {
-            get => _questionMCType;
-            set => _questionMCType = value;
-        }
 
-        public bool HasCorrectAnswer
-        {
-            get => _hasCorrectAnswer;
-            set => _hasCorrectAnswer = value;
-        }
+        public QuestionType QuestionMCType { get; set; }
 
-        public List<Option> Options
-        {
-            get => _options;
-            set => _options = value;
-        }
+
+        public bool HasCorrectAnswer { get; set; }
+
+
+        public List<Option> Options { get; set; }
+
 
         public QuestionMultipleChoice() {
             //Type = "MultipleChoice";

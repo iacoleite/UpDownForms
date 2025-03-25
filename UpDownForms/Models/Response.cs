@@ -6,55 +6,26 @@ namespace UpDownForms.Models
     [Table("Responses")]
     public class Response
     {
-        private int _id;
-        private int _formId;
-        private string? _respondentEmail;
-        private DateTime _submittedAt;
-        private bool _isDeleted;
-        private Form _form;
-        private List<Answer> _answers = new List<Answer>();
+        public int Id { get; set; }
 
-        public int Id
-        {
-            get => _id;
-            set => _id = value;
-        }
 
-        public int FormId
-        {
-            get => _formId;
-            set => _formId = value;
-        }
+        public int FormId { get; set; }
 
-        public string? RespondentEmail
-        {
-            get => _respondentEmail;
-            set => _respondentEmail = value;
-        }
 
-        public DateTime SubmittedAt
-        {
-            get => _submittedAt;
-            set => _submittedAt = value;
-        }
+        public string? RespondentEmail { get; set; }
 
-        public bool IsDeleted
-        {
-            get => _isDeleted;
-            set => _isDeleted = value;
-        }
 
-        public Form Form
-        {
-            get => _form;
-            set => _form = value;
-        }
+        public DateTime SubmittedAt { get; set; }
 
-        public List<Answer> Answers
-        {
-            get => _answers;
-            set => _answers = value;
-        }
+
+        public bool IsDeleted { get; set; }
+
+
+        public Form Form { get; set; }
+
+
+        public List<Answer> Answers { get; set; }
+
 
         public Response()
         {
@@ -82,12 +53,12 @@ namespace UpDownForms.Models
                     Answers = this.Answers != null ? this.Answers.Select(a => a.ToAnswerDTO()).ToList() : null
                 };
             }
-            catch (Exception e )
+            catch (Exception e)
             {
                 throw new Exception("Error converting Response to ResponseDTO", e);
             }
         }
-        
+
         public ResponseFormNoResponseDTO ToResponseFormNoResponseDTO()
         {
             return new ResponseFormNoResponseDTO
