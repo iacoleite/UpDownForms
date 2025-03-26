@@ -30,7 +30,7 @@ namespace UpDownForms.Models
             };
         }
 
-        public AnswerOpenEndedResponseDTO ToAnswerDTO()
+        public override AnswerOpenEndedResponseDTO ToAnswerDTO()
         {
             return new AnswerOpenEndedResponseDTO
             {

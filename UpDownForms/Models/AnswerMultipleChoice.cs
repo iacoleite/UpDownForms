@@ -50,10 +50,7 @@ namespace UpDownForms.Models
 
                 IsDeleted = this.IsDeleted
             };
-            //foreach (var optionId in pocoto.SelectedOptions)
-            //{
-            //    this.SelectedOptions.Add(new AnsweredOption { OptionId = optionId });
-            //}
+
             return teste;
         }
     }

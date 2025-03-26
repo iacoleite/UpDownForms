@@ -73,8 +73,7 @@ namespace UpDownForms.Services
                 IsDeleted = false,
                 Forms = new List<Form>()
             };
-            //try
-            //{
+
             var result = await _userManager.CreateAsync(user, createdUserDTO.Password);
             if (!result.Succeeded)
             {
@@ -82,13 +81,6 @@ namespace UpDownForms.Services
             }
 
             return user.ToUserDetailsDTO();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception(ex.Message);
-            //}
-
-
         }
 
         public async Task<UserDetailsDTO> UpdateUser(string id, UpdateUserDTO updatedUserDTO)

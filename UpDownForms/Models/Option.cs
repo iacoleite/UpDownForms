@@ -5,7 +5,6 @@ using UpDownForms.DTO.OptionDTOs;
 namespace UpDownForms.Models
 {
 
-    // This class is used to 
     [Table("Options")]
     public class Option
     {

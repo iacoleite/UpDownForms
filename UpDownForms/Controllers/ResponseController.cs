@@ -34,10 +34,6 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ResponseFormNoResponseDTO>> GetResponse(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var response = await _responseService.GetResponseById(id);
             return Ok(response);
         }
@@ -57,10 +53,7 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteResponse(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+
             var response = await _responseService.DeleteResponse(id);
             return Ok(response);
         }

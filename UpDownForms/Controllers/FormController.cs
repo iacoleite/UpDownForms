@@ -23,30 +23,19 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
         {
             var response = await _formService.GetForms();
-            //if (!response.Success)
-            //{
-            //    return BadRequest(response.Message);
-                
-            //}
+
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<FormDTO>> GetForm(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+
             //if (id < 0)
             //{
             //    return StatusCode(353, "pocoto");
             //}
             var response = await _formService.GetForm(id);
-            //if (!response.Success)
-            //{
-            //    return BadRequest(response.Message);
-            //}
 
             return Ok(response);
         }
@@ -61,10 +50,7 @@ namespace UpDownForms.Controllers
                 return BadRequest();
             }
             var response = await _formService.PostForm(createFormDTO);
-            //if (!response.Success)
-            //{
-            //    return BadRequest(response.Message);
-            //}
+
             return Ok(response);
         }
 

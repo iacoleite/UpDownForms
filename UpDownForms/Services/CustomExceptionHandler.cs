@@ -30,10 +30,9 @@ namespace UpDownForms.Services
                 Status = statusCode,
                 Type = exception?.GetType().Name,
                 Detail = exception?.Message,
-                Instance = httpContext.Request.Path
+                Instance = httpContext.Request.Path,
             };
 
-            // this is not working. its returning as simple json even after explicit setting it like this.
             httpContext.Response.ContentType = "application/problem+json";
             
             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(problemDetails), cancellationToken);

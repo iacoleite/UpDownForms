@@ -36,10 +36,6 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> GetUser(string id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
         var response = await _userService.GetUser(id);
 
         return Ok(response);
@@ -70,10 +66,7 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> DeleteUser(string id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
+
         var response = await _userService.DeleteUser(id);
         
         return Ok(response);

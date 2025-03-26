@@ -10,6 +10,7 @@ namespace UpDownForms.Models
     [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")] // it's lowercase because Json
     [JsonDerivedType(typeof(QuestionMultipleChoice), typeDiscriminator: "MultipleChoice")]
     [JsonDerivedType(typeof(QuestionOpenEnded), typeDiscriminator: "OpenEnded")]
+
     [Table("Questions")]
     public abstract class Question
     {

@@ -31,10 +31,7 @@ namespace UpDownForms.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionDTO>> GetQuestionById(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+
             var response = await _questionService.GetQuestionById(id);
 
             return Ok(response);
@@ -70,10 +67,6 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<QuestionDTO>> DeleteQuestion(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var response = await _questionService.DeleteQuestion(id);
             return Ok(response);
         
@@ -84,10 +77,6 @@ namespace UpDownForms.Controllers
         [HttpGet("{questionId}/options")]
         public async Task<ActionResult<IEnumerable<OptionDTO>>> GetOptions(int questionId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var response = await _questionService.GetOptionsByQuestion(questionId);
             return Ok(response);
         }
@@ -108,10 +97,6 @@ namespace UpDownForms.Controllers
         [HttpDelete("{questionId}/options/{optionId}")]
         public async Task<IActionResult> DeleteOption(int questionId, int optionId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var response = await _questionService.DeleteOption(questionId, optionId);
             return Ok(response);
         }
