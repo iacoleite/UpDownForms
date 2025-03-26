@@ -85,7 +85,11 @@ namespace UpDownForms.Services
                 await _context.SaveChangesAsync();
                 //return new ApiResponse<FormDTO>(true, "Form created successfully", form.ToFormDTO());
                 return form.ToFormDTO();
-            } 
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new BadHttpRequestException(ex.InnerException.Message);
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);

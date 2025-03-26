@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
@@ -13,28 +14,21 @@ namespace UpDownForms.Models
     public abstract class Question
     {
         public int Id { get; set; }
-
-
+        [Required]
         public int FormId { get; set; }
-
-
+        [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
-
-
+        [Required]
         public int Order { get; set; }
-
-
+        [Required]
         public bool IsRequired { get; set; }
-
-
+        [Required]
         public bool IsDeleted { get; set; }
-
-
+        [Required]
         public Form Form { get; set; }
-
-        public List<Answer> Answers { get; set; }
+        [Required]
+        public List<Answer> Answers { get; set; } = new List<Answer>();
         //public string Type { get; set; }
-
 
         public Question()
         {

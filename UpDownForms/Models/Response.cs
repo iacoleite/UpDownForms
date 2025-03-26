@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using UpDownForms.DTO.ResponseDTOs;
 
 namespace UpDownForms.Models
@@ -6,26 +7,22 @@ namespace UpDownForms.Models
     [Table("Responses")]
     public class Response
     {
+
+        [Required]
         public int Id { get; set; }
-
-
+        [Required]
         public int FormId { get; set; }
-
-
-        public string? RespondentEmail { get; set; }
-
-
+        [Required]
+        [EmailAddress]
+        public string RespondentEmail { get; set; }
+        [Required]
         public DateTime SubmittedAt { get; set; }
-
-
+        [Required]
         public bool IsDeleted { get; set; }
-
-
+        [Required]
         public Form Form { get; set; }
-
-
-        public List<Answer> Answers { get; set; }
-
+        [Required]
+        public List<Answer> Answers { get; set; } = new List<Answer>();
 
         public Response()
         {

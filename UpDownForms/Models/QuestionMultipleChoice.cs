@@ -1,21 +1,18 @@
-﻿using UpDownForms.DTO.OptionDTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 
 namespace UpDownForms.Models
 {
     public class QuestionMultipleChoice : Question
     {
-
-
+        [Required]
         public QuestionType QuestionMCType { get; set; }
-
-
+        [Required]
         public bool HasCorrectAnswer { get; set; }
-
-
-        public List<Option> Options { get; set; }
-
-
+        [Required]
+        public List<Option> Options { get; set; } = new List<Option>();
+        
         public QuestionMultipleChoice() {
             //Type = "MultipleChoice";
         }

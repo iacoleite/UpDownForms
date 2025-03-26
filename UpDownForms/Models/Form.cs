@@ -12,6 +12,7 @@ namespace UpDownForms.Models
         [Required]
         public string UserId { get;  set; }
         [Required(AllowEmptyStrings = false)]
+        [MaxLength(255)]
         public string Title { get;   set; }
         [Required(AllowEmptyStrings = false)]
         public string Description { get; set; }
@@ -26,9 +27,9 @@ namespace UpDownForms.Models
         [Required]
         public User User { get;  set; }
         [Required]
-        public List<Question> Questions { get; set; }
+        public List<Question> Questions { get; set; } = new List<Question>();
         [Required]
-        public List<Response> Responses { get; set; }
+        public List<Response> Responses { get; set; } = new List<Response>();
 
         public Form()
         {

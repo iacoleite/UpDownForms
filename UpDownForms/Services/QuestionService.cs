@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.OptionDTOs;
@@ -82,7 +83,12 @@ namespace UpDownForms.Services
 
             if (createQuestionDTO is CreateQuestionMultipleChoiceDTO createQuestionMultipleChoiceDTO)
             {
+                
                 question = new QuestionMultipleChoice(createQuestionMultipleChoiceDTO);
+                if (createQuestionMultipleChoiceDTO.Options.IsNullOrEmpty())
+                {
+                    throw new BadHttpRequestException("A Multiple Choice Question must have at least one Option when created.");
+                }
                 if (createQuestionMultipleChoiceDTO.Options != null && createQuestionMultipleChoiceDTO.Options.Any())
                 {
                     foreach (var optionDTO in createQuestionMultipleChoiceDTO.Options)
@@ -204,10 +210,15 @@ namespace UpDownForms.Services
 
         public async Task<IEnumerable<OptionDTO>> GetOptionsByQuestion(int id)
         {
+            var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
+            if (questionExists == null)
+            {
+                throw new EntityNotFoundException("Can't find question");
+            }
             var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                throw new EntityNotFoundException("Can't find question");
+                throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
 
             return question.Options.Select(o => o.ToOptionDTO()).ToList();
@@ -215,10 +226,16 @@ namespace UpDownForms.Services
 
         public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)
         {
+            var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
+            if (questionExists == null)
+            {
+                throw new EntityNotFoundException("Can't find question");
+            }
+
             var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
-                throw new EntityNotFoundException("Can't find question");
+                throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
             var userId = _userService.GetLoggedInUserId();
             if (userId == null)

@@ -157,7 +157,12 @@ namespace UpDownForms.Services
                         }
                     }
                     await transaction.CommitAsync();
-                    return answer.ToAnswerMultipleChoiceResponseDTO();
+                    var answerMultipleChoiceResponseDTO = answer.ToAnswerMultipleChoiceResponseDTO();
+                    foreach ( var selectedOption in answer.SelectedOptions)
+                    {
+                        answerMultipleChoiceResponseDTO.SelectedOptions.Add(selectedOption.OptionId);
+                    }
+                    return answerMultipleChoiceResponseDTO;
                 }
                 catch (Exception e)
                 {

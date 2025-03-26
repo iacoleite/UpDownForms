@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using UpDownForms.DTO.OptionDTOs;
 
 namespace UpDownForms.Models
@@ -9,13 +10,20 @@ namespace UpDownForms.Models
     public class Option
     {
         public int Id { get; set; }
+        [Required]
         public int QuestionId { get; set; }
+        [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
+        [Required]
         public int Order { get; set; }
+        [Required]
         public QuestionMultipleChoice QuestionMultipleChoice { get; set; }
+        [Required]
         public bool IsDeleted { get; set; }
+        [Required]
         public bool IsCorrect { get; set; }
-        public List<AnsweredOption> AnsweredOptions { get; set; }
+        [Required]
+        public List<AnsweredOption> AnsweredOptions { get; set; } = new List<AnsweredOption>();
 
         public Option() { }
 
@@ -37,7 +45,7 @@ namespace UpDownForms.Models
                 Order = this.Order,
                 IsDeleted = this.IsDeleted,
                 IsCorrect = this.IsCorrect
-                
+
             };
         }
 

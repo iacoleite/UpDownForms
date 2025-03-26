@@ -329,6 +329,7 @@ namespace UpDownForms.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("RespondentEmail")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("SubmittedAt")

@@ -1,4 +1,5 @@
-﻿using UpDownForms.DTO.QuestionDTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using UpDownForms.DTO.QuestionDTOs;
 
 namespace UpDownForms.Models
 {

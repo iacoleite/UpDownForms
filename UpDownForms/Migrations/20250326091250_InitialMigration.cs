@@ -267,7 +267,7 @@ namespace UpDownForms.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     FormId = table.Column<int>(type: "int", nullable: false),
-                    RespondentEmail = table.Column<string>(type: "longtext", nullable: true)
+                    RespondentEmail = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     SubmittedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false)

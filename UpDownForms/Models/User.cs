@@ -16,30 +16,21 @@ namespace UpDownForms.Models
         {
             _passwordHelper = passwordHelper;
         }
+
         [Required]
         public string Name { get; set; }
-
-
         [Required]
         public DateTime CreatedAt { get; set; }
-
-
         [Required]
         public DateTime UpdatedAt { get; set; }
-
-
         [Required]
         public bool IsDeleted { get; set; }
-
-
         [Required]
         public List<Form> Forms { get; set; }
-
 
         public User()
         {
         }
-
 
         public User(CreateUserDTO dto)
         {
@@ -55,9 +46,9 @@ namespace UpDownForms.Models
                 Id = this.Id,
                 Name = this.Name,
                 Email = this.Email,
-                PasswordHash = this.PasswordHash,
-                CreatedAt = this.CreatedAt,
-                IsDeleted = this.IsDeleted
+                //PasswordHash = this.PasswordHash,
+                //CreatedAt = this.CreatedAt,
+                //IsDeleted = this.IsDeleted
             };
         }
 

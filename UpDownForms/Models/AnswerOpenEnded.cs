@@ -1,10 +1,11 @@
-﻿using UpDownForms.DTO.AnswersDTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using UpDownForms.DTO.AnswersDTOs;
 
 namespace UpDownForms.Models
 {
     public class AnswerOpenEnded : Answer
     {
-        
+        [Required(AllowEmptyStrings = false)]
         public string AnswerText { get; set; }
 
         public AnswerOpenEnded()

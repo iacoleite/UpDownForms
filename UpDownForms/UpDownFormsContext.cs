@@ -25,72 +25,12 @@ public class UpDownFormsContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
-        //// User Entity -> Not needed anymore (YAY!) because of Identity 
-
-        //modelBuilder.Entity<User>()
-        //    .HasKey(u => u.Id);  
-        ////modelBuilder.Entity<User>()
-        ////    .Property(u => u.Id)
-        ////    .ValueGeneratedOnAdd(); 
-        //modelBuilder.Entity<User>()
-        //    .Property(u => u.Name)
-        //    .HasMaxLength(100)
-        //    .IsRequired();  
-        //modelBuilder.Entity<User>()
-        //    .Property(u => u.Email)
-        //    .HasMaxLength(255)
-        //    .IsRequired()
-        //    .IsUnicode(false);  
-        //modelBuilder.Entity<User>()
-        //    .Property(u => u.PasswordHash)
-        //    .HasMaxLength(255)
-        //    .IsRequired(); 
-        //modelBuilder.Entity<User>()
-        //    .Property(u => u.CreatedAt);  
-        //modelBuilder.Entity<User>()
-        //    .Property(u => u.IsDeleted);  
-
-        // Form Entity
-        modelBuilder.Entity<Form>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Form>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
-        modelBuilder.Entity<Form>()
-            .Property(f => f.Title)
-            .HasMaxLength(255)
-            .IsRequired();
-        modelBuilder.Entity<Form>()
-            .Property(f => f.CreatedAt);
-        modelBuilder.Entity<Form>()
-            .Property(f => f.UpdatedAt); 
-        modelBuilder.Entity<Form>()
-            .Property(f => f.IsPublished);
-        modelBuilder.Entity<Form>()
-            .Property(f => f.IsDeleted);
-
         // Relationships for Form and User
         modelBuilder.Entity<Form>()
             .HasOne(f => f.User)
             .WithMany(u => u.Forms)
             .HasForeignKey(f => f.UserId)
             .OnDelete(DeleteBehavior.Cascade);  
-
-        // Question Entity
-        modelBuilder.Entity<Question>()
-            .HasKey(q => q.Id);  
-        modelBuilder.Entity<Question>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();  
-        modelBuilder.Entity<Question>()
-            .Property(q => q.Text)
-            .IsRequired();  
-        modelBuilder.Entity<Question>()
-            .Property(q => q.Order);
-        modelBuilder.Entity<Question>()
-            .Property(q => q.IsRequired);
-        modelBuilder.Entity<Question>()
-            .Property(q => q.IsDeleted);
 
         // inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
@@ -115,42 +55,12 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .WithOne(o => o.QuestionMultipleChoice)
             .HasForeignKey(o => o.QuestionId);
 
-        // Option Entity
-        modelBuilder.Entity<Option>()
-            .HasKey(o => o.Id);  
-        modelBuilder.Entity<Option>()
-            .Property(o => o.Id)
-            .ValueGeneratedOnAdd();  
-        modelBuilder.Entity<Option>()
-            .Property(o => o.Order);        
-
-       
-        // Response Entity
-        modelBuilder.Entity<Response>()
-            .HasKey(r => r.Id);  
-        modelBuilder.Entity<Response>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();  
-        modelBuilder.Entity<Response>()
-            .Property(r => r.SubmittedAt);
-        modelBuilder.Entity<Response>()
-            .Property(r => r.IsDeleted);
-
         // Relationships for Response and Form
         modelBuilder.Entity<Response>()
             .HasOne(r => r.Form)
             .WithMany(f => f.Responses)
             .HasForeignKey(r => r.FormId)
             .OnDelete(DeleteBehavior.Cascade);  
-
-        // Answer Entity
-        modelBuilder.Entity<Answer>()
-            .HasKey(a => a.Id);  
-        modelBuilder.Entity<Answer>()
-            .Property(a => a.Id)
-            .ValueGeneratedOnAdd();  
-        modelBuilder.Entity<Answer>()
-            .Property(a => a.IsDeleted);
 
         // TPH Inheritance for Answer
         modelBuilder.Entity<Answer>()
@@ -183,10 +93,6 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(ao => ao.Option)
             .WithMany(o => o.AnsweredOptions) 
             .HasForeignKey(ao => ao.OptionId);
-
-        modelBuilder.Entity<AnswerOpenEnded>()
-           .Property(a => a.AnswerText)
-           .IsRequired();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken token = default)
@@ -204,15 +110,6 @@ public class UpDownFormsContext : IdentityDbContext<User>
                 case User user:
                     user.UpdatedAt = DateTime.UtcNow;
                     break;
-                //case Question question:
-                //    question.UpdatedAt = DateTime.UtcNow;
-                //    break;
-                //case Response response:
-                //    response.UpdatedAt = DateTime.UtcNow;
-                //    break;
-                //case Answer answer:
-                //    answer.UpdatedAt = DateTime.UtcNow;
-                //    break;
             }
         }
         return base.SaveChangesAsync(token);

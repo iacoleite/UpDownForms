@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace UpDownForms.Migrations
 {
     [DbContext(typeof(UpDownFormsContext))]
-    [Migration("20250321083331_InitialMigration")]
+    [Migration("20250326091250_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -332,6 +332,7 @@ namespace UpDownForms.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("RespondentEmail")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("SubmittedAt")
