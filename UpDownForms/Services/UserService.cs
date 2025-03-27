@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.UserDTOs;
@@ -49,7 +48,6 @@ namespace UpDownForms.Services
 
             if (!response.Id.Equals(userId))
             {
-                //return new ApiResponse<UserDetailsDTO>(false, "Logged user does not authorization to post to form", null);
                 throw new UnauthorizedException("User not authorized to get data from another user");
 
             }

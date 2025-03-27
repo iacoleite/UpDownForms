@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.FormDTOs;
+using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
@@ -61,21 +61,18 @@ namespace UpDownForms.Services
             if (createFormDTO == null)
             {
                 throw new BadHttpRequestException("Missing input data");
-                //return new ApiResponse<FormDTO>(false, "Missing form data", null);
             }
 
             var userId = _userService.GetLoggedInUserId();
             if (userId == null)
             {
                 throw new UnauthorizedException("User must be logged");
-                //return new ApiResponse<FormDTO>(false, "User should be logged", null);
             }
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 throw new EntityNotFoundException("Invalid user Id");
 
-                //return new ApiResponse<FormDTO>(false, "Invalid user ID", null);
             }
             try
             {
@@ -83,7 +80,6 @@ namespace UpDownForms.Services
 
                 _context.Forms.Add(form);
                 await _context.SaveChangesAsync();
-                //return new ApiResponse<FormDTO>(true, "Form created successfully", form.ToFormDTO());
                 return form.ToFormDTO();
             }
             catch (DbUpdateException ex)
@@ -150,6 +146,14 @@ namespace UpDownForms.Services
             _context.Forms.Update(form);
             await _context.SaveChangesAsync();
             return form.ToFormDTO();
+        }
+
+        public async Task<IEnumerable<ResponseDTO>> GetResponsesByFormId(int id)
+        {
+            var formResponses = await _context.Responses.Include(r => r.Answers.OrderBy(a => a.QuestionId)).Where(r => r.FormId == id).Where(r => r.Answers.Count() != 0).ToListAsync();
+
+            var responseListDTO = formResponses.Select(r => r.ToResponseDTO()).ToList();
+            return responseListDTO;
         }
     }
 }

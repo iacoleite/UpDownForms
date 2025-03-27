@@ -49,6 +49,15 @@ namespace UpDownForms.Models
             this.IsDeleted = false;
             this.HasCorrectAnswer = createQuestionDTO.HasCorrectAnswer;
         }
+        public void UpdateQuestionMultipleChoice(UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
+        {
+            this.Text = updateQuestionMultipleChoiceDTO.Text;
+            this.Order = updateQuestionMultipleChoiceDTO.Order;
+            this.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
+            this.IsDeleted = false;
+            this.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
+            this.UndeleteQuestionAndOptions();
+        }
         public void AddOption(Option option)
         {
             this.Options.Add(option);

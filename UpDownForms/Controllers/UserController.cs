@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
@@ -15,9 +14,7 @@ namespace UpDownForms.Controllers;
 public class UserController : ControllerBase
 {
     //private readonly ILogger<UserController> _logger;
-
     private readonly UserService _userService;
-
 
     public UserController(UserService userService)
     {

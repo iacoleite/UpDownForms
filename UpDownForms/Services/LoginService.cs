@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Security;
 
@@ -22,7 +21,6 @@ namespace UpDownForms.Services
         {
             if (loginDTO == null)
             {
-                //return new ApiResponse<string>(false, "Missing Login data", null);
                 throw new BadHttpRequestException("Invalid login data");
 
             }
@@ -30,15 +28,12 @@ namespace UpDownForms.Services
             if (user == null)
             {
                 throw new EntityNotFoundException("Invalid user Id");
-                //return new ApiResponse<string>(false, "User not found", null);
             }
             if (!_passwordHelper.VerifyPassword(user, loginDTO.Password, user.PasswordHash))
             {
-                //return new ApiResponse<string>(false, "Wrong password", null);
                 throw new BadHttpRequestException("Wrong password");
 
             }
-            //return new ApiResponse<string>(true, "Token generated successfully", _tokenService.GenerateToken(user));
             return _tokenService.GenerateToken(user);
         }
 

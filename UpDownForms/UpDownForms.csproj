@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\ApiResponse\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
-using UpDownForms.DTO.ApiResponse;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
@@ -138,17 +137,17 @@ namespace UpDownForms.Services
             {
                 if (!(question is QuestionMultipleChoice multipleChoiceQuestion))
                 {
-                    //return new ApiResponse<QuestionDTO>(false, "Question type mismatch", null);
                     throw new BadHttpRequestException("Question type mismatch");
 
                 }
-                multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
-                multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
-                multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
-                multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
-                //multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
-                //multipleChoiceQuestion.IsDeleted = false;
-                multipleChoiceQuestion.UndeleteQuestionAndOptions();
+                //multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
+                //multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
+                //multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
+                //multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
+                ////multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
+                ////multipleChoiceQuestion.IsDeleted = false;
+                //multipleChoiceQuestion.UndeleteQuestionAndOptions();
+                multipleChoiceQuestion.UpdateQuestionMultipleChoice(updateQuestionMultipleChoiceDTO);
 
             }
             else if (updateQuestionDTO is UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)
@@ -157,10 +156,11 @@ namespace UpDownForms.Services
                 {
                     throw new BadHttpRequestException("Question type mismatch");
                 }
-                openEndedQuestion.Text = updateQuestionOpenEndedDTO.Text;
-                openEndedQuestion.Order = updateQuestionOpenEndedDTO.Order;
-                openEndedQuestion.IsRequired = updateQuestionOpenEndedDTO.IsRequired;
-                openEndedQuestion.IsDeleted = false;
+                //openEndedQuestion.Text = updateQuestionOpenEndedDTO.Text;
+                //openEndedQuestion.Order = updateQuestionOpenEndedDTO.Order;
+                //openEndedQuestion.IsRequired = updateQuestionOpenEndedDTO.IsRequired;
+                //openEndedQuestion.IsDeleted = false;
+                openEndedQuestion.UpdateQuestionOpenEnded(updateQuestionOpenEndedDTO);
             }
             else
             {

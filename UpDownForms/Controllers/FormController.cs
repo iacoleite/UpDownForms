@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.FormDTOs;
+using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
 using UpDownForms.Services;
 
@@ -13,6 +14,7 @@ namespace UpDownForms.Controllers
     public class FormController : ControllerBase
     {
         private readonly FormService _formService;
+        
 
         public FormController(FormService formService)
         {
@@ -23,23 +25,25 @@ namespace UpDownForms.Controllers
         public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
         {
             var response = await _formService.GetForms();
-
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<FormDTO>> GetForm(int id)
         {
-
-            //if (id < 0)
-            //{
-            //    return StatusCode(353, "pocoto");
-            //}
             var response = await _formService.GetForm(id);
 
             return Ok(response);
         }
 
+        [Authorize]
+        [HttpGet("{id}/responses")]
+        public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponsesByFormId(int id)
+        {
+            var response = await _formService.GetResponsesByFormId(id);
+
+            return Ok(response);
+        }
 
         [Authorize]
         [HttpPost]
@@ -72,14 +76,11 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<string>> DeleteForm(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var response = await _formService.DeleteForm(id);
 
             return Ok(response);
-
         }
+
+        
     }
 }

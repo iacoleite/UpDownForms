@@ -50,15 +50,10 @@ builder.Services.AddAuthentication(o =>
     };
 });
 
-
-
-
-
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddScoped<TokenService>();
-
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);

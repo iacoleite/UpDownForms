@@ -36,7 +36,6 @@ namespace UpDownForms.Controllers
             catch (KeyNotFoundException ex)
             {
                 throw new EntityNotFoundException(ex.Message);
-
             }
             catch (UnauthorizedAccessException ex)
             {

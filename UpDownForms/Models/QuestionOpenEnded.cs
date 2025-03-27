@@ -32,5 +32,13 @@ namespace UpDownForms.Models
             this.IsRequired = createQuestionOpenEndedDTO.IsRequired;
             this.IsDeleted = false; 
         }
+
+        public void UpdateQuestionOpenEnded(UpdateQuestionOpenEndedDTO updateQuestionOpenEndedDTO)
+        {
+            this.Text = updateQuestionOpenEndedDTO.Text;
+            this.Order = updateQuestionOpenEndedDTO.Order;
+            this.IsRequired = updateQuestionOpenEndedDTO.IsRequired;
+            this.IsDeleted = false;
+        }
     }
 }

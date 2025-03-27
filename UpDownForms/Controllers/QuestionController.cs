@@ -12,7 +12,6 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class QuestionController : Controller
     {
-
         private readonly QuestionService _questionService;
 
         public QuestionController(QuestionService questionService)
@@ -69,9 +68,7 @@ namespace UpDownForms.Controllers
         {
             var response = await _questionService.DeleteQuestion(id);
             return Ok(response);
-        
         }
-
 
         // Handling options
         [HttpGet("{questionId}/options")]

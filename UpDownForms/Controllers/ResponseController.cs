@@ -14,7 +14,6 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class ResponseController : Controller
     {
-
         private readonly ResponseService _responseService;
 
         public ResponseController(ResponseService responseService)
