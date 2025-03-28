@@ -140,13 +140,7 @@ namespace UpDownForms.Services
                     throw new BadHttpRequestException("Question type mismatch");
 
                 }
-                //multipleChoiceQuestion.Text = updateQuestionMultipleChoiceDTO.Text;
-                //multipleChoiceQuestion.Order = updateQuestionMultipleChoiceDTO.Order;
-                //multipleChoiceQuestion.IsRequired = updateQuestionMultipleChoiceDTO.IsRequired;
-                //multipleChoiceQuestion.HasCorrectAnswer = updateQuestionMultipleChoiceDTO.HasCorrectAnswer;
-                ////multipleChoiceQuestion.QuestionType = updateQuestionMultipleChoiceDTO.Type;
-                ////multipleChoiceQuestion.IsDeleted = false;
-                //multipleChoiceQuestion.UndeleteQuestionAndOptions();
+
                 multipleChoiceQuestion.UpdateQuestionMultipleChoice(updateQuestionMultipleChoiceDTO);
 
             }
@@ -156,10 +150,7 @@ namespace UpDownForms.Services
                 {
                     throw new BadHttpRequestException("Question type mismatch");
                 }
-                //openEndedQuestion.Text = updateQuestionOpenEndedDTO.Text;
-                //openEndedQuestion.Order = updateQuestionOpenEndedDTO.Order;
-                //openEndedQuestion.IsRequired = updateQuestionOpenEndedDTO.IsRequired;
-                //openEndedQuestion.IsDeleted = false;
+
                 openEndedQuestion.UpdateQuestionOpenEnded(updateQuestionOpenEndedDTO);
             }
             else
@@ -201,7 +192,6 @@ namespace UpDownForms.Services
             {
                 question.DeleteQuestion();
             }
-            //question.DeleteQuestion();
             _context.SaveChanges();
             return question.ToQuestionDTO();
         }
@@ -221,7 +211,7 @@ namespace UpDownForms.Services
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
 
-            return question.Options.Select(o => o.ToOptionDTO()).ToList();
+            return question.Options.Select(o => o.ToOptionDTO()).OrderBy(o => o.Order).ToList();
         }
 
         public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)
