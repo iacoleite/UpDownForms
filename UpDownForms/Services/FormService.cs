@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Security;
 
 namespace UpDownForms.Services
@@ -27,19 +30,20 @@ namespace UpDownForms.Services
         {
         }
 
-        public async Task<IEnumerable<FormDTO>> GetForms()
+        public async Task<Pageable<FormDTO>> GetForms()
         {
             var response = await _context.Forms
                                          .Include(f => f.User)
                                          .Include(f => f.Questions)
-                                            //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
+                                         //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
                                          .Where(f => !f.IsDeleted)
                                          .ToListAsync();
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
-            return response.Select(f => f.ToFormDTO()).ToList();
+            var listDTO = response.Select(f => f.ToFormDTO()).ToList();
+            return await Pageable<FormDTO>.ToPageable(listDTO, 5, 0);
         }
 
         public async Task<FormDTO> GetForm(int id)
