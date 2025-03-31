@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Cryptography;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
@@ -21,10 +25,22 @@ namespace UpDownForms.Controllers
             _formService = formService;
         }
 
+        //[HttpGet]
+        //public async Task<ActionResult<Pageable<FormDTO>>> GetForms()
+        //{
+        //    var response = await _formService.GetForms(pageParameters);
+
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FormDTO>>> GetForms()
+
+        //[PaginatedHttpGetAttribute("GetForms")]
+        public async Task<ActionResult<Pageable<FormDTO>>> GetForms([FromQuery] PageParameters pageParameters)
         {
-            var response = await _formService.GetForms();
+            var response = await _formService.GetForms(pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
+                        
+            //response.Append<PageParameters>(pageParameters);
             return Ok(response);
         }
 
@@ -38,9 +54,12 @@ namespace UpDownForms.Controllers
 
         [Authorize]
         [HttpGet("{id}/responses")]
-        public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponsesByFormId(int id)
+        //[Route("{id}/responses")]
+        //[PaginatedHttpGetAttribute("GetResponsesByFormId")]
+        public async Task<ActionResult<Pageable<ResponseDTO>>> GetResponsesByFormId(int id, [FromQuery] PageParameters pageParameters)
         {
-            var response = await _formService.GetResponsesByFormId(id);
+            var response = await _formService.GetResponsesByFormId(id, pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
 
             return Ok(response);
         }

@@ -30,7 +30,7 @@ namespace UpDownForms.Services
         {
         }
 
-        public async Task<Pageable<FormDTO>> GetForms()
+        public async Task<Pageable<FormDTO>> GetForms(PageParameters pageParameters)
         {
             var response = await _context.Forms
                                          .Include(f => f.User)
@@ -38,12 +38,22 @@ namespace UpDownForms.Services
                                          //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
                                          .Where(f => !f.IsDeleted)
                                          .ToListAsync();
+                                         
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
             var listDTO = response.Select(f => f.ToFormDTO()).ToList();
-            return await Pageable<FormDTO>.ToPageable(listDTO, 5, 0);
+            //Pageable<FormDTO> teste = new Pageable<FormDTO>(listDTO, pageSize, pageIndex, itemsCount);
+            //return await Pageable<FormDTO>.ToPageable(listDTO, pageSize, pageIndex);
+            var pageable = await Pageable<FormDTO>.ToPageable(response.Select(f => f.ToFormDTO()).ToList(), pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
+            //return teste;
+            //return new Pageable<FormDTO>.ToPageable(listDTO, pageSize, pageIndex, itemsCount);
         }
 
         public async Task<FormDTO> GetForm(int id)
@@ -152,12 +162,21 @@ namespace UpDownForms.Services
             return form.ToFormDTO();
         }
 
-        public async Task<IEnumerable<ResponseDTO>> GetResponsesByFormId(int id)
+        public async Task<Pageable<ResponseDTO>> GetResponsesByFormId(int id, PageParameters pageParameters)
         {
             var formResponses = await _context.Responses.Include(r => r.Answers.OrderBy(a => a.QuestionId)).Where(r => r.FormId == id).Where(r => r.Answers.Count() != 0).ToListAsync();
+            if (formResponses == null)
+            {
+                throw new EntityNotFoundException();
+            }
 
             var responseListDTO = formResponses.Select(r => r.ToResponseDTO()).ToList();
-            return responseListDTO;
+            var pageable = await Pageable<ResponseDTO>.ToPageable(responseListDTO, pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
         }
     }
 }

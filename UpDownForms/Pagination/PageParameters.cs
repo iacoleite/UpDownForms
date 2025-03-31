@@ -1,4 +1,4 @@
 ﻿namespace UpDownForms.Pagination
 {
-    public record PageParameters (int PageIndex = 1, int PageSize = 10);
+    public record PageParameters (int Page = 0, int PageSize = 5);
 }
