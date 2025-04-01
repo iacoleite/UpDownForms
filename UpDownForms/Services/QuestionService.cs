@@ -287,13 +287,21 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<AnswerDTO>> GetAllAnswersByQuestionId(int questionId, PageParameters pageParameters)
         {
-            var question = _context.Questions.FirstOrDefault(q => q.Id == questionId);
+            var question = _context.Questions.Include(q => q.Form).FirstOrDefault(q => q.Id == questionId);
             if (question == null)
             {
                 throw new EntityNotFoundException("Can't find question");
             }
+            var userId = _userService.GetLoggedInUserId();
+            if (userId == null)
+            {
+                throw new UnauthorizedException("User must be logged");
+            }
+            if (!question.Form.UserId.Equals(userId))
+            {
+                throw new UnauthorizedException("User not authorized to update question");
+            }
             var response = _context.Answers.Where(a => a.QuestionId == questionId).Select(a => a.ToAnswerDTO());
-
             var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page);
             if (pageable.Items.Count() == 0)
             {

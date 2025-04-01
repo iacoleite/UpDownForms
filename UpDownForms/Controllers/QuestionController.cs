@@ -101,9 +101,7 @@ namespace UpDownForms.Controllers
             return Ok(response);
         }
 
-
-        // implement update?
-
+        [Authorize]
         [HttpGet("{id}/answers")]
         public async Task<ActionResult<Pageable<AnswerDTO>>> GetAllAnswersByQuestionId(int id, [FromQuery] PageParameters pageParameters)
         {
@@ -111,5 +109,7 @@ namespace UpDownForms.Controllers
             this.AddPaginationMetadata(response, pageParameters);
             return Ok(response);
         }
+
+        // implement update? -> ... 
     }
 }
