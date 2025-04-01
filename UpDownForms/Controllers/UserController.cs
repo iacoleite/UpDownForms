@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Security;
 using UpDownForms.Services;
 
@@ -22,10 +23,10 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetUsers()
+    public async Task<ActionResult<Pageable<UserDetailsDTO>>> GetUsers([FromQuery] PageParameters pageParameters)
     {
-        var response = await _userService.GetUsers();
-
+        var response = await _userService.GetUsers(pageParameters);
+        this.AddPaginationMetadata(response, pageParameters);
         return Ok(response);
     }
 

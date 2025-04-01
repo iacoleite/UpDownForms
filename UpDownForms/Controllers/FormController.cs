@@ -40,7 +40,6 @@ namespace UpDownForms.Controllers
             var response = await _formService.GetForms(pageParameters);
             this.AddPaginationMetadata(response, pageParameters);
                         
-            //response.Append<PageParameters>(pageParameters);
             return Ok(response);
         }
 
@@ -57,7 +56,7 @@ namespace UpDownForms.Controllers
         //[Route("{id}/responses")]
         //[PaginatedHttpGetAttribute("GetResponsesByFormId")]
         public async Task<ActionResult<Pageable<ResponseDTO>>> GetResponsesByFormId(int id, [FromQuery] PageParameters pageParameters)
-        {
+         {
             var response = await _formService.GetResponsesByFormId(id, pageParameters);
             this.AddPaginationMetadata(response, pageParameters);
 

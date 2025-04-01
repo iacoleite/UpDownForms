@@ -8,6 +8,7 @@ using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Security;
 
 namespace UpDownForms.Services
@@ -27,14 +28,19 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<IEnumerable<UserDetailsDTO>> GetUsers()
+        public async Task<Pageable<UserDetailsDTO>> GetUsers(PageParameters pageParameters)
         {
-            var response = await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
+            var response = _context.Users.Where(u => !u.IsDeleted);
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
-            return response.Select(u => u.ToUserDetailsDTO()).ToList();
+            var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.Select(u => u.ToUserDetailsDTO()), pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count() == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
         }
 
         public async Task<UserDetailsDTO> GetUser(string id)

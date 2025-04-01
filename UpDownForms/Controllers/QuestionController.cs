@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
@@ -20,10 +21,10 @@ namespace UpDownForms.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<QuestionDetailsDTO>>> GetQuestions()
+        public async Task<ActionResult<Pageable<QuestionDetailsDTO>>> GetQuestions([FromQuery] PageParameters pageParameters)
         {
-            var response = await _questionService.GetQuestions();
-
+            var response = await _questionService.GetQuestions(pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
             return Ok(response);
         }
 
@@ -72,15 +73,16 @@ namespace UpDownForms.Controllers
 
         // Handling options
         [HttpGet("{questionId}/options")]
-        public async Task<ActionResult<IEnumerable<OptionDTO>>> GetOptions(int questionId)
+        public async Task<ActionResult<Pageable<OptionDTO>>> GetOptions(int questionId, [FromQuery] PageParameters pageParameters)
         {
-            var response = await _questionService.GetOptionsByQuestion(questionId);
+            var response = await _questionService.GetOptionsByQuestion(questionId, pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
             return Ok(response);
         }
 
         [Authorize]
         [HttpPost("{questionId}/options")]
-        public async Task<IActionResult> AddOption(int questionId, [FromBody] CreateOptionDTO createOptionDTO)
+        public async Task<ActionResult> AddOption(int questionId, [FromBody] CreateOptionDTO createOptionDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -92,7 +94,7 @@ namespace UpDownForms.Controllers
 
         [Authorize]
         [HttpDelete("{questionId}/options/{optionId}")]
-        public async Task<IActionResult> DeleteOption(int questionId, int optionId)
+        public async Task<ActionResult> DeleteOption(int questionId, int optionId)
         {
             var response = await _questionService.DeleteOption(questionId, optionId);
             return Ok(response);

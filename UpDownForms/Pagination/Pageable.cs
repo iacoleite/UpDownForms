@@ -16,22 +16,22 @@ namespace UpDownForms.Pagination
         public string? NextPageUrl = null;
         public string? PreviousPageUrl = null;
 
-        public List<T> Items = new List<T>();
+        public IQueryable<T> Items;
 
-        public Pageable(List<T> items, int pageSize, int currentPage, int totalItems)
+        public Pageable(IQueryable<T> items, int pageSize, int currentPage, int totalItems)
         {
             this.PageSize = pageSize;
             this.CurrentPage = currentPage;
             this.TotalItems = totalItems;
             this.TotalPages = (int)Math.Ceiling((double)(totalItems / pageSize));
-            this.Items.AddRange(items);
+            this.Items = items;
         }
 
-        public static async Task<Pageable<T>> ToPageable(List<T> items, int pageSize, int currentPage)
+        public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage)
         {
-            var totalItems = items.Count();
-            var pagedItems = items.Skip(currentPage * pageSize).Take(pageSize).ToList();
-            return await Task.FromResult(new Pageable<T>(pagedItems, pageSize, currentPage, totalItems));
+            var totalItems = await items.CountAsync();
+            var pagedItems = await items.Skip(currentPage * pageSize).Take(pageSize).ToListAsync();
+            return new Pageable<T>(pagedItems.AsQueryable(), pageSize, currentPage, totalItems);
         }
 
     }

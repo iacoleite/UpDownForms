@@ -6,6 +6,7 @@ using System.Net;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace UpDownForms.Services
@@ -21,14 +22,20 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<IEnumerable<QuestionDetailsDTO>> GetQuestions()
+        public async Task<Pageable<QuestionDetailsDTO>> GetQuestions(PageParameters pageParameters)
         {
-            var response = await _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).ToListAsync();
+            var response = _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).Select(q => q.ToQuestionDetailsDTO());
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
-            return response.Select(q => q.ToQuestionDetailsDTO()).ToList();
+            var pageable = await Pageable<QuestionDetailsDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page);
+            //return response.Select(q => q.ToQuestionDetailsDTO()).ToList();
+            if (pageable.Items.Count() == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
         }
 
         public async Task<QuestionDTO> GetQuestionById(int id)
@@ -198,20 +205,28 @@ namespace UpDownForms.Services
 
         // handling options
 
-        public async Task<IEnumerable<OptionDTO>> GetOptionsByQuestion(int id)
+        public async Task<Pageable<OptionDTO>> GetOptionsByQuestion(int id, PageParameters pageParameters)
         {
-            var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
+            var questionExists = _context.Questions.FirstOrDefault(q => q.Id == id);
             if (questionExists == null)
             {
                 throw new EntityNotFoundException("Can't find question");
             }
-            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == id);
+            var question = _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).FirstOrDefault(q => q.Id == id);
             if (question == null)
             {
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
-
-            return question.Options.Select(o => o.ToOptionDTO()).OrderBy(o => o.Order).ToList();
+            var options = _context.Options
+                                  .Where(o => o.QuestionId == id)
+                                  .OrderBy(o => o.Order)
+                                  .Select(o => o.ToOptionDTO());
+            var pageable = await Pageable<OptionDTO>.ToPageable(options, pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count() == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
         }
 
         public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)

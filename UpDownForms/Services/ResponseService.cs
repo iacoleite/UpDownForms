@@ -4,6 +4,7 @@ using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 
 namespace UpDownForms.Services
 {
@@ -18,20 +19,24 @@ namespace UpDownForms.Services
             _userService = userService;
         }
 
-        public async Task<IEnumerable<ResponseDTO>> GetResponses()
+        public async Task<Pageable<ResponseDTO>> GetResponses(PageParameters pageParameters)
         {
-            var response = await _context.Responses
+            var response = _context.Responses
                    .Include(r => r.Form)
                    .ThenInclude(f => f.User)
                    .Include(r => r.Answers)
-                   .Where(r => !r.IsDeleted)
-                   .ToListAsync();
+                   .Where(r => !r.IsDeleted);
+                   //.ToListAsync();
             if (response == null)
             {
                 throw new EntityNotFoundException("Can't find response");
             }
-
-            return response.Select(r => r.ToResponseDTO()).ToList();
+            var pageable = await Pageable<ResponseDTO>.ToPageable(response.Select(r => r.ToResponseDTO()), pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count() == 0)
+            {
+                throw new EntityNotFoundException();
+            }
+            return pageable;
         }
 
         public async Task<ResponseFormNoResponseDTO> GetResponseById(int id)

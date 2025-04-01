@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text.Json;
 
 namespace UpDownForms.Pagination
 {
@@ -25,7 +26,22 @@ namespace UpDownForms.Pagination
                 });
             }
 
-            
+            // Add pagination metadata to header???
+
+            //controller.Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(
+            //new
+            //{
+            //    pageableItems.HasNext,
+            //    pageableItems.HasPrevious,
+            //    pageableItems.TotalPages,
+            //    pageableItems.TotalItems,
+            //    pageableItems.CurrentPage,
+            //    pageableItems.PageSize,
+            //    pageableItems.PreviousPageUrl,
+            //    pageableItems.NextPageUrl
+            //}));
+
+
         }
     }
 }

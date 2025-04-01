@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
+using UpDownForms.Pagination;
 using UpDownForms.Services;
 
 namespace UpDownForms.Controllers
@@ -23,10 +24,10 @@ namespace UpDownForms.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ResponseDTO>>> GetResponses()
+        public async Task<ActionResult<Pageable<ResponseDTO>>> GetResponses([FromQuery] PageParameters pageParameters)
         {
-            var response = await _responseService.GetResponses();
-
+            var response = await _responseService.GetResponses(pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
             return Ok(response);
         }
 
@@ -67,6 +68,8 @@ namespace UpDownForms.Controllers
             var response = await _responseService.PostAnswer(id, createAnswerDTO);
             return Ok(response);
         }
+
+
     }
 }
 
