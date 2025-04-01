@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
@@ -282,6 +283,23 @@ namespace UpDownForms.Services
             option.DeleteOption();
             await _context.SaveChangesAsync();
             return (QuestionMultipleChoiceDTO)question.ToQuestionDTO();
+        }
+
+        public async Task<Pageable<AnswerDTO>> GetAllAnswersByQuestionId(int questionId, PageParameters pageParameters)
+        {
+            var question = _context.Questions.FirstOrDefault(q => q.Id == questionId);
+            if (question == null)
+            {
+                throw new EntityNotFoundException("Can't find question");
+            }
+            var response = _context.Answers.Where(a => a.QuestionId == questionId).Select(a => a.ToAnswerDTO());
+
+            var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page);
+            if (pageable.Items.Count() == 0)
+            {
+                throw new EntityNotFoundException("Question does not have any answer.");
+            }
+            return pageable;
         }
     }
 }

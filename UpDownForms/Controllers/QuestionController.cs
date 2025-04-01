@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
@@ -99,8 +100,16 @@ namespace UpDownForms.Controllers
             var response = await _questionService.DeleteOption(questionId, optionId);
             return Ok(response);
         }
-    
+
 
         // implement update?
+
+        [HttpGet("{id}/answers")]
+        public async Task<ActionResult<Pageable<AnswerDTO>>> GetAllAnswersByQuestionId(int id, [FromQuery] PageParameters pageParameters)
+        {
+            var response = await _questionService.GetAllAnswersByQuestionId(id, pageParameters);
+            this.AddPaginationMetadata(response, pageParameters);
+            return Ok(response);
+        }
     }
 }
