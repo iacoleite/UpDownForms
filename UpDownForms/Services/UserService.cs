@@ -18,9 +18,9 @@ namespace UpDownForms.Services
         private readonly UpDownFormsContext _context;
         private readonly IPasswordHelper _passwordHelper;
         private readonly UserManager<User> _userManager;
-        private readonly IUserService _userService;
+        private readonly LoggedUserService _userService;
 
-        public UserService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager, IUserService userService)
+        public UserService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager, LoggedUserService userService)
         {
             _context = context;
             _passwordHelper = passwordHelper;
