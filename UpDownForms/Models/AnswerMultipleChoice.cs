@@ -16,7 +16,7 @@ namespace UpDownForms.Models
         {
             //this.ResponseId = createAnswerDTO.ResponseId;
             this.QuestionId = createAnswerDTO.QuestionId;
-            this.IsDeleted = createAnswerDTO.IsDeleted;
+            this.IsDeleted = false;
             ////this.OptionId = createAnswerDTO.OptionId;
             foreach (var optionId in createAnswerDTO.SelectedOptions)
             {

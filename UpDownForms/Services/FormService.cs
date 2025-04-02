@@ -68,6 +68,10 @@ namespace UpDownForms.Services
             {
                  throw new EntityNotFoundException();
             }
+            if (!form.IsPublished)
+            {
+                throw new UnauthorizedAccessException("Form is unpublished");
+            }
             return form.ToFormDTO();
         }
 
@@ -133,6 +137,7 @@ namespace UpDownForms.Services
             }
             form.UpdatedAt = DateTime.UtcNow;
             form.IsDeleted = false;
+            form.IsPublished = updateFormDTO.IsPublished;
             _context.Forms.Update(form);
             await _context.SaveChangesAsync();
             return form.ToFormDTO();

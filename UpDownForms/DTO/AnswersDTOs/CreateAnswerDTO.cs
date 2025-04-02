@@ -13,9 +13,11 @@ namespace UpDownForms.DTO.AnswersDTOs
     {
         //public int Id { get; set; }
         //public int ResponseId { get; set; }
+        [Required]
         public int QuestionId { get; set; }
+        [Required]
         public string Type{ get; set; }
-        public bool IsDeleted { get; set; }
+        //public bool IsDeleted { get; set; }
         
     }
 

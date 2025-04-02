@@ -10,12 +10,14 @@ namespace UpDownForms.DTO.QuestionDTOs
     [JsonDerivedType(typeof(CreateQuestionOpenEndedDTO), typeDiscriminator: "OpenEnded")] 
     public abstract class CreateQuestionDTO
     {
+        [Required]
         public int FormId { get; set; }
         [Required(AllowEmptyStrings = false)]
 
         public string Text { get; set; }
         public int Order { get; set; }
         public string Type { get; set; }
+        
         public bool IsRequired { get; set; }
 
         public CreateQuestionDTO() { }
