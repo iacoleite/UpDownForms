@@ -232,13 +232,17 @@ namespace UpDownForms.Services
 
         public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)
         {
-            var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
-            if (questionExists == null)
-            {
-                throw new EntityNotFoundException("Can't find question");
-            }
+            //var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
+            //if (questionExists == null)
+            //{
+            //    throw new EntityNotFoundException("Can't find question");
+            //}
 
-            var question = await _context.Questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
+            var questions = _context.Questions.Where(q => q.Id == id);
+            if (!questions.Any())
+                throw new EntityNotFoundException("Can't find question");
+                
+            var question = await questions.OfType<QuestionMultipleChoice>().Include(q => q.Options).Include(q => q.Form).FirstOrDefaultAsync(q => q.Id == id);
             if (question == null)
             {
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
