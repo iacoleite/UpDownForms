@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using System.Linq.Dynamic.Core;
+
 
 namespace UpDownForms.Pagination
 {
@@ -28,10 +30,19 @@ namespace UpDownForms.Pagination
             this.Items = items;
         }
 
-        public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage)
+        public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage, string orderBy)
         {
             var totalItems = items.Count();
-            var pagedItems = await items.Skip(currentPage * pageSize).Take(pageSize).ToListAsync();
+            //var orderedItems = items.OrderBy(orderBy);
+            //var pagedItems = orderedItems
+            //    .Skip(currentPage * pageSize)
+            //    .Take(pageSize)
+            //    .ToArray();
+            var pagedItems = await items
+                //.OrderBy(orderBy)
+                .Skip(currentPage * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
             return new Pageable<T>(pagedItems.AsQueryable(), pageSize, currentPage, totalItems);
         }
 

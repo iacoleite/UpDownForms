@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq.Dynamic.Core;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.UserDTOs;
@@ -30,12 +31,14 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<UserDetailsDTO>> GetUsers(PageParameters pageParameters)
         {
-            var response = _context.Users.Where(u => !u.IsDeleted);
+            var response =  _context.Users.Where(u => !u.IsDeleted);
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
-            var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.Select(u => u.ToUserDetailsDTO()), pageParameters.PageSize, pageParameters.Page);
+            //var orderedUsers = response.OrderBy(pageParameters.OrderBy).Select(u => u.ToUserDetailsDTO());
+
+            var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.OrderBy(pageParameters.OrderBy).Select(u => u.ToUserDetailsDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();

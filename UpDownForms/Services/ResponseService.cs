@@ -31,7 +31,7 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Can't find response");
             }
-            var pageable = await Pageable<ResponseDTO>.ToPageable(response.Select(r => r.ToResponseDTO()), pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<ResponseDTO>.ToPageable(response.Select(r => r.ToResponseDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();

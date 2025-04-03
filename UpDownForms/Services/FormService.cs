@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.DTO.UserDTOs;
@@ -47,7 +49,7 @@ namespace UpDownForms.Services
             //var listDTO = response.Select(f => f.ToFormDTO()).ToList();
             //Pageable<FormDTO> teste = new Pageable<FormDTO>(listDTO, pageSize, pageIndex, itemsCount);
             //return await Pageable<FormDTO>.ToPageable(listDTO, pageSize, pageIndex);
-            var pageable = await Pageable<FormDTO>.ToPageable(response.Select(f => f.ToFormDTO()), pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<FormDTO>.ToPageable(response.OrderBy(pageParameters.OrderBy).Select(f => f.ToFormDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();
@@ -176,7 +178,7 @@ namespace UpDownForms.Services
                 throw new EntityNotFoundException();
             }
 
-            var pageable = await Pageable<ResponseDTO>.ToPageable(formResponses, pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<ResponseDTO>.ToPageable(formResponses, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();

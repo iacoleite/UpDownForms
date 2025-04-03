@@ -30,7 +30,7 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException();
             }
-            var pageable = await Pageable<QuestionDetailsDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<QuestionDetailsDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             //return response.Select(q => q.ToQuestionDetailsDTO()).ToList();
             if (pageable.Items.Count() == 0)
             {
@@ -222,7 +222,7 @@ namespace UpDownForms.Services
                                   .Where(o => o.QuestionId == id)
                                   .OrderBy(o => o.Order)
                                   .Select(o => o.ToOptionDTO());
-            var pageable = await Pageable<OptionDTO>.ToPageable(options, pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<OptionDTO>.ToPageable(options, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();
@@ -306,7 +306,7 @@ namespace UpDownForms.Services
                 throw new UnauthorizedException("User not authorized to update question");
             }
             var response = _context.Answers.Where(a => a.QuestionId == questionId).Select(a => a.ToAnswerDTO());
-            var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page);
+            var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException("Question does not have any answer.");
