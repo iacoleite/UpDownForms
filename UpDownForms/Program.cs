@@ -129,7 +129,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var DbContext = scope.ServiceProvider.GetRequiredService<UpDownFormsContext>();
-    //DbContext.Database.EnsureCreated();
+    DbContext.Database.EnsureCreated();
     DbContext.Database.Migrate();
 }
 

@@ -15,6 +15,7 @@ namespace UpDownForms.Pagination
         public bool HasPrevious => (CurrentPage >= 1);
         public string? NextPageUrl = null;
         public string? PreviousPageUrl = null;
+        
 
         public IQueryable<T> Items;
 
@@ -29,7 +30,7 @@ namespace UpDownForms.Pagination
 
         public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage)
         {
-            var totalItems = await items.CountAsync();
+            var totalItems = items.Count();
             var pagedItems = await items.Skip(currentPage * pageSize).Take(pageSize).ToListAsync();
             return new Pageable<T>(pagedItems.AsQueryable(), pageSize, currentPage, totalItems);
         }

@@ -19,7 +19,7 @@ namespace UpDownForms.Tests.Services
         private UpDownFormsContext _context;
         private IPasswordHelper _passwordHelper;
         private UserManager<User> _userManager;
-        private IUserService _userServiceMock;
+        private LoggedUserService _userServiceMock;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +27,7 @@ namespace UpDownForms.Tests.Services
             _context = Substitute.For<UpDownFormsContext>(new DbContextOptions<UpDownFormsContext>());
             _passwordHelper = Substitute.For<IPasswordHelper>();
             _userManager = Substitute.For<UserManager<User>>(Substitute.For<IUserStore<User>>(), null, null, null, null, null, null, null, null);
-            _userServiceMock = Substitute.For<IUserService>();
+            _userServiceMock = Substitute.For<LoggedUserService>();
             _userService = new UserService(_context, _passwordHelper, _userManager, _userServiceMock);
         }
 
