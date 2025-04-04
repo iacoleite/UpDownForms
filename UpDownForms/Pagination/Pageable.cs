@@ -30,7 +30,8 @@ namespace UpDownForms.Pagination
             this.Items = items;
         }
 
-        public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage, string orderBy)
+        //public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, int pageSize, int currentPage, string orderBy)
+        public static async Task<Pageable<T>> ToPageable(IQueryable<T> items, PageParameters pageParameters)
         {
             var totalItems = items.Count();
             //var orderedItems = items.OrderBy(orderBy);
@@ -40,10 +41,10 @@ namespace UpDownForms.Pagination
             //    .ToArray();
             var pagedItems = await items
                 //.OrderBy(orderBy)
-                .Skip(currentPage * pageSize)
-                .Take(pageSize)
+                .Skip(pageParameters.Page * pageParameters.PageSize)
+                .Take(pageParameters.PageSize)
                 .ToListAsync();
-            return new Pageable<T>(pagedItems.AsQueryable(), pageSize, currentPage, totalItems);
+            return new Pageable<T>(pagedItems.AsQueryable(), pageParameters.PageSize, pageParameters.Page, totalItems);
         }
 
     }

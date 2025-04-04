@@ -49,7 +49,9 @@ namespace UpDownForms.Services
             //var listDTO = response.Select(f => f.ToFormDTO()).ToList();
             //Pageable<FormDTO> teste = new Pageable<FormDTO>(listDTO, pageSize, pageIndex, itemsCount);
             //return await Pageable<FormDTO>.ToPageable(listDTO, pageSize, pageIndex);
-            var pageable = await Pageable<FormDTO>.ToPageable(response.OrderBy(pageParameters.OrderBy).Select(f => f.ToFormDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var orderParam = PageParamValidator.ValidatePageParameter<FormDTO>(pageParameters);
+
+            var pageable = await Pageable<FormDTO>.ToPageable(response.OrderBy(orderParam).Select(f => f.ToFormDTO()), pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();
@@ -172,13 +174,15 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<ResponseDTO>> GetResponsesByFormId(int id, PageParameters pageParameters)
         {
-            var formResponses = _context.Responses.Include(r => r.Answers.OrderBy(a => a.QuestionId)).Where(r => r.FormId == id).Where(r => r.Answers.Count() != 0).Select(r => r.ToResponseDTO());
+            var orderParam = PageParamValidator.ValidatePageParameter<ResponseDTO>(pageParameters);
+
+            var formResponses = _context.Responses.Include(r => r.Answers.OrderBy(a => a.QuestionId)).Where(r => r.FormId == id).Where(r => r.Answers.Count() != 0).OrderBy(orderParam).Select(r => r.ToResponseDTO());
             if (formResponses == null)
             {
                 throw new EntityNotFoundException();
             }
 
-            var pageable = await Pageable<ResponseDTO>.ToPageable(formResponses, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var pageable = await Pageable<ResponseDTO>.ToPageable(formResponses, pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();

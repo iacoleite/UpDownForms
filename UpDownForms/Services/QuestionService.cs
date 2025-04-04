@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Linq.Dynamic.Core;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Collections.Immutable;
 
 namespace UpDownForms.Services
 {
@@ -25,12 +27,14 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<QuestionDetailsDTO>> GetQuestions(PageParameters pageParameters)
         {
-            var response = _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).Select(q => q.ToQuestionDetailsDTO());
+            var orderParam = PageParamValidator.ValidatePageParameter<AnswerDTO>(pageParameters);
+
+            var response = _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).OrderBy(orderParam).Select(q => q.ToQuestionDetailsDTO());
             if (response == null)
             {
                 throw new EntityNotFoundException();
             }
-            var pageable = await Pageable<QuestionDetailsDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var pageable = await Pageable<QuestionDetailsDTO>.ToPageable(response, pageParameters);
             //return response.Select(q => q.ToQuestionDetailsDTO()).ToList();
             if (pageable.Items.Count() == 0)
             {
@@ -218,11 +222,23 @@ namespace UpDownForms.Services
             {
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
+
+            //var properties = typeof(OptionDTO).GetProperties();
+            //string[] propertiesStrings = properties.Select(p => p.Name.ToLower()).ToArray();
+
+            //var orderParam = propertiesStrings.Contains(pageParameters.OrderBy.ToLower()) ? pageParameters.OrderBy : "Id";
+            //if (pageParameters.Sort.ToLower().Equals("desc"))
+            //{
+            //    orderParam += " desc";
+            //}
+
+            var orderParam = PageParamValidator.ValidatePageParameter<OptionDTO>(pageParameters);
+
             var options = _context.Options
                                   .Where(o => o.QuestionId == id)
-                                  .OrderBy(o => o.Order)
+                                  .OrderBy(orderParam)
                                   .Select(o => o.ToOptionDTO());
-            var pageable = await Pageable<OptionDTO>.ToPageable(options, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var pageable = await Pageable<OptionDTO>.ToPageable(options, pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();
@@ -232,12 +248,6 @@ namespace UpDownForms.Services
 
         public async Task<QuestionDTO> AddOption(int id, CreateOptionDTO createOptionDTO)
         {
-            //var questionExists = await _context.Questions.FirstOrDefaultAsync(q => q.Id == id);
-            //if (questionExists == null)
-            //{
-            //    throw new EntityNotFoundException("Can't find question");
-            //}
-
             var questions = _context.Questions.Where(q => q.Id == id);
             if (!questions.Any())
                 throw new EntityNotFoundException("Can't find question");
@@ -305,8 +315,10 @@ namespace UpDownForms.Services
             {
                 throw new UnauthorizedException("User not authorized to update question");
             }
-            var response = _context.Answers.Where(a => a.QuestionId == questionId).Select(a => a.ToAnswerDTO());
-            var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var orderParam = PageParamValidator.ValidatePageParameter<AnswerDTO>(pageParameters);
+
+            var response = _context.Answers.Where(a => a.QuestionId == questionId).OrderBy(orderParam).Select(a => a.ToAnswerDTO());
+            var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException("Question does not have any answer.");

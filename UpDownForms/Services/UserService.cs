@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq.Dynamic.Core;
+using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.UserDTOs;
@@ -37,8 +38,10 @@ namespace UpDownForms.Services
                 throw new EntityNotFoundException();
             }
             //var orderedUsers = response.OrderBy(pageParameters.OrderBy).Select(u => u.ToUserDetailsDTO());
+            var orderParam = PageParamValidator.ValidatePageParameter<UserDetailsDTO>(pageParameters);
 
-            var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.OrderBy(pageParameters.OrderBy).Select(u => u.ToUserDetailsDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+
+            var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.OrderBy(orderParam).Select(u => u.ToUserDetailsDTO()), pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Linq.Dynamic.Core;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.ResponseDTOs;
@@ -21,17 +22,20 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<ResponseDTO>> GetResponses(PageParameters pageParameters)
         {
+            var orderParam = PageParamValidator.ValidatePageParameter<ResponseDTO>(pageParameters);
+
             var response = _context.Responses
                    .Include(r => r.Form)
                    .ThenInclude(f => f.User)
                    .Include(r => r.Answers)
+                   .OrderBy(orderParam)
                    .Where(r => !r.IsDeleted);
-                   //.ToListAsync();
+            //.ToListAsync();
             if (response == null)
             {
                 throw new EntityNotFoundException("Can't find response");
             }
-            var pageable = await Pageable<ResponseDTO>.ToPageable(response.Select(r => r.ToResponseDTO()), pageParameters.PageSize, pageParameters.Page, pageParameters.OrderBy);
+            var pageable = await Pageable<ResponseDTO>.ToPageable(response.Select(r => r.ToResponseDTO()), pageParameters);
             if (pageable.Items.Count() == 0)
             {
                 throw new EntityNotFoundException();
@@ -162,7 +166,7 @@ namespace UpDownForms.Services
                     }
                     await transaction.CommitAsync();
                     var answerMultipleChoiceResponseDTO = answer.ToAnswerMultipleChoiceResponseDTO();
-                    foreach ( var selectedOption in answer.SelectedOptions)
+                    foreach (var selectedOption in answer.SelectedOptions)
                     {
                         answerMultipleChoiceResponseDTO.SelectedOptions.Add(selectedOption.OptionId);
                     }
