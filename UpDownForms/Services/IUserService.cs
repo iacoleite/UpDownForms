@@ -17,6 +17,8 @@ namespace UpDownForms.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public LoggedUserService() { }
+
         public string GetLoggedInUserId()
         {
             var httpContext = _httpContextAccessor.HttpContext;

@@ -18,21 +18,19 @@ namespace UpDownForms.Services
     public class UserService
     {
         private readonly UpDownFormsContext _context;
-        private readonly IPasswordHelper _passwordHelper;
         private readonly UserManager<User> _userManager;
         private readonly LoggedUserService _userService;
 
-        public UserService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager, LoggedUserService userService)
+        public UserService(UpDownFormsContext context, UserManager<User> userManager, LoggedUserService userService)
         {
             _context = context;
-            _passwordHelper = passwordHelper;
             _userManager = userManager;
             _userService = userService;
         }
 
         public async Task<Pageable<UserDetailsDTO>> GetUsers(PageParameters pageParameters)
         {
-            var response =  _context.Users.Where(u => !u.IsDeleted);
+            var response = _context.Users.Where(u => !u.IsDeleted);
             if (response == null)
             {
                 throw new EntityNotFoundException();

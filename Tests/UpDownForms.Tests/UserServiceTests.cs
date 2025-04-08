@@ -17,7 +17,6 @@ namespace UpDownForms.Tests.Services
     {
         private UserService _userService;
         private UpDownFormsContext _context;
-        private IPasswordHelper _passwordHelper;
         private UserManager<User> _userManager;
         private LoggedUserService _userServiceMock;
 
@@ -25,10 +24,9 @@ namespace UpDownForms.Tests.Services
         public void SetUp()
         {
             _context = Substitute.For<UpDownFormsContext>(new DbContextOptions<UpDownFormsContext>());
-            _passwordHelper = Substitute.For<IPasswordHelper>();
             _userManager = Substitute.For<UserManager<User>>(Substitute.For<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _userServiceMock = Substitute.For<LoggedUserService>();
-            _userService = new UserService(_context, _passwordHelper, _userManager, _userServiceMock);
+            _userService = new UserService(_context, _userManager, _userServiceMock);
         }
 
         [Test]
@@ -61,8 +59,40 @@ namespace UpDownForms.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(createUserDTO.Name, result.Name);
             Assert.AreEqual(createUserDTO.Email, result.Email);
-            
-            
+        }
+
+        [Test]
+        public async Task UpdateUser_ShouldUpdateUser_WhenDataIsValid()
+        {
+            var createUserDTO = new CreateUserDTO
+            {
+                Name = "Test User",
+                Email = "test@example.com",
+                Password = "Password123@"
+            };
+
+            var user = new User
+            {
+                UserName = createUserDTO.Email,
+                Name = createUserDTO.Name,
+                Email = createUserDTO.Email,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false,
+                Forms = new List<Form>()
+            };
+
+            var updateUserDTO = new UpdateUserDTO
+            {
+                Name = "new User Name",
+                Password = "P@ssword123"
+            };
+
+            _userManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+
+            var createUser = await _userService.PostUser(createUserDTO);
+
+            var result = await _userService.UpdateUser(createUserDTO);
+
         }
 
         [Test]
