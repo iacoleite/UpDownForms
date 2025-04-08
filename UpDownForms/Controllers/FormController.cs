@@ -25,16 +25,7 @@ namespace UpDownForms.Controllers
             _formService = formService;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<Pageable<FormDTO>>> GetForms()
-        //{
-        //    var response = await _formService.GetForms(pageParameters);
-
-        //}
-
         [HttpGet]
-
-        //[PaginatedHttpGetAttribute("GetForms")]
         public async Task<ActionResult<Pageable<FormDTO>>> GetForms([FromQuery] PageParameters pageParameters)
         {
             var response = await _formService.GetForms(pageParameters);
@@ -53,8 +44,6 @@ namespace UpDownForms.Controllers
 
         [Authorize]
         [HttpGet("{id}/responses")]
-        //[Route("{id}/responses")]
-        //[PaginatedHttpGetAttribute("GetResponsesByFormId")]
         public async Task<ActionResult<Pageable<ResponseDTO>>> GetResponsesByFormId(int id, [FromQuery] PageParameters pageParameters)
          {
             var response = await _formService.GetResponsesByFormId(id, pageParameters);

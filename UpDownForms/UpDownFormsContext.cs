@@ -25,6 +25,31 @@ public class UpDownFormsContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
+        //setting some types because default is insanely large
+        modelBuilder.Entity<Form>()
+            .Property(f => f.Description)
+            .HasColumnType("text");
+
+        modelBuilder.Entity<Option>()
+            .Property(o => o.Text)
+            .HasColumnType("text");
+
+        modelBuilder.Entity<Question>()
+            .Property(q => q.Text)
+            .HasColumnType("text");
+
+        modelBuilder.Entity<QuestionMultipleChoice>()
+            .Property(q => q.QuestionMCType)
+            .HasColumnType("varchar(255)");
+
+        modelBuilder.Entity<Response>()
+            .Property(r => r.RespondentEmail)
+            .HasColumnType("varchar(255)");
+        
+        modelBuilder.Entity<AnswerOpenEnded>()
+            .Property(a => a.AnswerText)
+            .HasColumnType("text");
+
         // Relationships for Form and User
         modelBuilder.Entity<Form>()
             .HasOne(f => f.User)

@@ -29,7 +29,7 @@ namespace UpDownForms.Controllers
                 var token = await _loginService.Login(loginDTO);
                 return token;
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex) when (ex is ArgumentNullException || ex is BadHttpRequestException)
             {
                 throw new BadHttpRequestException(ex.Message);
             }
@@ -40,10 +40,6 @@ namespace UpDownForms.Controllers
             catch (UnauthorizedAccessException ex)
             {
                 throw new UnauthorizedException(ex.Message);
-            }
-            catch (BadHttpRequestException ex)
-            {
-                throw new BadHttpRequestException(ex.Message);
             }
             catch (EntityNotFoundException ex)
             {

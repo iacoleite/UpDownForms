@@ -2,7 +2,7 @@
 {
     public static class PageParamValidator
     {
-        public static string ValidatePageParameter<T>(PageParameters pageParameters)
+        public static string SetSortOrder<T>(PageParameters pageParameters)
         {
             var properties = typeof(T).GetProperties();
             string[] propertiesStrings = properties.Select(p => p.Name.ToLower()).ToArray();

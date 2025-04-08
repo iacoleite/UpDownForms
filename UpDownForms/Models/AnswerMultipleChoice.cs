@@ -6,10 +6,8 @@ namespace UpDownForms.Models
 {
     public class AnswerMultipleChoice : Answer
     {
-        //public int OptionId { get; set; }
         public List<AnsweredOption> SelectedOptions { get; set; } = new List<AnsweredOption>();
         public AnswerMultipleChoice() {
-            //Type = "MultipleChoice";
         }
 
         public AnswerMultipleChoice(CreateAnswerMultipleChoiceDTO createAnswerDTO)
@@ -22,7 +20,6 @@ namespace UpDownForms.Models
             {
                 this.SelectedOptions.Add(new AnsweredOption { OptionId = optionId });
             }
-            
         }
 
         public AnswerMultipleChoiceResponseDTO ToAnswerMultipleChoiceResponseDTO()
@@ -34,7 +31,6 @@ namespace UpDownForms.Models
                 QuestionId = this.QuestionId,
                 IsDeleted = this.IsDeleted
             };
-
         }
 
         public AnswerMultipleChoiceResponseDTO ToAnswerDTO()
@@ -47,10 +43,8 @@ namespace UpDownForms.Models
                 QuestionId = this.QuestionId,
                 //AnswerText = this.AnswerText,
                 //OptionId = this.OptionId,
-
                 IsDeleted = this.IsDeleted
             };
-
             return teste;
         }
     }

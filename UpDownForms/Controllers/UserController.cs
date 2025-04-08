@@ -66,7 +66,7 @@ public class UserController : ControllerBase
     {
 
         var response = await _userService.DeleteUser(id);
-        
+
         return Ok(response);
     }
 

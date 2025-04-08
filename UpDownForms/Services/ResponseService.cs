@@ -22,7 +22,7 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<ResponseDTO>> GetResponses(PageParameters pageParameters)
         {
-            var orderParam = PageParamValidator.ValidatePageParameter<ResponseDTO>(pageParameters);
+            var orderParam = PageParamValidator.SetSortOrder<ResponseDTO>(pageParameters);
 
             var response = _context.Responses
                    .Include(r => r.Form)

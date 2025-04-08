@@ -24,8 +24,6 @@ namespace UpDownForms.Models
         [Required]
         public Question Question { get; set; }
 
-        //public string Type { get; set; }
-
         public Answer()
         {
         }

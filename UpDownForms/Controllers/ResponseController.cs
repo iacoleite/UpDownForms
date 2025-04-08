@@ -19,7 +19,6 @@ namespace UpDownForms.Controllers
 
         public ResponseController(ResponseService responseService)
         {
-
             _responseService = responseService;
         }
 
@@ -53,7 +52,6 @@ namespace UpDownForms.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteResponse(int id)
         {
-
             var response = await _responseService.DeleteResponse(id);
             return Ok(response);
         }
@@ -68,8 +66,6 @@ namespace UpDownForms.Controllers
             var response = await _responseService.PostAnswer(id, createAnswerDTO);
             return Ok(response);
         }
-
-
     }
 }
 
