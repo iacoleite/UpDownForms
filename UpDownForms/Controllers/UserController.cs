@@ -50,6 +50,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
+
     [HttpPut("{id}")]
     public async Task<ActionResult<UserDetailsDTO>> UpdateUser(string id, [FromBody] UpdateUserDTO updatedUserDTO)
     {

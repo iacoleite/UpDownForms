@@ -16,15 +16,11 @@ namespace UpDownForms.Services
     public class FormService
     {
         private readonly UpDownFormsContext _context;
-        private readonly IPasswordHelper _passwordHelper;
-        private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
 
-        public FormService(UpDownFormsContext context, IPasswordHelper passwordHelper, UserManager<User> userManager, IUserService userService)
+        public FormService(UpDownFormsContext context, IUserService userService)
         {
             _context = context;
-            _passwordHelper = passwordHelper;
-            _userManager = userManager;
             _userService = userService;
         }
 
@@ -39,9 +35,9 @@ namespace UpDownForms.Services
                                    .Include(f => f.Questions)
                                    //.ThenInclude(q => (q as QuestionMultipleChoice).Options)
                                    .Where(f => !f.IsDeleted);
-                                   //.AsQueryable();
-                                   //.ToListAsync();
-                                         
+            //.AsQueryable();
+            //.ToListAsync();
+
             if (response == null)
             {
                 throw new EntityNotFoundException();
@@ -70,7 +66,7 @@ namespace UpDownForms.Services
                 .FirstOrDefaultAsync(f => f.Id == id);
             if (form == null)
             {
-                 throw new EntityNotFoundException();
+                throw new EntityNotFoundException();
             }
             if (!form.IsPublished)
             {

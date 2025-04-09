@@ -223,15 +223,6 @@ namespace UpDownForms.Services
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
 
-            //var properties = typeof(OptionDTO).GetProperties();
-            //string[] propertiesStrings = properties.Select(p => p.Name.ToLower()).ToArray();
-
-            //var orderParam = propertiesStrings.Contains(pageParameters.OrderBy.ToLower()) ? pageParameters.OrderBy : "Id";
-            //if (pageParameters.Sort.ToLower().Equals("desc"))
-            //{
-            //    orderParam += " desc";
-            //}
-
             var orderParam = PageParamValidator.SetSortOrder<OptionDTO>(pageParameters);
 
             var options = _context.Options

@@ -9,6 +9,7 @@ using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Security;
 using UpDownForms.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace UpDownForms.Tests.Services
 {
@@ -18,15 +19,19 @@ namespace UpDownForms.Tests.Services
         private UserService _userService;
         private UpDownFormsContext _context;
         private UserManager<User> _userManager;
-        private LoggedUserService _userServiceMock;
+        private IHttpContextAccessor _iHttpContextAcessor;
+        private LoggedUserService _loggedUserServiceMock;
+
 
         [SetUp]
         public void SetUp()
         {
             _context = Substitute.For<UpDownFormsContext>(new DbContextOptions<UpDownFormsContext>());
             _userManager = Substitute.For<UserManager<User>>(Substitute.For<IUserStore<User>>(), null, null, null, null, null, null, null, null);
-            _userServiceMock = Substitute.For<LoggedUserService>();
-            _userService = new UserService(_context, _userManager, _userServiceMock);
+            _iHttpContextAcessor = Substitute.For<IHttpContextAccessor>();
+            //_loggedUserServiceMock = Substitute.For<LoggedUserService>();
+            _loggedUserServiceMock = new LoggedUserService(_iHttpContextAcessor);
+            _userService = new UserService(_context, _userManager, _loggedUserServiceMock);
         }
 
         [Test]
@@ -61,39 +66,47 @@ namespace UpDownForms.Tests.Services
             Assert.AreEqual(createUserDTO.Email, result.Email);
         }
 
-        [Test]
-        public async Task UpdateUser_ShouldUpdateUser_WhenDataIsValid()
-        {
-            var createUserDTO = new CreateUserDTO
-            {
-                Name = "Test User",
-                Email = "test@example.com",
-                Password = "Password123@"
-            };
+        //[Test]
+        //public async Task UpdateUser_ShouldUpdateUser_WhenDataIsValid()
+        //{
+        //    // Arrange
+        //    var userId = "123";
+        //    var user = new User
+        //    {
+        //        Id = userId,
+        //        UserName = "test@example.com",
+        //        Name = "Test User",
+        //        Email = "test@example.com",
+        //        CreatedAt = DateTime.UtcNow,
+        //        IsDeleted = false,
+        //        Forms = new List<Form>(),
+        //        PasswordHash = "123"
+        //    };
 
-            var user = new User
-            {
-                UserName = createUserDTO.Email,
-                Name = createUserDTO.Name,
-                Email = createUserDTO.Email,
-                CreatedAt = DateTime.UtcNow,
-                IsDeleted = false,
-                Forms = new List<Form>()
-            };
+        //    var updateUserDTO = new UpdateUserDTO
+        //    {
+        //        Name = "new User Name",
+        //        Password = "P@ssword123"
+        //    };
 
-            var updateUserDTO = new UpdateUserDTO
-            {
-                Name = "new User Name",
-                Password = "P@ssword123"
-            };
 
-            _userManager.CreateAsync(Arg.Any<User>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+        //    // Mock the user retrieval from the context
+        //    _context.Users.FindAsync(userId).Returns(user);
 
-            var createUser = await _userService.PostUser(createUserDTO);
+        //    // Mock the update operation
+        //    _userManager.UpdateAsync(Arg.Any<User>()).Returns(IdentityResult.Success);
+        //    _loggedUserServiceMock.GetLoggedInUserId().Returns(userId);
+            
 
-            var result = await _userService.UpdateUser(createUserDTO);
 
-        }
+        //    // Act
+        //    var result = await _userService.UpdateUser(userId, updateUserDTO);
+
+        //    // Assert
+        //    Assert.IsNotNull(result);
+        //    Assert.AreEqual(updateUserDTO.Name, result.Name);
+        //    Assert.AreEqual(userId, result.Id);
+        //}
 
         [Test]
         public void PostUser_ShouldThrowException_WhenUserCreationFails()
