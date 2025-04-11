@@ -7,6 +7,7 @@ using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
 using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Controllers
 {
@@ -14,9 +15,9 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class QuestionController : Controller
     {
-        private readonly QuestionService _questionService;
+        private readonly IQuestionService _questionService;
 
-        public QuestionController(QuestionService questionService)
+        public QuestionController(IQuestionService questionService)
         {
             _questionService = questionService;
         }

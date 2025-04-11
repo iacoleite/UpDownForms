@@ -2,7 +2,7 @@ using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Pagination;
 
-namespace UpDownForms.Services
+namespace UpDownForms.Services.Interfaces
 {
     public interface IFormService
     {

@@ -9,17 +9,17 @@ using UpDownForms.DTO.OptionDTOs;
 using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Collections.Immutable;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Services
 {
-    public class QuestionService
+    public class QuestionService : IQuestionService
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IUserService _userService;
+        private readonly IUpDownFormsContext _context;
+        private readonly ILoggedUserService _userService;
 
-        public QuestionService(UpDownFormsContext context, IUserService userService)
+        public QuestionService(IUpDownFormsContext context, ILoggedUserService userService)
         {
             _context = context;
             _userService = userService;
@@ -204,7 +204,7 @@ namespace UpDownForms.Services
             {
                 question.DeleteQuestion();
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return question.ToQuestionDTO();
         }
 

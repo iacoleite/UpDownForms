@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Security;
 using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Controllers
 {
@@ -10,9 +11,9 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class LoginController : Controller
     {
-        private readonly LoginService _loginService;
+        private readonly ILoginService _loginService;
 
-        public LoginController(LoginService loginService)
+        public LoginController(ILoginService loginService)
         {
             _loginService = loginService;
         }

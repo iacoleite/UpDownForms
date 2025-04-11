@@ -10,6 +10,7 @@ using UpDownForms.Models;
 using UpDownForms.Security;
 using UpDownForms.Services;
 using Microsoft.AspNetCore.Http;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Tests.Services
 {
@@ -125,16 +126,12 @@ namespace UpDownForms.Tests.Services
             Assert.ThrowsAsync<Exception>(async () => await _userService.PostUser(createUserDTO));
         }
 
-        //[Test]
-        //public void 
+
         [TearDown]
         public void TearDown()
         {
             _context.Dispose();
             _userManager.Dispose();
         }
-
-        
-        
     }
 }

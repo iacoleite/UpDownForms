@@ -9,7 +9,7 @@ using UpDownForms.DTO.FormDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
-using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Controllers
 {
@@ -17,10 +17,10 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class FormController : ControllerBase
     {
-        private readonly FormService _formService;
+        private readonly IFormService _formService;
         
 
-        public FormController(FormService formService)
+        public FormController(IFormService formService)
         {
             _formService = formService;
         }

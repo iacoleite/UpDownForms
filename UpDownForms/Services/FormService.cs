@@ -10,22 +10,19 @@ using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
 using UpDownForms.Security;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Services
 {
-    public class FormService
+    public class FormService : IFormService
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IUserService _userService;
+        private readonly IUpDownFormsContext _context;
+        private readonly ILoggedUserService _userService;
 
-        public FormService(UpDownFormsContext context, IUserService userService)
+        public FormService(IUpDownFormsContext context, ILoggedUserService userService)
         {
             _context = context;
             _userService = userService;
-        }
-
-        public FormService()
-        {
         }
 
         public async Task<Pageable<FormDTO>> GetForms(PageParameters pageParameters)

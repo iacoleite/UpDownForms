@@ -8,6 +8,7 @@ using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
 using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Controllers
 {
@@ -15,9 +16,9 @@ namespace UpDownForms.Controllers
     [Route("[controller]")]
     public class ResponseController : Controller
     {
-        private readonly ResponseService _responseService;
+        private readonly IResponseService _responseService;
 
-        public ResponseController(ResponseService responseService)
+        public ResponseController(IResponseService responseService)
         {
             _responseService = responseService;
         }

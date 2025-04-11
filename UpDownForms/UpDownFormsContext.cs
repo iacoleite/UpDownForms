@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 using UpDownForms.Models;
 
-public class UpDownFormsContext : IdentityDbContext<User>
+public class UpDownFormsContext : IdentityDbContext<User>, IUpDownFormsContext
 {
     public UpDownFormsContext(DbContextOptions<UpDownFormsContext> options) : base(options)
     {
@@ -18,8 +19,12 @@ public class UpDownFormsContext : IdentityDbContext<User>
     public DbSet<AnsweredOption> AnsweredOptions { get; set; }
     public DbSet<Option> Options { get; set; }
     public DbSet<Response> Responses { get; set; }
-    public DbSet<User> AppUsers => Set<User>();
+    public DbSet<User> Users => Set<User>();
 
+    public IDbContextTransaction BeginTransaction()
+    {
+        return this.Database.BeginTransaction();
+    }
     public UpDownFormsContext() { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -45,7 +50,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
         modelBuilder.Entity<Response>()
             .Property(r => r.RespondentEmail)
             .HasColumnType("varchar(255)");
-        
+
         modelBuilder.Entity<AnswerOpenEnded>()
             .Property(a => a.AnswerText)
             .HasColumnType("text");
@@ -55,7 +60,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(f => f.User)
             .WithMany(u => u.Forms)
             .HasForeignKey(f => f.UserId)
-            .OnDelete(DeleteBehavior.Cascade);  
+            .OnDelete(DeleteBehavior.Cascade);
 
         // inheritance between Question and differents types of questions using EF 
         modelBuilder.Entity<Question>()
@@ -73,7 +78,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
         // Store QuestionType as an integer in the db
         modelBuilder.Entity<QuestionMultipleChoice>()
             .Property(q => q.QuestionMCType)
-            .HasConversion<string>();  
+            .HasConversion<string>();
 
         modelBuilder.Entity<QuestionMultipleChoice>()
             .HasMany(q => q.Options)
@@ -85,7 +90,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(r => r.Form)
             .WithMany(f => f.Responses)
             .HasForeignKey(r => r.FormId)
-            .OnDelete(DeleteBehavior.Cascade);  
+            .OnDelete(DeleteBehavior.Cascade);
 
         // TPH Inheritance for Answer
         modelBuilder.Entity<Answer>()
@@ -98,25 +103,25 @@ public class UpDownFormsContext : IdentityDbContext<User>
             .HasOne(a => a.Response)
             .WithMany(r => r.Answers)
             .HasForeignKey(a => a.ResponseId)
-            .OnDelete(DeleteBehavior.Cascade); 
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Answer>()
             .HasOne(a => a.Question)
             .WithMany(q => q.Answers)
             .HasForeignKey(a => a.QuestionId)
-            .OnDelete(DeleteBehavior.Cascade);  
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<AnsweredOption>()
-            .HasKey(ao => new { ao.AnswerMultipleChoiceId, ao.OptionId }); 
+            .HasKey(ao => new { ao.AnswerMultipleChoiceId, ao.OptionId });
 
         modelBuilder.Entity<AnsweredOption>()
             .HasOne(ao => ao.AnswerMultipleChoice)
-            .WithMany(amc => amc.SelectedOptions) 
+            .WithMany(amc => amc.SelectedOptions)
             .HasForeignKey(ao => ao.AnswerMultipleChoiceId);
 
         modelBuilder.Entity<AnsweredOption>()
             .HasOne(ao => ao.Option)
-            .WithMany(o => o.AnsweredOptions) 
+            .WithMany(o => o.AnsweredOptions)
             .HasForeignKey(ao => ao.OptionId);
     }
 
@@ -124,7 +129,7 @@ public class UpDownFormsContext : IdentityDbContext<User>
     {
         var entries = ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-        
+
         foreach (var entry in entries)
         {
             switch (entry.Entity)
@@ -139,4 +144,6 @@ public class UpDownFormsContext : IdentityDbContext<User>
         }
         return base.SaveChangesAsync(token);
     }
+
+
 }

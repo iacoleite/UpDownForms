@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using UpDownForms.Models;
 using UpDownForms.Security;
 using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,19 +54,17 @@ builder.Services.AddAuthentication(o =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
-builder.Services.AddScoped<TokenService>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<LoggedUserService>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<IUserService, LoggedUserService>();
-
-builder.Services.AddScoped<FormService>();
-builder.Services.AddScoped<QuestionService>();
-builder.Services.AddScoped<ResponseService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUpDownFormsContext, UpDownFormsContext>();
+builder.Services.AddScoped<ILoggedUserService, LoggedUserService>();
+builder.Services.AddScoped<IFormService, FormService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IResponseService, ResponseService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>

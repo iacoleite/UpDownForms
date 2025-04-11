@@ -6,7 +6,7 @@ using UpDownForms.Models;
 
 namespace UpDownForms.Security
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly JwtSettings _jwtSettings;
         public TokenService(JwtSettings jwtSettings)

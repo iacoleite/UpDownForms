@@ -6,18 +6,18 @@ using UpDownForms.DTO.QuestionDTOs;
 using UpDownForms.DTO.ResponseDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Services
 {
-    public class ResponseService
+    public class ResponseService : IResponseService
     {
-        private readonly UpDownFormsContext _context;
-        private readonly IUserService _userService;
+        private readonly IUpDownFormsContext _context;
 
-        public ResponseService(UpDownFormsContext context, IUserService userService)
+        public ResponseService(IUpDownFormsContext context)
         {
             _context = context;
-            _userService = userService;
+
         }
 
         public async Task<Pageable<ResponseDTO>> GetResponses(PageParameters pageParameters)
@@ -141,7 +141,8 @@ namespace UpDownForms.Services
             }
             else if (createAnswerDTO is CreateAnswerMultipleChoiceDTO createAnswerMultipleChoiceDTO)
             {
-                using var transaction = _context.Database.BeginTransaction();
+                using var transaction = _context.BeginTransaction();
+                
                 try
                 {
                     var answer = new AnswerMultipleChoice(createAnswerMultipleChoiceDTO);

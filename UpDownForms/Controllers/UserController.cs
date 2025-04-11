@@ -7,6 +7,7 @@ using UpDownForms.Models;
 using UpDownForms.Pagination;
 using UpDownForms.Security;
 using UpDownForms.Services;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Controllers;
 
@@ -15,9 +16,9 @@ namespace UpDownForms.Controllers;
 public class UserController : ControllerBase
 {
     //private readonly ILogger<UserController> _logger;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UserController(UserService userService)
+    public UserController(IUserService userService)
     {
         _userService = userService;
     }

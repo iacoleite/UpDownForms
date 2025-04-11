@@ -1,16 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Security;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Services
 {
-    public class LoginService
+    public class LoginService : ILoginService
     {
-        private readonly UpDownFormsContext _context;
+        private readonly IUpDownFormsContext _context;
         private readonly IPasswordHelper _passwordHelper;
-        private readonly TokenService _tokenService;
+        private readonly ITokenService _tokenService;
 
-        public LoginService(UpDownFormsContext context, IPasswordHelper passwordHelper, TokenService tokenService)
+        public LoginService(IUpDownFormsContext context, IPasswordHelper passwordHelper, ITokenService tokenService)
         {
             _context = context;
             _passwordHelper = passwordHelper;

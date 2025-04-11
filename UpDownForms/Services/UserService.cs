@@ -12,16 +12,17 @@ using UpDownForms.DTO.UserDTOs;
 using UpDownForms.Models;
 using UpDownForms.Pagination;
 using UpDownForms.Security;
+using UpDownForms.Services.Interfaces;
 
 namespace UpDownForms.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UpDownFormsContext _context;
+        private readonly IUpDownFormsContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly LoggedUserService _userService;
+        private readonly ILoggedUserService _userService;
 
-        public UserService(UpDownFormsContext context, UserManager<User> userManager, LoggedUserService userService)
+        public UserService(IUpDownFormsContext context, UserManager<User> userManager, ILoggedUserService userService)
         {
             _context = context;
             _userManager = userManager;

@@ -1,14 +1,14 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace UpDownForms.Services
+namespace UpDownForms.Services.Interfaces
 {
-    public interface IUserService
+    public interface ILoggedUserService
     {
         string GetLoggedInUserId();
     }
 
-    public class LoggedUserService : IUserService
+    public class LoggedUserService : ILoggedUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -16,8 +16,6 @@ namespace UpDownForms.Services
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        public LoggedUserService() { }
 
         public string GetLoggedInUserId()
         {
