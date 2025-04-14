@@ -17,21 +17,23 @@ namespace UpDownForms.Tests.Services
     [TestFixture]
     public class UserServiceTests
     {
-        private UserService _userService;
-        private UpDownFormsContext _context;
+        private IUserService _userService;
+        private IUpDownFormsContext _context;
         private UserManager<User> _userManager;
         private IHttpContextAccessor _iHttpContextAcessor;
-        private LoggedUserService _loggedUserServiceMock;
+        private ILoggedUserService _loggedUserServiceMock;
 
 
         [SetUp]
         public void SetUp()
         {
             _context = Substitute.For<UpDownFormsContext>(new DbContextOptions<UpDownFormsContext>());
-            _userManager = Substitute.For<UserManager<User>>(Substitute.For<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            //_userManager = Substitute.For<UserManager<User>>(Substitute.For<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _iHttpContextAcessor = Substitute.For<IHttpContextAccessor>();
             //_loggedUserServiceMock = Substitute.For<LoggedUserService>();
-            _loggedUserServiceMock = new LoggedUserService(_iHttpContextAcessor);
+            //_loggedUserServiceMock = new LoggedUserService(_iHttpContextAcessor);
+            _loggedUserServiceMock = Substitute.For<ILoggedUserService>();
+
             _userService = new UserService(_context, _userManager, _loggedUserServiceMock);
         }
 
@@ -130,7 +132,9 @@ namespace UpDownForms.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            _context.Dispose();
+
+            // TODO: Verify how can dispose a IDbContext 
+            //_context.Dispose();
             _userManager.Dispose();
         }
     }
