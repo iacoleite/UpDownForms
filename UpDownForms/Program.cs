@@ -53,10 +53,9 @@ builder.Services.AddAuthentication(o =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
-
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<JwtSettings>>().Value);
+builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -138,8 +137,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseExceptionHandler();
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

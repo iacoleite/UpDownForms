@@ -22,12 +22,6 @@ namespace UpDownForms.Tests
         private ILoggedUserService _loggedUserService;
         private QuestionOpenEnded fakeOpenEndedQuestion;
 
-
-        //public QuestionServiceTests(IQuestionService questionService)
-        //{
-        //    _questionService = new QuestionService(_context, _loggedUserService);
-        //}
-
         [SetUp]
         public void SetUp()
         {
@@ -51,8 +45,12 @@ namespace UpDownForms.Tests
         [Test]
         public async Task DeleteQuestion_QuestionExists_ShouldReturnQuestionDTOWithIsDeletedTrue()
         {
+            
             var result = await _questionService.DeleteQuestion(fakeOpenEndedQuestion.Id);
-            Assert.AreNotEqual(result.IsDeleted, fakeOpenEndedQuestion.IsDeleted);
+
+            
+            //Assert.AreNotEqual(result.IsDeleted, fakeOpenEndedQuestion.IsDeleted);
+            Assert.That(result.IsDeleted, Is.Not.EqualTo(fakeOpenEndedQuestion.IsDeleted));
         }
 
     }

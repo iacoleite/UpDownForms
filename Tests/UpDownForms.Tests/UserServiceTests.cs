@@ -65,8 +65,10 @@ namespace UpDownForms.Tests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(createUserDTO.Name, result.Name);
-            Assert.AreEqual(createUserDTO.Email, result.Email);
+            Assert.That(createUserDTO.Name, Is.EqualTo(result.Name));
+            //Assert.AreEqual(createUserDTO.Name, result.Name);
+            Assert.That(createUserDTO.Email, Is.EqualTo(result.Email));
+            //Assert.AreEqual(createUserDTO.Email, result.Email);
         }
 
         //[Test]
