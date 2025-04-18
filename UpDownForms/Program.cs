@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -64,6 +65,7 @@ builder.Services.AddScoped<ILoggedUserService, LoggedUserService>();
 builder.Services.AddScoped<IFormService, FormService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IResponseService, ResponseService>();
+builder.Services.AddScoped<IAuthorizationHandler, VerifyOwnershipHandler>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>

@@ -12,7 +12,7 @@ namespace UpDownForms.Models
     [JsonDerivedType(typeof(QuestionOpenEnded), typeDiscriminator: "OpenEnded")]
 
     [Table("Questions")]
-    public abstract class Question
+    public abstract class Question : IVerifyOwnership
     {
         public int Id { get; set; }
         [Required]
@@ -29,6 +29,9 @@ namespace UpDownForms.Models
         public Form Form { get; set; }
         [Required]
         public List<Answer> Answers { get; set; } = new List<Answer>();
+
+        public string UserId => (Form).UserId;
+
         //public string Type { get; set; }
 
         public Question()

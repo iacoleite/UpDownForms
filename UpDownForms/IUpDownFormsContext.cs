@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using UpDownForms.Models;
 
-public interface IUpDownFormsContext
+public interface IUpDownFormsContext 
 {
     DbSet<AnsweredOption> AnsweredOptions { get; set; }
     DbSet<Answer> Answers { get; set; }

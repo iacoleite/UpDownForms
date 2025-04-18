@@ -6,7 +6,7 @@ namespace UpDownForms.Models
 {
 
     [Table("Options")]
-    public class Option
+    public class Option : IVerifyOwnership
     {
         public int Id { get; set; }
         [Required]
@@ -23,6 +23,8 @@ namespace UpDownForms.Models
         public bool IsCorrect { get; set; }
         [Required]
         public List<AnsweredOption> AnsweredOptions { get; set; } = new List<AnsweredOption>();
+
+        public string UserId => ((IVerifyOwnership)QuestionMultipleChoice).UserId;
 
         public Option() { }
 

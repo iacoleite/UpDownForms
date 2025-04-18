@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,7 +133,7 @@ namespace UpDownForms.Services
             {
                 form.Description = updateFormDTO.Description;
             }
-            form.UpdatedAt = DateTime.UtcNow;
+            //form.UpdatedAt = DateTime.UtcNow;
             form.IsDeleted = false;
             form.IsPublished = updateFormDTO.IsPublished;
             _context.Forms.Update(form);

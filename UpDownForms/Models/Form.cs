@@ -6,7 +6,7 @@ using UpDownForms.DTO.UserDTOs;
 namespace UpDownForms.Models
 {
     [Table("Forms")]
-    public class Form
+    public class Form : IVerifyOwnership
     {
         public int Id { get;  set; }
         [Required]
