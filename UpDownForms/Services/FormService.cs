@@ -120,11 +120,20 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Form not found");
             }
-            var userId = _userService.GetLoggedInUserId();
-            if (!(form.User.Id == userId))
+            var isAuthorized = await _userService.IsAuthorized(form);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("You are not authorized to update this form");
+                    throw new UnauthorizedException("You are not authorized to update this form");
             }
+
+            //var userId = _userService.GetLoggedInUserId();
+            //if (!(form.User.Id == userId))
+            //{
+            //    throw new UnauthorizedException("You are not authorized to update this form");
+            //}
+
+
             if (!string.IsNullOrEmpty(updateFormDTO.Title))
             {
                 form.Title = updateFormDTO.Title;

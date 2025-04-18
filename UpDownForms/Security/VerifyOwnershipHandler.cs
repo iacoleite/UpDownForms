@@ -7,11 +7,23 @@ namespace UpDownForms.Security
 {
     public class VerifyOwnershipHandler : AuthorizationHandler<SameAuthorRequirement, IVerifyOwnership>
     {
-        public override Task HandleRequirementAsync(AuthorizationHandlerContext context, SameAuthorRequirement requirement, IVerifyOwnership resource)
+        //public Task Teste(AuthorizationHandlerContext context, SameAuthorRequirement requirement, IVerifyOwnership resource)
+        //{
+        //    var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    if (context.User.Identity.Name == resource.UserId)
+        //    {
+        //        context.Succeed(requirement);
+        //    }
+
+        //    return Task.CompletedTask;
+        //}
+
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, SameAuthorRequirement requirement, IVerifyOwnership resource)
         {
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (context.User.Identity.Name == resource.UserId)
+            if (userId == resource.UserId)
             {
                 context.Succeed(requirement);
             }
