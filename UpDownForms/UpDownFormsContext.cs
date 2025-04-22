@@ -9,17 +9,17 @@ public class UpDownFormsContext : IdentityDbContext<User>, IUpDownFormsContext
     public UpDownFormsContext(DbContextOptions<UpDownFormsContext> options) : base(options)
     {
     }
-    public DbSet<Form> Forms { get; set; }
-    public DbSet<Question> Questions { get; set; }
-    public DbSet<QuestionMultipleChoice> QuestionsMultipleChoice { get; set; }
-    public DbSet<QuestionOpenEnded> QuestionsOpenEnded { get; set; }
-    public DbSet<Answer> Answers { get; set; }
-    public DbSet<AnswerMultipleChoice> AnswersMultipleChoice { get; set; }
-    public DbSet<AnswerOpenEnded> AnswersOpenEnded { get; set; }
-    public DbSet<AnsweredOption> AnsweredOptions { get; set; }
-    public DbSet<Option> Options { get; set; }
-    public DbSet<Response> Responses { get; set; }
-    public DbSet<User> Users => Set<User>();
+    public virtual DbSet<Form> Forms { get; set; }
+    public virtual DbSet<Question> Questions { get; set; }
+    public virtual DbSet<QuestionMultipleChoice> QuestionsMultipleChoice { get; set; }
+    public virtual DbSet<QuestionOpenEnded> QuestionsOpenEnded { get; set; }
+    public virtual DbSet<Answer> Answers { get; set; }
+    public virtual DbSet<AnswerMultipleChoice> AnswersMultipleChoice { get; set; }
+    public virtual DbSet<AnswerOpenEnded> AnswersOpenEnded { get; set; }
+    public virtual DbSet<AnsweredOption> AnsweredOptions { get; set; }
+    public virtual DbSet<Option> Options { get; set; }
+    public virtual DbSet<Response> Responses { get; set; }
+    public virtual DbSet<User> Users => Set<User>();
 
     public IDbContextTransaction BeginTransaction()
     {

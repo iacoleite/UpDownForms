@@ -59,5 +59,10 @@ namespace UpDownForms.Models
         {
             this.IsDeleted = false;
         }
+
+        public string GetUserId()
+        {
+            return UserId;
+        }
     }
 }

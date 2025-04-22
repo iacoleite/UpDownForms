@@ -13,11 +13,12 @@ namespace UpDownForms.Services
     public class ResponseService : IResponseService
     {
         private readonly IUpDownFormsContext _context;
+        private readonly ILoggedUserService _userService;
 
-        public ResponseService(IUpDownFormsContext context)
+        public ResponseService(IUpDownFormsContext context, ILoggedUserService userService)
         {
             _context = context;
-
+            _userService = userService;
         }
 
         public async Task<Pageable<ResponseDTO>> GetResponses(PageParameters pageParameters)
@@ -79,10 +80,16 @@ namespace UpDownForms.Services
 
         public async Task<ResponseDTO> DeleteResponse(int id)
         {
-            var response = await _context.Responses.Include(r => r.Answers).FirstOrDefaultAsync(r => id == r.Id);
+            var response = await _context.Responses.Include(r => r.Answers).Include(r => r.Form).FirstOrDefaultAsync(r => id == r.Id);
             if (response == null)
             {
-                throw new EntityNotFoundException("Can't find Form");
+                throw new EntityNotFoundException("Can't find response");
+            }
+            var isAuthorized = await _userService.IsAuthorized(response.Form);
+
+            if (!isAuthorized)
+            {
+                throw new UnauthorizedException("You are not authorized to delete a response of this form");
             }
             response.DeleteResponse();
             //response.IsDeleted = true;

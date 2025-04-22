@@ -48,7 +48,10 @@ namespace UpDownForms.Models
             this.IsRequired = createQuestionDTO.IsRequired;
             this.IsDeleted = false;
         }
-
+        public string GetUserId()
+        {
+            return UserId;
+        }
         public virtual QuestionDTO ToQuestionDTO()
         {
             return new BaseQuestionDTO

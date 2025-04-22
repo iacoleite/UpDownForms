@@ -3,5 +3,7 @@
     public interface IVerifyOwnership
     {
         string UserId { get; }
+
+        string GetUserId();
     }
 }

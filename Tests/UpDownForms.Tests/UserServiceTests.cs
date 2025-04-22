@@ -12,7 +12,7 @@ using UpDownForms.Services;
 using Microsoft.AspNetCore.Http;
 using UpDownForms.Services.Interfaces;
 
-namespace UpDownForms.Tests.Services
+namespace UpDownForms.Tests
 {
     [TestFixture]
     public class UserServiceTests

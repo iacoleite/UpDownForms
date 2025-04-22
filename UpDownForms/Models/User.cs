@@ -27,6 +27,7 @@ namespace UpDownForms.Models
         public bool IsDeleted { get; set; }
         [Required]
         public List<Form> Forms { get; set; }
+        
 
         public User()
         {

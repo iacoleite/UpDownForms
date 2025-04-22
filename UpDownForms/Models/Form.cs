@@ -44,6 +44,10 @@ namespace UpDownForms.Models
             this.UpdatedAt = DateTime.UtcNow;
         }
 
+        public string GetUserId()
+        {
+            return UserId;
+        }
         public FormDTO ToFormDTO()
         {
             return new FormDTO

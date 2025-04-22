@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Net;
 using System.Linq.Dynamic.Core;
 using UpDownForms.DTO.AnswersDTOs;
 using UpDownForms.DTO.OptionDTOs;
@@ -80,15 +77,13 @@ namespace UpDownForms.Services
                 throw new EntityNotFoundException("Can't find form to add question");
             }
 
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+            var isAuthorized = await _userService.IsAuthorized(form);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
+                throw new UnauthorizedException("You are not authorized to post in this form");
             }
-            if (!form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to add a question to this form");
-            }
+
 
             Question question;
 
@@ -135,15 +130,14 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Can't find question");
             }
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+
+            var isAuthorized = await _userService.IsAuthorized(question);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
+                throw new UnauthorizedException("You are not authorized to update this question");
             }
-            if (!question.Form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to update question");
-            }
+
 
             if (updateQuestionDTO is UpdateQuestionMultipleChoiceDTO updateQuestionMultipleChoiceDTO)
             {
@@ -186,15 +180,13 @@ namespace UpDownForms.Services
                 throw new EntityNotFoundException("Can't find question");
             }
 
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+            var isAuthorized = await _userService.IsAuthorized(question);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
+                throw new UnauthorizedException("You are not authorized to delete this question");
             }
-            if (!question.Form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to update question");
-            }
+
 
             if (question.GetType().Name == "QuestionMultipleChoice")
             {
@@ -248,14 +240,11 @@ namespace UpDownForms.Services
             {
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+            var isAuthorized = await _userService.IsAuthorized(question);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
-            }
-            if (!question.Form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to update question");
+                throw new UnauthorizedException("You are not authorized to add options to this question");
             }
             var option = new Option(createOptionDTO);
             question.AddOption(option);
@@ -275,14 +264,11 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Can't find option");
             }
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+            var isAuthorized = await _userService.IsAuthorized(question);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
-            }
-            if (!question.Form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to update question");
+                throw new UnauthorizedException("You are not authorized to delete this option");
             }
 
             option.DeleteOption();
@@ -297,14 +283,12 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Can't find question");
             }
-            var userId = _userService.GetLoggedInUserId();
-            if (userId == null)
+
+            var isAuthorized = await _userService.IsAuthorized(question);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("User must be logged");
-            }
-            if (!question.Form.UserId.Equals(userId))
-            {
-                throw new UnauthorizedException("User not authorized to update question");
+                throw new UnauthorizedException("You are not authorized to access the answers of this question");
             }
             var orderParam = PageParamValidator.SetSortOrder<AnswerDTO>(pageParameters);
 

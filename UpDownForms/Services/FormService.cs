@@ -124,15 +124,8 @@ namespace UpDownForms.Services
 
             if (!isAuthorized)
             {
-                    throw new UnauthorizedException("You are not authorized to update this form");
+                throw new UnauthorizedException("You are not authorized to update this form");
             }
-
-            //var userId = _userService.GetLoggedInUserId();
-            //if (!(form.User.Id == userId))
-            //{
-            //    throw new UnauthorizedException("You are not authorized to update this form");
-            //}
-
 
             if (!string.IsNullOrEmpty(updateFormDTO.Title))
             {
@@ -161,11 +154,11 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException("Form not found");
             }
-            var user = form.User;
-            var loggedUserId = _userService.GetLoggedInUserId();
-            if (user.Id != loggedUserId)
+            var isAuthorized = await _userService.IsAuthorized(form);
+
+            if (!isAuthorized)
             {
-                throw new UnauthorizedException("You are not authorized to update this form");
+                throw new UnauthorizedException("You are not authorized to delete this form");
             }
 
             //var form = await _context.Forms.Include(f => f.User).Include(f => f.Questions).Include(f => f.Responses).FindAsync(id);

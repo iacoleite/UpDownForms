@@ -10,8 +10,6 @@ using NSubstitute;
 using NUnit.Framework;
 using UpDownForms.Services;
 
-
-
 namespace UpDownForms.Tests
 {
     [TestFixture]
@@ -47,8 +45,7 @@ namespace UpDownForms.Tests
         {
             
             var result = await _questionService.DeleteQuestion(fakeOpenEndedQuestion.Id);
-
-            
+            //_context.Users.
             //Assert.AreNotEqual(result.IsDeleted, fakeOpenEndedQuestion.IsDeleted);
             Assert.That(result.IsDeleted, Is.Not.EqualTo(fakeOpenEndedQuestion.IsDeleted));
         }
