@@ -43,7 +43,7 @@ namespace UpDownForms.Services
             //var listDTO = response.Select(f => f.ToFormDTO()).ToList();
             //Pageable<FormDTO> teste = new Pageable<FormDTO>(listDTO, pageSize, pageIndex, itemsCount);
             //return await Pageable<FormDTO>.ToPageable(listDTO, pageSize, pageIndex);
-            var orderParam = PageParamValidator.SetSortOrder<FormDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<FormDTO>(pageParameters);
 
             var pageable = await Pageable<FormDTO>.ToPageable(response.OrderBy(orderParam).Select(f => f.ToFormDTO()), pageParameters);
             if (pageable.Items.Count() == 0)
@@ -170,7 +170,7 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<ResponseDTO>> GetResponsesByFormId(int id, PageParameters pageParameters)
         {
-            var orderParam = PageParamValidator.SetSortOrder<ResponseDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<ResponseDTO>(pageParameters);
 
             var formResponses = _context.Responses.Include(r => r.Answers.OrderBy(a => a.QuestionId)).Where(r => r.FormId == id).Where(r => r.Answers.Count() != 0).OrderBy(orderParam).Select(r => r.ToResponseDTO());
             if (formResponses == null)

@@ -1,6 +1,6 @@
 ﻿namespace UpDownForms.Pagination
 {
-    public static class PageParamValidator
+    public static class PageParamConfigurator
     {
         public static string SetSortOrder<T>(PageParameters pageParameters)
         {

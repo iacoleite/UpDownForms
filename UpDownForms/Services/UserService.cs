@@ -36,7 +36,7 @@ namespace UpDownForms.Services
             {
                 throw new EntityNotFoundException();
             }
-            var orderParam = PageParamValidator.SetSortOrder<UserDetailsDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<UserDetailsDTO>(pageParameters);
 
 
             var pageable = await Pageable<UserDetailsDTO>.ToPageable(response.OrderBy(orderParam).Select(u => u.ToUserDetailsDTO()), pageParameters);

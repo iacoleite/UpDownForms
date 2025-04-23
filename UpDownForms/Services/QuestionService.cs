@@ -24,7 +24,7 @@ namespace UpDownForms.Services
 
         public async Task<Pageable<QuestionDetailsDTO>> GetQuestions(PageParameters pageParameters)
         {
-            var orderParam = PageParamValidator.SetSortOrder<AnswerDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<AnswerDTO>(pageParameters);
 
             var response = _context.Questions.Include(q => q.Form).Where(q => !q.IsDeleted).OrderBy(orderParam).Select(q => q.ToQuestionDetailsDTO());
             if (response == null)
@@ -215,7 +215,7 @@ namespace UpDownForms.Services
                 throw new BadHttpRequestException("Question type mismatch. Only Multiple Choice Questions can have Options.");
             }
 
-            var orderParam = PageParamValidator.SetSortOrder<OptionDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<OptionDTO>(pageParameters);
 
             var options = _context.Options
                                   .Where(o => o.QuestionId == id)
@@ -290,7 +290,7 @@ namespace UpDownForms.Services
             {
                 throw new UnauthorizedException("You are not authorized to access the answers of this question");
             }
-            var orderParam = PageParamValidator.SetSortOrder<AnswerDTO>(pageParameters);
+            var orderParam = PageParamConfigurator.SetSortOrder<AnswerDTO>(pageParameters);
 
             var response = _context.Answers.Where(a => a.QuestionId == questionId).OrderBy(orderParam).Select(a => a.ToAnswerDTO());
             var pageable = await Pageable<AnswerDTO>.ToPageable(response, pageParameters);

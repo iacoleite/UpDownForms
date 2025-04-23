@@ -9,13 +9,11 @@ namespace UpDownForms.Services
     public class LoggedUserService : ILoggedUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationHandler _verifyOwnershipHandler;
         private readonly IAuthorizationService _authorizationService;
 
-        public LoggedUserService(IHttpContextAccessor httpContextAccessor, IAuthorizationHandler verifyOwnershipHandler, IAuthorizationService authorizationService)
+        public LoggedUserService(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
-            _verifyOwnershipHandler = verifyOwnershipHandler;
             _authorizationService = authorizationService;
         }
 
